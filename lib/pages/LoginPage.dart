@@ -1,10 +1,12 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
+import 'package:sheger_parking/models/login_request_model.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/SignUpPage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sheger_parking/services/api_service.dart';
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
@@ -19,6 +21,8 @@ class _LoginPageState extends State<LoginPage> {
   bool isLoading = false;
 
   final _formKey = GlobalKey<FormState>();
+  String? email;
+  String? password;
 
   @override
   Widget build(BuildContext context) {
@@ -77,6 +81,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: Container(
                     alignment: Alignment.center,
                     child: TextFormField(
+                      onChanged: (value){
+                        email = value;
+                      },
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
@@ -115,6 +122,9 @@ class _LoginPageState extends State<LoginPage> {
                   child: Container(
                     alignment: Alignment.center,
                     child: TextFormField(
+                      onChanged: (value){
+                        password = value;
+                      },
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
@@ -176,11 +186,19 @@ class _LoginPageState extends State<LoginPage> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                       onPressed: () {
+                        print("Email : $email");
+                        print("Password : $password");
                         if (_formKey.currentState!.validate()) {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) => HomePage()));
+                          _formKey.currentState!.save();
+                          LoginRequest model = LoginRequest(
+                              email: email!,
+                              passwordHash: password!);
+
+                          APIService.login(model).then((response) {
+                            if(response){
+                              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                            }
+                          });
                         } else {
                           print("Enter fields");
                         }

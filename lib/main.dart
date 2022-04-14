@@ -1,3 +1,12 @@
+import 'package:sheger_parking/pages/BranchesPage.dart';
+import 'package:sheger_parking/pages/EditProfile.dart';
+import 'package:sheger_parking/pages/EditReservation.dart';
+import 'package:sheger_parking/pages/HomePage.dart';
+import 'package:sheger_parking/pages/LoginPage.dart';
+import 'package:sheger_parking/pages/ProfilePage.dart';
+import 'package:sheger_parking/pages/ReservationDetailsPage.dart';
+import 'package:sheger_parking/pages/ReservationPage.dart';
+import 'package:sheger_parking/pages/SignUpPage.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,7 +34,18 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: StartUp(),
+      routes: {
+        '/' : (context) => const StartUp(),
+        '/login' : (context) => LoginPage(),
+        '/signup' : (context) => SignUpPage(),
+        '/home' : (context) => HomePage(),
+        '/branch' : (context) => BranchesPage(),
+        '/editProfile' : (context) => EditProfilePage(),
+        '/editReservation' : (context) => EditReservation(plateNumber: "523614"),
+        '/profile' : (context) => ProfilePage(),
+        '/reservationDetails' : (context) => ReservationDetailsPage(),
+        '/reservation' : (context) => ReservationPage()
+      },
     );
   }
 }

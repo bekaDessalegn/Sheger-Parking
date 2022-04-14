@@ -1,10 +1,12 @@
 // ignore: file_names
-// ignore_for_file: file_names, prefer_const_constructors
+// ignore_for_file: file_names, prefer_const_constructors, unnecessary_null_comparison
 
+import 'package:sheger_parking/models/register_request_model.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/LoginPage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sheger_parking/services/api_service.dart';
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
@@ -19,6 +21,12 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _secureText = true;
   bool isDataEntered = false;
   bool isProcessing = false;
+
+  String? fullName;
+  String? email;
+  String? phoneNumber;
+  String? plateNumber;
+  String? password;
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +86,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        onChanged: (value){
+                          fullName = value;
+                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -112,6 +123,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        onChanged: (value){
+                          email = value;
+                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -152,6 +166,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        onChanged: (value){
+                          phoneNumber = value;
+                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -186,6 +203,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        onChanged: (value){
+                          plateNumber = value;
+                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -221,6 +241,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        onChanged: (value){
+                          password = value;
+                        },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -356,10 +379,19 @@ class _SignUpPageState extends State<SignUpPage> {
                               isProcessing = true;
                             });
                             if (!isDataEntered) {
-                              Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) => HomePage()));
+                              _formKey.currentState!.save();
+                              RegisterRequest model = RegisterRequest(
+                                  fullName: fullName!,
+                                  phone: phoneNumber!,
+                                  email: email!,
+                                  passwordHash: password!,
+                                  defaultPlateNumber: plateNumber!);
+
+                              APIService.register(model).then((response) {
+                                if(response.email != null || response.fullName != null || response.passwordHash != null || response.defaultPlateNumber != null || response.phone != null){
+                                  Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
+                                }
+                              });
                             }
                           } else {
                             print("Enter fields");

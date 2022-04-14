@@ -32,6 +32,7 @@ dependencies:
   ionicons: ^0.1.2
   expandable: ^5.0.1
   http: ^0.13.4
+  api_cache_manager: ^1.0.2
   time_picker_widget: ^1.0.0+10
   material_design_icons_flutter: ^5.0.6595
 
