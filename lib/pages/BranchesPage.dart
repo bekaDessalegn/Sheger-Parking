@@ -37,7 +37,7 @@ class _BranchesPageState extends State<BranchesPage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 8,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,

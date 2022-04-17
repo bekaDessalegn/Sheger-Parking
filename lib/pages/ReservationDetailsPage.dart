@@ -27,7 +27,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 8,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,

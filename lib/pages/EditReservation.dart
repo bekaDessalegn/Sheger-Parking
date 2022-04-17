@@ -48,7 +48,7 @@ class _EditReservationState extends State<EditReservation> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 8,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -110,9 +110,9 @@ class _EditReservationState extends State<EditReservation> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(25, 40, 0, 0),
+                padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
                 child: Container(
-                  width: 300,
+                  width: double.infinity,
                   alignment: Alignment.center,
                   child: TextField(
                     decoration: InputDecoration(
@@ -134,14 +134,13 @@ class _EditReservationState extends State<EditReservation> {
                       ),
                       border: OutlineInputBorder(),
                     ),
-                    keyboardType: TextInputType.number,
                   ),
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(25, 20, 0, 0),
+                padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
                 child: Container(
-                  width: 300,
+                  width: double.infinity,
                   child: Text(
                     "Branch",
                     style: TextStyle(
@@ -155,9 +154,9 @@ class _EditReservationState extends State<EditReservation> {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
+                padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
                 child: Container(
-                  width: 300,
+                  width: double.infinity,
                   alignment: Alignment.center,
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                   decoration: BoxDecoration(

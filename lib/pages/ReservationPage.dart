@@ -40,7 +40,7 @@ class _ReservationPageState extends State<ReservationPage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 8,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -96,9 +96,9 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                     ),
                   ),
-                  Padding(padding: EdgeInsets.fromLTRB(25, 40, 0, 0),
+                  Padding(padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
                     child: Container(
-                      width: 300,
+                      width: double.infinity,
                       alignment: Alignment.center,
                       child: TextField(
                         onChanged: (text){
@@ -123,13 +123,12 @@ class _ReservationPageState extends State<ReservationPage> {
                           ),
                           border: OutlineInputBorder(),
                         ),
-                        keyboardType: TextInputType.number,
                       ),
                     ),
                   ),
-                  Padding(padding: EdgeInsets.fromLTRB(25, 20, 0, 0),
+                  Padding(padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
                     child: Container(
-                      width: 300,
+                      width: double.infinity,
                       child: Text("Branch",
                         style: TextStyle(
                           color: Col.textfieldLabel,
@@ -141,9 +140,9 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                     ),
                   ),
-                  Padding(padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
+                  Padding(padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
                     child: Container(
-                      width: 300,
+                      width: double.infinity,
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       decoration: BoxDecoration(
@@ -160,9 +159,9 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                     ),
                   ),
-                  Padding(padding: EdgeInsets.fromLTRB(25, 20, 0, 0),
+                  Padding(padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
                     child: Container(
-                      width: 300,
+                      width: double.infinity,
                       child:
                       Row(
                         children: <Widget> [
@@ -206,7 +205,7 @@ class _ReservationPageState extends State<ReservationPage> {
 
                   Padding(padding: EdgeInsets.fromLTRB(25, 20, 0, 0),
                     child: Container(
-                      width: 300,
+                      width: double.infinity,
                       child: Text("Duration",
                         style: TextStyle(
                           color: Col.textfieldLabel,
@@ -220,7 +219,7 @@ class _ReservationPageState extends State<ReservationPage> {
                   ),
                   Padding(padding: EdgeInsets.fromLTRB(25, 0, 0, 0),
                     child: Container(
-                      width: 300,
+                      width: double.infinity,
                       alignment: Alignment.center,
                       padding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
                       child: Row(

@@ -1,8 +1,9 @@
 // ignore: file_names
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_const_constructors
 
 import 'package:sheger_parking/pages/BranchesPage.dart';
 import 'package:sheger_parking/pages/EditReservation.dart';
+import 'package:sheger_parking/pages/NoReservation.dart';
 import 'package:sheger_parking/pages/ProfilePage.dart';
 import 'package:sheger_parking/pages/ReservationDetailsPage.dart';
 import 'package:flutter/gestures.dart';
@@ -70,6 +71,7 @@ class _HomePageState extends State<HomePage> {
       "branch": "Branch 8"
     },
   ];
+  bool isDataEntered = true;
 
   @override
   Widget build(BuildContext context) {
@@ -79,7 +81,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 8,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -128,7 +130,7 @@ class _HomePageState extends State<HomePage> {
             child: Padding(
               padding: EdgeInsets.fromLTRB(15, 30, 0, 0),
               child: Text(
-                "Reservations",
+                isDataEntered ? "Reservations" : "No Reservations",
                 style: TextStyle(
                   color: Col.Onbackground,
                   fontSize: 28,
@@ -139,7 +141,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          Expanded(
+          isDataEntered ? Expanded(
             child: ListView.builder(
                 itemCount: infos.length,
                 itemBuilder: (context, index) {
@@ -223,62 +225,62 @@ class _HomePageState extends State<HomePage> {
                     ),
                   );
                 }),
-          ),
+          ) : Expanded(child: NoReservation()),
           Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: RaisedButton(
-                  color: Col.primary,
-                  child: Text(
-                    "Explore\nBranches",
-                    style: TextStyle(
-                      color: Col.Onprimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.3,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  child: RaisedButton(
+                    color: Col.primary,
+                    child: Text(
+                      "Explore\nBranches",
+                      style: TextStyle(
+                        color: Col.Onprimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Nunito',
+                        letterSpacing: 0.3,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => BranchesPage()));
+                    },
                   ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => BranchesPage()));
-                  },
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
-                child: RaisedButton(
-                  color: Col.primary,
-                  child: Text(
-                    "Reserve a\nspot",
-                    style: TextStyle(
-                      color: Col.Onprimary,
-                      fontSize: 14,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.3,
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+                  child: RaisedButton(
+                    color: Col.primary,
+                    child: Text(
+                      "Reserve a\nspot",
+                      style: TextStyle(
+                        color: Col.Onprimary,
+                        fontSize: 14,
+                        fontWeight: FontWeight.bold,
+                        fontFamily: 'Nunito',
+                        letterSpacing: 0.3,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
-                    textAlign: TextAlign.center,
+                    shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8)),
+                    onPressed: () {
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ReservationPage()));
+                    },
                   ),
-                  shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(8)),
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => ReservationPage()));
-                  },
                 ),
-              ),
-            ],
-          ),
+              ],
+            ),
         ],
       ),
     );
