@@ -102,6 +102,7 @@ class _HomePageState extends State<HomePage> {
               padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
               iconSize: 40,
               onPressed: () {
+                Navigator.of(context).pop();
                 Navigator.push(context,
                     MaterialPageRoute(builder: (context) => ProfilePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
               },
