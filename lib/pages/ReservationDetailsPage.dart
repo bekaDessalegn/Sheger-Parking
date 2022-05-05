@@ -14,11 +14,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'ProfilePage.dart';
 
 class ReservationDetailsPage extends StatefulWidget {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  ReservationDetailsPage({required this.id, required this.fullName, required this.phone, required this.email, required this.passwordHash, required this.defaultPlateNumber});
+
   @override
-  _ReservationDetailsPageState createState() => _ReservationDetailsPageState();
+  _ReservationDetailsPageState createState() => _ReservationDetailsPageState(id, fullName, phone, email, passwordHash, defaultPlateNumber);
 }
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  _ReservationDetailsPageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -27,7 +35,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 16.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -36,17 +44,6 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           },
           icon: Icon(Icons.arrow_back),
         ),
-        actions: [
-          IconButton(
-              color: Col.Onbackground,
-              padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-              iconSize: 40,
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()));
-              },
-              icon: Icon(Icons.account_circle_sharp)),
-        ],
         title: Text(
           Strings.app_title,
           style: TextStyle(

@@ -3,7 +3,9 @@
 
 import 'dart:async';
 
+import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/EditProfile.dart';
+import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -12,11 +14,19 @@ import '../constants/colors.dart';
 import '../constants/strings.dart';
 
 class ProfilePage extends StatefulWidget {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  ProfilePage({required this.id, required this.fullName, required this.phone, required this.email, required this.passwordHash, required this.defaultPlateNumber});
+
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  _ProfilePageState createState() => _ProfilePageState(id, fullName, phone, email, passwordHash, defaultPlateNumber);
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  _ProfilePageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -25,12 +35,12 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 16.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
           onPressed: () {
-            Navigator.of(context).pop();
+            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
           },
           icon: Icon(Icons.arrow_back),
         ),
@@ -154,7 +164,16 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-                child: clientFullName(),
+                child: Text(
+                  fullName,
+                  style: TextStyle(
+                    color: Col.Onbackground,
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.3,
+                  ),
+                ),
               ),
               Divider(
                 color: Col.Onbackground,
@@ -175,7 +194,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  "example@gmail.com",
+                  email,
                   style: TextStyle(
                     color: Col.Onbackground,
                     fontSize: 22,
@@ -204,7 +223,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  "+251900000000",
+                  phone,
                   style: TextStyle(
                     color: Col.Onbackground,
                     fontSize: 22,
@@ -233,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  "254867",
+                  defaultPlateNumber,
                   style: TextStyle(
                     color: Col.Onbackground,
                     fontSize: 22,
@@ -252,8 +271,8 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.push(context,
-              MaterialPageRoute(builder: (context) => EditProfilePage()));
+          Navigator.pushReplacement(context,
+              MaterialPageRoute(builder: (context) => EditProfilePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
         },
         backgroundColor: Col.primary,
         child: Icon(
@@ -264,14 +283,17 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  Widget clientFullName() => Text(
-        "FirstName LastName",
-        style: TextStyle(
-          color: Col.Onbackground,
-          fontSize: 22,
-          fontWeight: FontWeight.bold,
-          fontFamily: 'Nunito',
-          letterSpacing: 0.3,
-        ),
-      );
+  // Widget clientFullName(List<User> users){
+  //   final user = users[0];
+  //   return Text(
+  //       user.fullName,
+  //       style: TextStyle(
+  //         color: Col.Onbackground,
+  //         fontSize: 22,
+  //         fontWeight: FontWeight.bold,
+  //         fontFamily: 'Nunito',
+  //         letterSpacing: 0.3,
+  //       ),
+  //     );
+  // }
 }

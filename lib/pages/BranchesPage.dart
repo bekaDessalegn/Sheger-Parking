@@ -1,6 +1,7 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors
 
+import 'package:sheger_parking/pages/BranchMap.dart';
 import 'package:sheger_parking/pages/EditProfile.dart';
 import 'package:sheger_parking/pages/EditReservation.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
@@ -15,11 +16,19 @@ import 'package:expandable/expandable.dart';
 import 'ProfilePage.dart';
 
 class BranchesPage extends StatefulWidget {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  BranchesPage({required this.id, required this.fullName, required this.phone, required this.email, required this.passwordHash, required this.defaultPlateNumber});
+
   @override
-  _BranchesPageState createState() => _BranchesPageState();
+  _BranchesPageState createState() => _BranchesPageState(id, fullName, phone, email, passwordHash, defaultPlateNumber);
 }
 
 class _BranchesPageState extends State<BranchesPage> {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  _BranchesPageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
+
   final branches = [
     'Branch 1',
     'Branch 2',
@@ -37,7 +46,7 @@ class _BranchesPageState extends State<BranchesPage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 16.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -46,17 +55,6 @@ class _BranchesPageState extends State<BranchesPage> {
           },
           icon: Icon(Icons.arrow_back),
         ),
-        actions: [
-          IconButton(
-              color: Col.Onbackground,
-              padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-              iconSize: 40,
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()));
-              },
-              icon: Icon(Icons.account_circle_sharp)),
-        ],
         title: Text(
           Strings.app_title,
           style: TextStyle(
@@ -117,7 +115,7 @@ class _BranchesPageState extends State<BranchesPage> {
                                 Align(
                                   child: IconButton(
                                     onPressed: () {
-                                      print("Teleyaleh");
+                                      Navigator.push(context, MaterialPageRoute(builder: (context) => BranchMap()));
                                     },
                                     icon: Icon(
                                       Icons.location_on,

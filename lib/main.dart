@@ -36,15 +36,6 @@ class MyApp extends StatelessWidget {
       ),
       routes: {
         '/' : (context) => const StartUp(),
-        '/login' : (context) => LoginPage(),
-        '/signup' : (context) => SignUpPage(),
-        '/home' : (context) => HomePage(),
-        '/branch' : (context) => BranchesPage(),
-        '/editProfile' : (context) => EditProfilePage(),
-        '/editReservation' : (context) => EditReservation(plateNumber: "523614"),
-        '/profile' : (context) => ProfilePage(),
-        '/reservationDetails' : (context) => ReservationDetailsPage(),
-        '/reservation' : (context) => ReservationPage()
       },
     );
   }

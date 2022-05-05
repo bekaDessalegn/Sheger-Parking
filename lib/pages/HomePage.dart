@@ -1,5 +1,5 @@
 // ignore: file_names
-// ignore_for_file: file_names
+// ignore_for_file: file_names, no_logic_in_create_state, prefer_const_constructors
 
 import 'package:sheger_parking/pages/BranchesPage.dart';
 import 'package:sheger_parking/pages/EditReservation.dart';
@@ -15,11 +15,19 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'ReservationPage.dart';
 
 class HomePage extends StatefulWidget {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  HomePage({required this.id, required this.fullName, required this.phone, required this.email, required this.passwordHash, required this.defaultPlateNumber});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  _HomePageState createState() => _HomePageState(id, fullName, phone, email, passwordHash, defaultPlateNumber);
 }
 
 class _HomePageState extends State<HomePage> {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  _HomePageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
+
   dynamic infos = [
     {
       "plateNumber": "624875",
@@ -79,7 +87,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 16.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -95,7 +103,7 @@ class _HomePageState extends State<HomePage> {
               iconSize: 40,
               onPressed: () {
                 Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()));
+                    MaterialPageRoute(builder: (context) => ProfilePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
               },
               icon: Icon(Icons.account_circle_sharp)),
         ],
@@ -149,7 +157,7 @@ class _HomePageState extends State<HomePage> {
                       Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => ReservationDetailsPage()));
+                              builder: (context) => ReservationDetailsPage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
                     },
                     child: Padding(
                       padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
@@ -248,7 +256,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => BranchesPage()));
+                            builder: (context) => BranchesPage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
                   },
                 ),
               ),
@@ -273,7 +281,7 @@ class _HomePageState extends State<HomePage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) => ReservationPage()));
+                            builder: (context) => ReservationPage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
                   },
                 ),
               ),

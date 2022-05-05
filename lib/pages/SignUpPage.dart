@@ -1,12 +1,14 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors, unnecessary_null_comparison
 
-import 'package:sheger_parking/models/register_request_model.dart';
+import 'dart:convert';
+
+import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/LoginPage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:sheger_parking/services/api_service.dart';
+import 'package:http/http.dart' as http;
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
@@ -21,12 +23,79 @@ class _SignUpPageState extends State<SignUpPage> {
   bool _secureText = true;
   bool isDataEntered = false;
   bool isProcessing = false;
+  late String verificationCode;
 
-  String? fullName;
-  String? email;
-  String? phoneNumber;
-  String? plateNumber;
-  String? password;
+  Future verify() async {
+    var headersList = {
+      'Accept': '*/*',
+      'Content-Type': 'application/json'
+    };
+    var url = Uri.parse('http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/clients/signup');
+
+    var body = {
+      "fullName": user.fullName,
+      "phone": user.phone,
+      "email": user.email,
+      "passwordHash": user.passwordHash,
+      "defaultPlateNumber": user.defaultPlateNumber
+    };
+
+    var req = http.Request('POST', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      var verificationCode = json.decode(resBody);
+      print(verificationCode["emailVerificationCode"]);
+      this.verificationCode = verificationCode["emailVerificationCode"].toString();
+      print(resBody);
+    }
+    else {
+      print(res.reasonPhrase);
+    }
+  }
+
+  Future save() async {
+    var headersList = {
+      'Accept': '*/*',
+      'Content-Type': 'application/json'
+    };
+    var url = Uri.parse('http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/clients');
+
+    var body = {
+      "fullName": user.fullName,
+      "phone": user.phone,
+      "email": user.email,
+      "passwordHash": user.passwordHash,
+      "defaultPlateNumber": user.defaultPlateNumber
+    };
+    var req = http.Request('POST', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      var data = json.decode(resBody);
+      String id = data["id"].toString();
+      String fullName = data["fullName"].toString();
+      String phone = data["phone"].toString();
+      String email = data["email"].toString();
+      String passwordHash = data["passwordHash"].toString();
+      String defaultPlateNumber = data["defaultPlateNumber"].toString();
+      print(resBody);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
+    }
+    else {
+      print(res.reasonPhrase);
+    }
+  }
+
+  User user = User('', '', '', '', '');
 
   @override
   Widget build(BuildContext context) {
@@ -86,8 +155,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        controller: TextEditingController(text: user.fullName),
                         onChanged: (value){
-                          fullName = value;
+                          user.fullName = value;
                         },
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -123,8 +193,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        controller: TextEditingController(text: user.email),
                         onChanged: (value){
-                          email = value;
+                          user.email = value;
                         },
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -166,8 +237,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        controller: TextEditingController(text: user.phone),
                         onChanged: (value){
-                          phoneNumber = value;
+                          user.phone = value;
                         },
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -203,8 +275,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        controller: TextEditingController(text: user.defaultPlateNumber),
                         onChanged: (value){
-                          plateNumber = value;
+                          user.defaultPlateNumber = value;
                         },
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -241,8 +314,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
+                        controller: TextEditingController(text: user.passwordHash),
                         onChanged: (value){
-                          password = value;
+                          user.passwordHash = value;
                         },
                         validator: (value) {
                           if (value!.isEmpty) {
@@ -322,6 +396,8 @@ class _SignUpPageState extends State<SignUpPage> {
                                       validator: (value) {
                                         if (value!.isEmpty) {
                                           return "This field can not be empty";
+                                        }else if(value != verificationCode){
+                                          return "Please enter the correct verification code";
                                         }
                                         return null;
                                       },
@@ -346,6 +422,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                               BorderSide(color: Colors.red),
                                         ),
                                       ),
+                                      keyboardType: TextInputType.number,
                                     ),
                                   ),
                                 ],
@@ -371,6 +448,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                         onPressed: () {
+                          verify();
                           if (_formKey.currentState!.validate()) {
                             setState(() {
                               isDataEntered = !isDataEntered;
@@ -379,24 +457,12 @@ class _SignUpPageState extends State<SignUpPage> {
                               isProcessing = true;
                             });
                             if (!isDataEntered) {
-                              _formKey.currentState!.save();
-                              RegisterRequest model = RegisterRequest(
-                                  fullName: fullName!,
-                                  phone: phoneNumber!,
-                                  email: email!,
-                                  passwordHash: password!,
-                                  defaultPlateNumber: plateNumber!);
-
-                              APIService.register(model).then((response) {
-                                if(response.email != null || response.fullName != null || response.passwordHash != null || response.defaultPlateNumber != null || response.phone != null){
-                                  Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                                }
-                              });
+                              save();
                             }
                           } else {
                             print("Enter fields");
                           }
-                          Future.delayed(Duration(seconds: 3), () {
+                          Future.delayed(Duration(seconds: 5), () {
                             setState(() {
                               isProcessing = false;
                             });

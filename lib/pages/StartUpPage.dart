@@ -1,5 +1,5 @@
 // ignore: file_names
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_const_constructors
 
 import 'package:sheger_parking/pages/LoginPage.dart';
 import 'package:sheger_parking/pages/SignUpPage.dart';

@@ -12,11 +12,17 @@ import 'ProfilePage.dart';
 
 class ReservationPage extends StatefulWidget {
 
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  ReservationPage({required this.id, required this.fullName, required this.phone, required this.email, required this.passwordHash, required this.defaultPlateNumber});
+
   @override
-  _ReservationPageState createState() => _ReservationPageState();
+  _ReservationPageState createState() => _ReservationPageState(id, fullName, phone, email, passwordHash, defaultPlateNumber);
 }
 
 class _ReservationPageState extends State<ReservationPage> {
+
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber;
+  _ReservationPageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
 
   final branches = ['Branch 1','Branch 2','Branch 3','Branch 4','Branch 5','Branch 6'];
   final duration = ['hours', 'days'];
@@ -40,7 +46,7 @@ class _ReservationPageState extends State<ReservationPage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 16.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -49,15 +55,6 @@ class _ReservationPageState extends State<ReservationPage> {
           },
           icon: Icon(Icons.arrow_back),
         ),
-        actions: [IconButton(
-            color: Col.Onbackground,
-            padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-            iconSize: 40,
-            onPressed: (){
-              Navigator.push(context, MaterialPageRoute(builder: (context) => ProfilePage()));
-            },
-            icon: Icon(Icons.account_circle_sharp)),
-        ],
         title: Text(Strings.app_title,
           style: TextStyle(
             color: Col.Onsurface,

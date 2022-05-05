@@ -1,12 +1,14 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors, prefer_const_literals_to_create_immutables, sized_box_for_whitespace
 
-import 'package:sheger_parking/models/login_request_model.dart';
+import 'dart:convert';
+
+import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/SignUpPage.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-import 'package:sheger_parking/services/api_service.dart';
+import 'package:http/http.dart' as http;
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
@@ -20,9 +22,52 @@ class _LoginPageState extends State<LoginPage> {
   bool _secureText = true;
   bool isLoading = false;
 
+  String? response;
+
   final _formKey = GlobalKey<FormState>();
-  String? email;
-  String? password;
+
+  Future save() async{
+    var headersList = {
+      'Accept': '*/*',
+      'Content-Type': 'application/json'
+    };
+    var url = Uri.parse('http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/clients/login');
+
+    var body = {
+      "phone": user.phone,
+      "passwordHash": user.passwordHash
+    };
+    var req = http.Request('POST', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    setState(() {
+      response = res.reasonPhrase;
+    });
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      var data = json.decode(resBody);
+      String id = data["id"].toString();
+      String fullName = data["fullName"].toString();
+      String phone = data["phone"].toString();
+      String email = data["email"].toString();
+      String passwordHash = data["passwordHash"].toString();
+      String defaultPlateNumber = data["defaultPlateNumber"].toString();
+      // var content = json.decode(resBody);
+      // phone = content["phone"].toString();
+      // passwordHash = content["passwordHash"].toString();
+      print(resBody);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
+    }
+    else {
+      print(res.reasonPhrase);
+    }
+  }
+
+  User user = User('', '', '', '', '');
 
   @override
   Widget build(BuildContext context) {
@@ -81,27 +126,27 @@ class _LoginPageState extends State<LoginPage> {
                   child: Container(
                     alignment: Alignment.center,
                     child: TextFormField(
+                      controller: TextEditingController(text: user.phone),
                       onChanged: (value){
-                        email = value;
+                        user.phone = value;
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
-                        } else if (value != "name@ex.com") {
-                          return "Email doesn't exist";
-                        } else {
+                        }
+                        else {
                           return null;
                         }
                       },
                       decoration: InputDecoration(
-                        hintText: "name@example.com",
+                        hintText: "",
                         hintStyle: TextStyle(
                           color: Col.textfieldLabel,
                           fontSize: 14,
                           fontFamily: 'Nunito',
                           letterSpacing: 0.1,
                         ),
-                        labelText: "Email",
+                        labelText: "Phone Number",
                         labelStyle: TextStyle(
                           color: Col.textfieldLabel,
                           fontSize: 14,
@@ -113,7 +158,6 @@ class _LoginPageState extends State<LoginPage> {
                           borderSide: BorderSide(color: Colors.red),
                         ),
                       ),
-                      keyboardType: TextInputType.emailAddress,
                     ),
                   ),
                 ),
@@ -122,15 +166,15 @@ class _LoginPageState extends State<LoginPage> {
                   child: Container(
                     alignment: Alignment.center,
                     child: TextFormField(
+                      controller: TextEditingController(text: user.passwordHash),
                       onChanged: (value){
-                        password = value;
+                        user.passwordHash = value;
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
-                        } else if (value != "asdfghjk") {
-                          return "Password is incorrect";
-                        } else {
+                        }
+                        else {
                           return null;
                         }
                       },
@@ -167,8 +211,19 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
+                (response == "Not Found") ?
                 Padding(
-                  padding: EdgeInsets.fromLTRB(25, 75, 25, 0),
+                  padding: const EdgeInsets.only(top: 15, left: 25),
+                  child: Text("One of the credentials is incorrect",
+                  style: TextStyle(
+                    color: Colors.redAccent,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 15
+                  ),
+                  ),
+                ) : Text(""),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(25, 65, 25, 0),
                   child: Container(
                     width: double.infinity,
                     child: RaisedButton(
@@ -186,23 +241,10 @@ class _LoginPageState extends State<LoginPage> {
                       shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(8)),
                       onPressed: () {
-                        print("Email : $email");
-                        print("Password : $password");
                         if (_formKey.currentState!.validate()) {
-                          _formKey.currentState!.save();
-                          LoginRequest model = LoginRequest(
-                              email: email!,
-                              passwordHash: password!);
-
-                          APIService.login(model).then((response) {
-                            if(response){
-                              Navigator.pushNamedAndRemoveUntil(context, '/home', (route) => false);
-                            }
-                          });
-                        } else {
-                          print("Enter fields");
+                          save();
                         }
-                      },
+                      }
                     ),
                   ),
                 ),

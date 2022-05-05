@@ -48,7 +48,7 @@ class _EditReservationState extends State<EditReservation> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 0.0,
+        elevation: 16.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -57,17 +57,6 @@ class _EditReservationState extends State<EditReservation> {
           },
           icon: Icon(Icons.arrow_back),
         ),
-        actions: [
-          IconButton(
-              color: Col.Onbackground,
-              padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-              iconSize: 40,
-              onPressed: () {
-                Navigator.push(context,
-                    MaterialPageRoute(builder: (context) => ProfilePage()));
-              },
-              icon: Icon(Icons.account_circle_sharp)),
-        ],
         title: Text(
           Strings.app_title,
           style: TextStyle(
