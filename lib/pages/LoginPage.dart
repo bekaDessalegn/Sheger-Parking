@@ -60,7 +60,7 @@ class _LoginPageState extends State<LoginPage> {
       // phone = content["phone"].toString();
       // passwordHash = content["passwordHash"].toString();
       print(resBody);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
     }
     else {
       print(res.reasonPhrase);

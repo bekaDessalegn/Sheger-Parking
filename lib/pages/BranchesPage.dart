@@ -40,44 +40,7 @@ class _BranchesPageState extends State<BranchesPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      resizeToAvoidBottomInset: false,
-      backgroundColor: Col.background,
-      appBar: AppBar(
-        brightness: Brightness.dark,
-        backgroundColor: Colors.transparent,
-        elevation: 16.0,
-        toolbarHeight: 70,
-        leading: IconButton(
-          color: Col.Onbackground,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
-        title: Text(
-          Strings.app_title,
-          style: TextStyle(
-            color: Col.Onsurface,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
-            fontFamily: 'Nunito',
-            letterSpacing: 0.3,
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20)),
-            gradient: LinearGradient(
-                colors: [Col.secondary, Col.secondary],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter),
-          ),
-        ),
-      ),
-      body: Column(
+    return Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           Center(
@@ -167,8 +130,7 @@ class _BranchesPageState extends State<BranchesPage> {
                 }),
           ),
         ],
-      ),
-    );
+      );
   }
 
   // Widget buildCard(String branchName) => Padding(

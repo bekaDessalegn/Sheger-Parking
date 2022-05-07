@@ -35,12 +35,12 @@ class _ProfilePageState extends State<ProfilePage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 16.0,
+        elevation: 4.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
           onPressed: () {
-            Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
+            Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
           },
           icon: Icon(Icons.arrow_back),
         ),
@@ -121,8 +121,8 @@ class _ProfilePageState extends State<ProfilePage> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20)),
+                bottomLeft: Radius.circular(0),
+                bottomRight: Radius.circular(0)),
             gradient: LinearGradient(
                 colors: [Col.secondary, Col.secondary],
                 begin: Alignment.bottomCenter,
@@ -271,7 +271,7 @@ class _ProfilePageState extends State<ProfilePage> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          Navigator.pushReplacement(context,
+          Navigator.push(context,
               MaterialPageRoute(builder: (context) => EditProfilePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
         },
         backgroundColor: Col.primary,

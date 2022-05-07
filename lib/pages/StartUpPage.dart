@@ -67,19 +67,22 @@ class StartUp extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.fromLTRB(0, 60, 0, 0),
                     child: RaisedButton(
-                      color: Col.primary,
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 50, vertical: 10),
+                      color: Colors.white,
                       child: Text(
                         "Login",
                         style: TextStyle(
-                          color: Col.Onprimary,
-                          fontSize: 28,
+                          color: Colors.black,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Nunito',
                           letterSpacing: 0.3,
                         ),
                       ),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(color: Col.primary)),
                       onPressed: () {
                         Navigator.push(
                             context,
@@ -91,19 +94,22 @@ class StartUp extends StatelessWidget {
                   Padding(
                     padding: EdgeInsets.fromLTRB(0, 60, 0, 0),
                     child: RaisedButton(
-                      color: Col.primary,
+                      color: Colors.white,
+                      padding:
+                      EdgeInsets.symmetric(horizontal: 50, vertical: 10),
                       child: Text(
                         Strings.signup,
                         style: TextStyle(
-                          color: Col.Onprimary,
-                          fontSize: 28,
+                          color: Colors.black,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
                           fontFamily: 'Nunito',
                           letterSpacing: 0.3,
                         ),
                       ),
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                          borderRadius: BorderRadius.circular(8),
+                          side: BorderSide(color: Col.primary)),
                       onPressed: () {
                         Navigator.push(
                             context,

@@ -44,7 +44,7 @@ class _BranchMapState extends State<BranchMap> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 16.0,
+        elevation: 4.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -66,8 +66,8 @@ class _BranchMapState extends State<BranchMap> {
         flexibleSpace: Container(
           decoration: BoxDecoration(
             borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(20),
-                bottomRight: Radius.circular(20)),
+                bottomLeft: Radius.circular(0),
+                bottomRight: Radius.circular(0)),
             gradient: LinearGradient(
                 colors: [Col.secondary, Col.secondary],
                 begin: Alignment.bottomCenter,
