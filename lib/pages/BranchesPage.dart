@@ -1,19 +1,15 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors
 
-import 'package:sheger_parking/pages/BranchMap.dart';
-import 'package:sheger_parking/pages/EditProfile.dart';
-import 'package:sheger_parking/pages/EditReservation.dart';
-import 'package:sheger_parking/pages/StartUpPage.dart';
-import 'package:flutter/gestures.dart';
+import 'dart:async';
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:sheger_parking/pages/BranchMap.dart';
 
 import '../constants/colors.dart';
-import '../constants/strings.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:expandable/expandable.dart';
-
-import 'ProfilePage.dart';
+import 'package:sheger_parking/models/BranchDetails.dart';
+import 'package:http/http.dart' as http;
 
 class BranchesPage extends StatefulWidget {
 
@@ -29,14 +25,64 @@ class _BranchesPageState extends State<BranchesPage> {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
   _BranchesPageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
 
-  final branches = [
-    'Branch 1',
-    'Branch 2',
-    'Branch 3',
-    'Branch 4',
-    'Branch 5',
-    'Branch 6'
-  ];
+  List<BranchDetails> branches = [];
+  String query = '';
+  Timer? debouncer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    init();
+  }
+
+  @override
+  void dispose() {
+    debouncer?.cancel();
+    super.dispose();
+  }
+
+  void debounce(
+      VoidCallback callback, {
+        Duration duration = const Duration(milliseconds: 1000),
+      }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+
+    debouncer = Timer(duration, callback);
+  }
+
+  static Future<List<BranchDetails>> getBranchDetails(
+      String query) async {
+    final url = Uri.parse(
+        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/branches');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List branchDetails = json.decode(response.body);
+
+      return branchDetails
+          .map((json) => BranchDetails.fromJson(json))
+          .where((branchDetail) {
+        final branchNameLower =
+        branchDetail.name.toLowerCase();
+        final branchIdLower = branchDetail.id.toLowerCase();
+        final searchLower = query.toLowerCase();
+
+        return branchNameLower.contains(searchLower) ||
+            branchIdLower.contains(searchLower);
+      }).toList();
+    } else {
+      throw Exception();
+    }
+  }
+
+  Future init() async {
+    final branchDetails = await getBranchDetails(query);
+
+    setState(() => this.branches = branchDetails);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -60,11 +106,12 @@ class _BranchesPageState extends State<BranchesPage> {
           ),
           Expanded(
             child: ListView.builder(
-                itemCount: branches.length,
-                itemBuilder: (context, index) {
-                  dynamic branch = branches[index];
-                  return Padding(
-                    padding: EdgeInsets.fromLTRB(20, 0, 20, 0),
+              itemCount: branches.length,
+              itemBuilder: (context, index) {
+                final branchDetail = branches[index];
+
+                return Padding(
+                    padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
                     child: Card(
                       color: Colors.grey[100],
                       elevation: 8,
@@ -78,20 +125,20 @@ class _BranchesPageState extends State<BranchesPage> {
                                 Align(
                                   child: IconButton(
                                     onPressed: () {
-                                      Navigator.push(context, MaterialPageRoute(builder: (context) => BranchMap()));
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => BranchMap()));
                                     },
-                                    icon: Icon(
-                                      Icons.location_on,
-                                    ),
+                                    icon: Icon(Icons.location_on),
                                     iconSize: 25,
                                   ),
                                   alignment: Alignment.topRight,
                                 ),
                                 Padding(
-                                  padding:
-                                      const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                                  padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
                                   child: Text(
-                                    "$branch",
+                                    "${branchDetail.name}",
                                     style: TextStyle(
                                       color: Col.Onbackground,
                                       fontSize: 20,
@@ -106,8 +153,9 @@ class _BranchesPageState extends State<BranchesPage> {
                             Text(
                               "Description 1",
                               style: TextStyle(
-                                color: Colors.black,
+                                color: Col.Onbackground,
                                 fontSize: 18,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Nunito',
                                 letterSpacing: 0.3,
                               ),
@@ -115,8 +163,9 @@ class _BranchesPageState extends State<BranchesPage> {
                             Text(
                               "Description 2",
                               style: TextStyle(
-                                color: Colors.black,
+                                color: Col.Onbackground,
                                 fontSize: 18,
+                                fontWeight: FontWeight.bold,
                                 fontFamily: 'Nunito',
                                 letterSpacing: 0.3,
                               ),
@@ -126,8 +175,9 @@ class _BranchesPageState extends State<BranchesPage> {
                       ),
                       margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                     ),
-                  );
-                }),
+                );
+              },
+            ),
           ),
         ],
       );

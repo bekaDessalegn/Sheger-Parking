@@ -1,17 +1,10 @@
 // ignore: file_names
 // ignore_for_file: file_names, no_logic_in_create_state, prefer_const_constructors
 
-import 'package:sheger_parking/pages/EditProfile.dart';
-import 'package:sheger_parking/pages/EditReservation.dart';
-import 'package:sheger_parking/pages/StartUpPage.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-
-import 'ProfilePage.dart';
 
 class ReservationDetailsPage extends StatefulWidget {
   String id,

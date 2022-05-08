@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:sheger_parking/api/reservations_api.dart';
 import 'package:sheger_parking/constants/colors.dart';
 import 'package:sheger_parking/models/ReservationDetails.dart';
 import 'package:sheger_parking/widget/search_widget.dart';
@@ -14,7 +13,7 @@ class FilterNetworkListPage extends StatefulWidget {
 }
 
 class FilterNetworkListPageState extends State<FilterNetworkListPage> {
-  List<Book> books = [];
+  List<ReservationDetails> reservations = [];
   String query = '';
   Timer? debouncer;
 
@@ -42,17 +41,17 @@ class FilterNetworkListPageState extends State<FilterNetworkListPage> {
     debouncer = Timer(duration, callback);
   }
 
-  static Future<List<Book>> getBooks(String query) async {
+  static Future<List<ReservationDetails>> getReservationDetails(String query) async {
     final url = Uri.parse(
-        'http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/clients/6271835d3c51e34e83c59c8a/reservations');
+        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/clients/6271835d3c51e34e83c59c8a/reservations');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      final List books = json.decode(response.body);
+      final List reservationDetails = json.decode(response.body);
 
-      return books.map((json) => Book.fromJson(json)).where((book) {
-        final reservationPlateNumberLower = book.reservationPlateNumber.toLowerCase();
-        final branchLower = book.branch.toLowerCase();
+      return reservationDetails.map((json) => ReservationDetails.fromJson(json)).where((reservationDetail) {
+        final reservationPlateNumberLower = reservationDetail.reservationPlateNumber.toLowerCase();
+        final branchLower = reservationDetail.branch.toLowerCase();
         final searchLower = query.toLowerCase();
 
         return reservationPlateNumberLower.contains(searchLower) ||
@@ -64,9 +63,9 @@ class FilterNetworkListPageState extends State<FilterNetworkListPage> {
   }
 
   Future init() async {
-    final books = await getBooks(query);
+    final reservationDetails = await getReservationDetails(query);
 
-    setState(() => this.books = books);
+    setState(() => this.reservations = reservationDetails);
   }
 
   @override
@@ -76,11 +75,11 @@ class FilterNetworkListPageState extends State<FilterNetworkListPage> {
             buildSearch(),
             Expanded(
               child: ListView.builder(
-                itemCount: books.length,
+                itemCount: reservations.length,
                 itemBuilder: (context, index) {
-                  final book = books[index];
+                  final reservationDetail = reservations[index];
 
-                  return buildBook(book);
+                  return buildReservation(reservationDetail);
                 },
               ),
             ),
@@ -91,21 +90,21 @@ class FilterNetworkListPageState extends State<FilterNetworkListPage> {
   Widget buildSearch() => SearchWidget(
         text: query,
         hintText: 'Title or Author Name',
-        onChanged: searchBook,
+        onChanged: searchReservations,
       );
 
-  Future searchBook(String query) async => debounce(() async {
-        final books = await getBooks(query);
+  Future searchReservations(String query) async => debounce(() async {
+        final reservationDetails = await getReservationDetails(query);
 
         if (!mounted) return;
 
         setState(() {
           this.query = query;
-          this.books = books;
+          this.reservations = reservationDetails;
         });
       });
 
-  Widget buildBook(Book book) => GestureDetector(
+  Widget buildReservation(ReservationDetails reservationDetail) => GestureDetector(
                 onTap: () {
                   // Navigator.push(
                   //     context,
@@ -142,7 +141,7 @@ class FilterNetworkListPageState extends State<FilterNetworkListPage> {
                                 padding: const EdgeInsets.fromLTRB(
                                     0, 15, 0, 0),
                                 child: Text(
-                                  "Reservation at ${book.branch}",
+                                  "Reservation at ${reservationDetail.branch}",
                                   style: TextStyle(
                                     color: Col.Onbackground,
                                     fontSize: 20,

@@ -1,19 +1,14 @@
 // ignore: file_names
 // ignore_for_file: file_names, no_logic_in_create_state, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
+
 import 'package:sheger_parking/pages/BranchesPage.dart';
-import 'package:sheger_parking/pages/EditReservation.dart';
-import 'package:sheger_parking/pages/NoReservation.dart';
 import 'package:sheger_parking/pages/ProfilePage.dart';
-import 'package:sheger_parking/pages/ReservationDetailsPage.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:sheger_parking/pages/Reservations.dart';
-import 'package:sheger_parking/pages/filter_network_list_page.dart';
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 import 'ReservationPage.dart';
 
@@ -94,61 +89,9 @@ class _HomePageState extends State<HomePage> {
           phone: phone,
           email: email,
           passwordHash: passwordHash,
-          defaultPlateNumber: defaultPlateNumber),
-      FilterNetworkListPage()
+          defaultPlateNumber: defaultPlateNumber)
     ];
   }
-
-  dynamic infos = [
-    {
-      "plateNumber": "624875",
-      "time": "8:00 A.M",
-      "duration": "3 hrs",
-      "branch": "Branch 1"
-    },
-    {
-      "plateNumber": "215896",
-      "time": "4:00 A.M",
-      "duration": "6 hrs",
-      "branch": "Branch 2"
-    },
-    {
-      "plateNumber": "478563",
-      "time": "7:00 A.M",
-      "duration": "2 hrs",
-      "branch": "Branch 3"
-    },
-    {
-      "plateNumber": "015874",
-      "time": "1:00 A.M",
-      "duration": "4 hrs",
-      "branch": "Branch 4"
-    },
-    {
-      "plateNumber": "624875",
-      "time": "8:00 A.M",
-      "duration": "3 hrs",
-      "branch": "Branch 5"
-    },
-    {
-      "plateNumber": "215896",
-      "time": "4:00 A.M",
-      "duration": "6 hrs",
-      "branch": "Branch 6"
-    },
-    {
-      "plateNumber": "478563",
-      "time": "7:00 A.M",
-      "duration": "2 hrs",
-      "branch": "Branch 7"
-    },
-    {
-      "plateNumber": "015874",
-      "time": "1:00 A.M",
-      "duration": "4 hrs",
-      "branch": "Branch 8"
-    },
-  ];
 
   bool isDataEntered = true;
 
@@ -217,16 +160,12 @@ class _HomePageState extends State<HomePage> {
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.car_repair),
+            icon: Icon(Icons.account_tree),
             label: "Branches",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.assignment_late),
+            icon: Icon(Icons.book),
             label: "Reserve",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home_repair_service),
-            label: "Trial",
           ),
         ],
       ),

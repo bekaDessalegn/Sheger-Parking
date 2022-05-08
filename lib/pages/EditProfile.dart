@@ -4,14 +4,11 @@
 import 'dart:convert';
 
 import 'package:sheger_parking/pages/ProfilePage.dart';
-import 'package:sheger_parking/pages/StartUpPage.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 
 class EditProfilePage extends StatefulWidget {
 
@@ -34,7 +31,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'Accept': '*/*',
       'Content-Type': 'application/json'
     };
-    var url = Uri.parse('http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/clients/${id}');
+    var url = Uri.parse('http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/clients/${id}');
 
     var body = {
       "fullName": fullName,

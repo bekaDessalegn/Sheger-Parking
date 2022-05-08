@@ -30,7 +30,7 @@ class _SignUpPageState extends State<SignUpPage> {
       'Accept': '*/*',
       'Content-Type': 'application/json'
     };
-    var url = Uri.parse('http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/clients/signup');
+    var url = Uri.parse('http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/clients/signup');
 
     var body = {
       "fullName": user.fullName,
@@ -63,7 +63,7 @@ class _SignUpPageState extends State<SignUpPage> {
       'Accept': '*/*',
       'Content-Type': 'application/json'
     };
-    var url = Uri.parse('http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/clients');
+    var url = Uri.parse('http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/clients');
 
     var body = {
       "fullName": user.fullName,
@@ -305,7 +305,6 @@ class _SignUpPageState extends State<SignUpPage> {
                             borderSide: BorderSide(color: Colors.red),
                           ),
                         ),
-                        keyboardType: TextInputType.number,
                       ),
                     ),
                   ),

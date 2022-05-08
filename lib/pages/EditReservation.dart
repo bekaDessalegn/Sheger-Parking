@@ -3,18 +3,13 @@
 
 import 'dart:convert';
 
-import 'package:sheger_parking/models/Reservation.dart';
-import 'package:sheger_parking/pages/EditProfile.dart';
-import 'package:sheger_parking/pages/StartUpPage.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
+import 'package:sheger_parking/pages/HomePage.dart';
+import 'package:time_picker_widget/time_picker_widget.dart';
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
 import 'package:http/http.dart' as http;
-import 'package:flutter_svg/flutter_svg.dart';
-
-import 'ProfilePage.dart';
 
 class EditReservation extends StatefulWidget {
   String id,
@@ -83,12 +78,9 @@ class _EditReservationState extends State<EditReservation> {
     'Branch 5',
     'Branch 6'
   ];
-  final duration = ['hours', 'days'];
-  String? duration_value = 'hours';
-  String? value;
-  String price = "25";
 
-  String _selectedTime = '8:00 AM';
+  String? value;
+
   DateTime dateTime = DateTime(2022, 12, 24);
 
   Future editReservation() async {
@@ -98,7 +90,7 @@ class _EditReservationState extends State<EditReservation> {
       'Content-Type': 'application/json'
     };
     var url = Uri.parse(
-        'http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/reservations/$reservationId');
+        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/reservations/$reservationId');
 
     var body = {
       "reservationPlateNumber": reservationPlateNumber,
@@ -114,6 +106,7 @@ class _EditReservationState extends State<EditReservation> {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       print(resBody);
+      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
     } else {
       print(res.reasonPhrase);
     }
@@ -123,7 +116,7 @@ class _EditReservationState extends State<EditReservation> {
   Widget build(BuildContext context) {
     final hours = dateTime.hour.toString().padLeft(2, '0');
     // reservation.startingTime = int.parse(hours);
-    startTime = hours;
+    startTime = int.parse(hours);
     final minutes = dateTime.minute.toString().padLeft(2, '0');
 
     return Scaffold(
@@ -369,24 +362,30 @@ class _EditReservationState extends State<EditReservation> {
     );
   }
 
+  Future<DateTime?> pickDate() => showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1991),
+      lastDate: DateTime(2050));
+
+  Future<TimeOfDay?> pickTime() => showCustomTimePicker(
+      context: context,
+      // It is a must if you provide selectableTimePredicate
+      onFailValidation: (context) => print('Unavailable selection'),
+      initialTime: TimeOfDay(hour: 6, minute: 0),
+      selectableTimePredicate: (time) => time!.minute == 0);
+
   Future pickDateTime() async {
-    DateTime? date = await showDatePicker(
-        context: context,
-        initialDate: DateTime.now(),
-        firstDate: DateTime(1900),
-        lastDate: DateTime(2100));
+    DateTime? date = await pickDate();
     if (date == null) return;
 
-    TimeOfDay? time =
-        await showTimePicker(context: context, initialTime: TimeOfDay.now());
+    TimeOfDay? time = await pickTime();
     if (time == null) return;
 
     final dateTime =
-        DateTime(date.year, date.month, date.day, date.hour, date.minute);
-
+    DateTime(date.year, date.month, date.day, time.hour, time.minute);
     setState(() {
       this.dateTime = dateTime;
-      _selectedTime = time.format(context);
     });
   }
 
@@ -403,18 +402,18 @@ class _EditReservationState extends State<EditReservation> {
         ),
       );
 
-  DropdownMenuItem<String> buildMenuDuration(String duration) =>
-      DropdownMenuItem(
-        value: duration,
-        child: Text(
-          duration,
-          style: TextStyle(
-            color: Col.Onbackground,
-            fontSize: 18,
-            fontFamily: 'Nunito',
-            letterSpacing: 0.3,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      );
+  // DropdownMenuItem<String> buildMenuDuration(String duration) =>
+  //     DropdownMenuItem(
+  //       value: duration,
+  //       child: Text(
+  //         duration,
+  //         style: TextStyle(
+  //           color: Col.Onbackground,
+  //           fontSize: 18,
+  //           fontFamily: 'Nunito',
+  //           letterSpacing: 0.3,
+  //         ),
+  //         textAlign: TextAlign.center,
+  //       ),
+  //     );
 }

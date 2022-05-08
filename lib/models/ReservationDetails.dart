@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-class Book {
+class ReservationDetails {
   final String id;
   final String client;
   final String reservationPlateNumber;
@@ -11,7 +11,7 @@ class Book {
   final int duration;
   final bool parked;
 
-  const Book({
+  const ReservationDetails({
     required this.id,
     required this.client,
     required this.reservationPlateNumber,
@@ -23,7 +23,7 @@ class Book {
     required this.parked,
   });
 
-  factory Book.fromJson(Map<String, dynamic> json) => Book(
+  factory ReservationDetails.fromJson(Map<String, dynamic> json) => ReservationDetails(
     id: json['id'],
     client: json['client'],
     reservationPlateNumber: json['reservationPlateNumber'],

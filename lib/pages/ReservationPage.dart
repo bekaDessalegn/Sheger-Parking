@@ -8,11 +8,8 @@ import 'package:sheger_parking/models/Reservation.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 
 import '../constants/colors.dart';
-import '../constants/strings.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
 import 'package:http/http.dart' as http;
-
-import 'ProfilePage.dart';
 
 class ReservationPage extends StatefulWidget {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
@@ -42,27 +39,25 @@ class _ReservationPageState extends State<ReservationPage> {
     'Branch 5',
     'Branch 6'
   ];
-  final duration = ['hours', 'days'];
-  String? duration_value = 'hours';
+
   String? value;
-  String price = "25";
 
   DateTime dateTime = DateTime(2022, 3, 21, 4, 0);
 
-  String plateNumber = "256542";
-
   final _formKey = GlobalKey<FormState>();
+
+  String? slotResponse;
 
   Future reserve() async {
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse(
-        'http://10.4.109.57:5000/token:qwhu67fv56frt5drfx45e/reservations');
+        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/reservations');
 
     var body = {
       "client": id,
       "reservationPlateNumber": reservation.reservationPlateNumber,
       "branch": reservation.branch,
-      "slot": 8,
+      "slot": 69,
       "price": 87,
       "startingTime": reservation.startingTime,
       "duration": reservation.duration
@@ -84,6 +79,9 @@ class _ReservationPageState extends State<ReservationPage> {
       String price = data["price"].toString();
       String duration = data["duration"].toString();
       String parked = data["parked"].toString();
+      setState(() {
+        slotResponse = "There is an available spot";
+      });
       print(resBody);
       Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber,
           reservationId: reservationId,
@@ -91,9 +89,15 @@ class _ReservationPageState extends State<ReservationPage> {
           branch: branch,
           startTime: startingTime, slot: slot, price: price, duration: duration, parked: parked)));
     } else {
-      print(res.reasonPhrase);
+      var data = json.decode(resBody);
+      setState(() {
+        slotResponse = data["message"];
+      });
+      print(resBody);
     }
   }
+
+
 
   Reservation reservation = Reservation("", "", "", 0, "", 0, 0);
 
@@ -354,6 +358,17 @@ class _ReservationPageState extends State<ReservationPage> {
                     //           ),
                     //         ),
                     //   ),
+                    (slotResponse == "No_Available_Slot") ?
+                    Padding(
+                      padding: const EdgeInsets.only(top: 15, left: 25),
+                      child: Text("No Available Slot",
+                        style: TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15
+                        ),
+                      ),
+                    ) : Text(""),
                     Padding(
                       padding: EdgeInsets.fromLTRB(0, 35, 0, 20),
                       child: Center(
@@ -439,20 +454,20 @@ class _ReservationPageState extends State<ReservationPage> {
         ),
       );
 
-  DropdownMenuItem<String> buildMenuDuration(String duration) =>
-      DropdownMenuItem(
-        value: duration,
-        child: Text(
-          duration,
-          style: TextStyle(
-            color: Col.Onbackground,
-            fontSize: 18,
-            fontFamily: 'Nunito',
-            letterSpacing: 0.3,
-          ),
-          textAlign: TextAlign.center,
-        ),
-      );
+  // DropdownMenuItem<String> buildMenuDuration(String duration) =>
+  //     DropdownMenuItem(
+  //       value: duration,
+  //       child: Text(
+  //         duration,
+  //         style: TextStyle(
+  //           color: Col.Onbackground,
+  //           fontSize: 18,
+  //           fontFamily: 'Nunito',
+  //           letterSpacing: 0.3,
+  //         ),
+  //         textAlign: TextAlign.center,
+  //       ),
+  //     );
 
   Future<DateTime?> pickDate() => showDatePicker(
       context: context,

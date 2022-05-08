@@ -1,9 +1,6 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors
 
-import 'dart:async';
-
-import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/EditProfile.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
