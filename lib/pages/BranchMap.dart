@@ -15,26 +15,54 @@ class BranchMap extends StatefulWidget {
 
 class _BranchMapState extends State<BranchMap> {
 
-  var lat = 0.0;
-  var longs = 0.0;
+  late double lat = 0.0;
+  late double longs = 0.0;
+
+  late GoogleMapController _googleMapController;
+
+  final Set<Polyline>_polyline={};
+
+  List<LatLng> latlng = [];
+
+  Marker destination = Marker(
+      markerId: const MarkerId('Destination'),
+      infoWindow: const InfoWindow(title: "Destination"),
+      icon: BitmapDescriptor.defaultMarkerWithHue(
+          BitmapDescriptor.hueRed),
+      position: LatLng(8.9831, 38.8101));
 
   void getCurrentLocation() async {
-    var position = await Geolocator().getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    var position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
     setState(() {
       lat = position.latitude;
       longs = position.longitude;
     });
+
+    _polyline.add(Polyline(
+      polylineId: PolylineId(LatLng(lat, longs).toString()),
+      visible: true,
+      width: 3,
+      //latlng is List<LatLng>
+      points: latlng,
+      color: Colors.blue,
+    ));
+
+    latlng.add(LatLng(lat, longs));
+    latlng.add(destination.position);
+
   }
 
-  late GoogleMapController _googleMapController;
-  late Marker _destination;
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   void dispose() {
     _googleMapController.dispose();
     super.dispose();
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -75,7 +103,10 @@ class _BranchMapState extends State<BranchMap> {
           ),
         ),
       ),
-        body: GoogleMap(
+      body: (lat == 0.0 && longs == 0.0) ? Center(child: CircularProgressIndicator(),) : Stack(
+        alignment: Alignment.center,
+        children: [
+          GoogleMap(
             myLocationButtonEnabled: false,
             zoomControlsEnabled: false,
             initialCameraPosition: CameraPosition(
@@ -83,20 +114,29 @@ class _BranchMapState extends State<BranchMap> {
               zoom: 13.5,
             ),
             onMapCreated: (controller) => _googleMapController = controller,
-            markers: {Marker(markerId: const MarkerId('origin'),
-            infoWindow: const InfoWindow(title: "Origin"),
-            icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueGreen),
-            position: LatLng(lat, longs)),},
-        ),
+            markers: {
+              Marker(
+                  markerId: const MarkerId('origin'),
+                  infoWindow: const InfoWindow(title: "Origin"),
+                  icon: BitmapDescriptor.defaultMarkerWithHue(
+                      BitmapDescriptor.hueGreen),
+                  position: LatLng(lat, longs)),
+              destination
+            },
+            polylines:_polyline,
+          ),
+        ],
+      ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.white,
         foregroundColor: Colors.black,
         onPressed: () {
           _googleMapController.animateCamera(
-            CameraUpdate.newCameraPosition(CameraPosition(
-              target: LatLng(lat, longs),
-              zoom: 13.5,
-            ),
+            CameraUpdate.newCameraPosition(
+              CameraPosition(
+                target: LatLng(lat, longs),
+                zoom: 13.5,
+              ),
             ),
           );
           print("Latitiude : $lat and Longitude : $longs");
@@ -105,4 +145,5 @@ class _BranchMapState extends State<BranchMap> {
       ),
     );
   }
+
 }

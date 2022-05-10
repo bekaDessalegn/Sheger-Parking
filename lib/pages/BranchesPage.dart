@@ -25,6 +25,8 @@ class _BranchesPageState extends State<BranchesPage> {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
   _BranchesPageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
 
+  bool isLoading = false;
+
   List<BranchDetails> branches = [];
   String query = '';
   Timer? debouncer;
@@ -56,7 +58,7 @@ class _BranchesPageState extends State<BranchesPage> {
   static Future<List<BranchDetails>> getBranchDetails(
       String query) async {
     final url = Uri.parse(
-        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/branches');
+        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/branches');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -79,9 +81,19 @@ class _BranchesPageState extends State<BranchesPage> {
   }
 
   Future init() async {
+
+    setState(() {
+      isLoading = true;
+    });
+
     final branchDetails = await getBranchDetails(query);
 
     setState(() => this.branches = branchDetails);
+
+    setState(() {
+      isLoading = false;
+    });
+
   }
 
   @override
@@ -105,7 +117,8 @@ class _BranchesPageState extends State<BranchesPage> {
             ),
           ),
           Expanded(
-            child: ListView.builder(
+            child: isLoading ? Center(child: CircularProgressIndicator(),
+            ) : ListView.builder(
               itemCount: branches.length,
               itemBuilder: (context, index) {
                 final branchDetail = branches[index];
@@ -150,24 +163,52 @@ class _BranchesPageState extends State<BranchesPage> {
                                 ),
                               ],
                             ),
-                            Text(
-                              "Description 1",
-                              style: TextStyle(
-                                color: Col.Onbackground,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Nunito',
-                                letterSpacing: 0.3,
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                      style: TextStyle(
+                                        color: Col.Onbackground,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                      text: "Price per hour : "),
+                                  TextSpan(
+                                    style: TextStyle(
+                                      color: Col.Onbackground,
+                                      fontSize: 18,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.3,
+                                    ),
+                                    text: "${branchDetail.pricePerHour}",
+                                  ),
+                                ],
                               ),
                             ),
-                            Text(
-                              "Description 2",
-                              style: TextStyle(
-                                color: Col.Onbackground,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Nunito',
-                                letterSpacing: 0.3,
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                      style: TextStyle(
+                                        color: Col.Onbackground,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                      text: "Description : "),
+                                  TextSpan(
+                                      style: TextStyle(
+                                        color: Col.Onbackground,
+                                        fontSize: 18,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                      text: "${branchDetail.description}",
+                                      ),
+                                ],
                               ),
                             ),
                           ],

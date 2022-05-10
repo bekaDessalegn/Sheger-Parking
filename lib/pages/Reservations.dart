@@ -6,7 +6,6 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:sheger_parking/constants/colors.dart';
-import 'package:sheger_parking/models/BranchDetails.dart';
 
 import 'EditReservation.dart';
 import 'NoReservation.dart';
@@ -49,7 +48,6 @@ class _ReservationsState extends State<Reservations> {
 
   bool isLoading = false;
 
-  List<BranchDetails> branches = [];
   List<ReservationDetails> reservations = [];
   String query = '';
   Timer? debouncer;
@@ -81,7 +79,7 @@ class _ReservationsState extends State<Reservations> {
    Future<List<ReservationDetails>> getReservationDetails(String query) async {
 
     final url = Uri.parse(
-        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/clients/$id/reservations');
+        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/clients/$id/reservations');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -100,31 +98,6 @@ class _ReservationsState extends State<Reservations> {
     }
   }
 
-  static Future<List<BranchDetails>> getBranchDetails(
-      String query) async {
-    final url = Uri.parse(
-        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/branches');
-    final response = await http.get(url);
-
-    if (response.statusCode == 200) {
-      final List branchDetails = json.decode(response.body);
-
-      return branchDetails
-          .map((json) => BranchDetails.fromJson(json))
-          .where((branchDetail) {
-        final branchNameLower =
-        branchDetail.name.toLowerCase();
-        final branchIdLower = branchDetail.id.toLowerCase();
-        final searchLower = query.toLowerCase();
-
-        return branchNameLower.contains(searchLower) ||
-            branchIdLower.contains(searchLower);
-      }).toList();
-    } else {
-      throw Exception();
-    }
-  }
-
   Future init() async {
 
     setState(() {
@@ -132,10 +105,8 @@ class _ReservationsState extends State<Reservations> {
     });
 
     final reservationDetails = await getReservationDetails(query);
-    final branchDetails = await getBranchDetails(query);
 
     setState(() => this.reservations = reservationDetails);
-    setState(() => this.branches = branchDetails);
 
     setState(() {
       isLoading = false;
@@ -182,21 +153,23 @@ class _ReservationsState extends State<Reservations> {
             ),
           ),
         ),
-        (reservations.length > 0)
-            ? Expanded(
+        Expanded(
     child: isLoading ? Center(child: CircularProgressIndicator(),
-    ) : ListView.builder(
+    ) : (reservations.length > 0)
+        ? ListView.builder(
     itemCount: reservations.length,
     itemBuilder: (context, index) {
     final reservationDetail = reservations[index];
-    final branchDetail = branches[index];
+    DateTime startTime = DateTime.fromMillisecondsSinceEpoch(reservationDetail.startingTime);
+    String datetime = startTime.hour.toString().padLeft(2, '0') + ":" + startTime.minute.toString().padLeft(2, '0');
+    String finishingTime = (startTime.hour + reservationDetail.duration).toString().padLeft(2, '0') + ":" + (startTime.minute).toString().padLeft(2, '0');
 
     return GestureDetector(
       onTap: () {
         Navigator.push(
             context,
             MaterialPageRoute(
-                builder: (context) => ReservationDetailsPage(id: reservationDetail.client, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, startTime: reservationDetail.startingTime.toString(), slot: reservationDetail.slot, price: reservationDetail.price.toString(), duration: reservationDetail.duration.toString(), parked: reservationDetail.toString())));
+                builder: (context) => ReservationDetailsPage(id: reservationDetail.client, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime.toString(), slot: reservationDetail.slot, price: reservationDetail.price.toString(), duration: reservationDetail.duration.toString(), parked: reservationDetail.toString())));
       },
       child: Padding(
         padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
@@ -217,7 +190,7 @@ class _ReservationsState extends State<Reservations> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, startTime: reservationDetail.startingTime)));
+                                      EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
                         },
                         icon: Icon(Icons.edit),
                         iconSize: 25,
@@ -228,7 +201,7 @@ class _ReservationsState extends State<Reservations> {
                       padding: const EdgeInsets.fromLTRB(
                           0, 15, 0, 0),
                       child: Text(
-                        "Reservation at ${branchDetail.name}",
+                        "Reservation at ${reservationDetail.branchName}",
                         style: TextStyle(
                           color: Col.Onbackground,
                           fontSize: 20,
@@ -240,7 +213,7 @@ class _ReservationsState extends State<Reservations> {
                   ],
                 ),
                 Text(
-                  "${reservationDetail.startingTime}:00 A.M - ${reservationDetail.startingTime + reservationDetail.duration}:00 P.M",
+                  "$datetime - $finishingTime",
                   style: TextStyle(
                     color: Col.Onbackground,
                     fontSize: 18,
@@ -264,9 +237,8 @@ class _ReservationsState extends State<Reservations> {
       ),
     );
     },
-    ),
+    ) : Expanded(child: NoReservation()),
     )
-            : Expanded(child: NoReservation()),
       ],
     );
   }

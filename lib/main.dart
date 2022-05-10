@@ -7,6 +7,7 @@ import 'package:sheger_parking/pages/ProfilePage.dart';
 import 'package:sheger_parking/pages/ReservationDetailsPage.dart';
 import 'package:sheger_parking/pages/ReservationPage.dart';
 import 'package:sheger_parking/pages/SignUpPage.dart';
+import 'package:sheger_parking/pages/SplashScreen.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -34,9 +35,7 @@ class MyApp extends StatelessWidget {
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      routes: {
-        '/' : (context) => const StartUp(),
-      },
+      home : SplashScreen(),
     );
   }
 }

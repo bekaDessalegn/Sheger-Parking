@@ -16,6 +16,7 @@ class ReservationDetailsPage extends StatefulWidget {
       reservationId,
       reservationPlateNumber,
       branch,
+      branchName,
       startTime,
       slot,
       price,
@@ -28,21 +29,35 @@ class ReservationDetailsPage extends StatefulWidget {
       required this.phone,
       required this.email,
       required this.passwordHash,
-      required this.defaultPlateNumber, required this.reservationId,
+      required this.defaultPlateNumber,
+        required this.reservationId,
         required this.reservationPlateNumber,
         required this.branch,
+        required this.branchName,
         required this.startTime, required this.slot, required this.price, required this.duration, required this.parked});
 
   @override
   _ReservationDetailsPageState createState() => _ReservationDetailsPageState(
-      id, fullName, phone, email, passwordHash, defaultPlateNumber, reservationId, reservationPlateNumber, branch, startTime, slot, price, duration, parked);
+      id, fullName, phone, email, passwordHash, defaultPlateNumber, reservationId, reservationPlateNumber, branch, branchName, startTime, slot, price, duration, parked);
 }
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
-  String id, fullName, phone, email, passwordHash, defaultPlateNumber, reservationId, reservationPlateNumber, branch, startTime, slot, price, duration, parked;
+  String id, fullName, phone, email, passwordHash, defaultPlateNumber, reservationId, reservationPlateNumber, branch, branchName, startTime, slot, price, duration, parked;
 
   _ReservationDetailsPageState(this.id, this.fullName, this.phone, this.email,
-      this.passwordHash, this.defaultPlateNumber, this.reservationId, this.reservationPlateNumber, this.branch, this.startTime, this.slot, this.price, this.duration, this.parked);
+      this.passwordHash, this.defaultPlateNumber, this.reservationId, this.reservationPlateNumber, this.branch, this.branchName, this.startTime, this.slot, this.price, this.duration, this.parked);
+
+  String? startingTime;
+
+  @override
+  void initState() {
+    super.initState();
+    DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(int.parse(startTime));
+    String datetime = startingTime.hour.toString().padLeft(2, '0') + ":" + startingTime.minute.toString().padLeft(2, '0');
+
+    this.startingTime = datetime;
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -118,7 +133,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  branch,
+                  branchName,
                   style: TextStyle(
                     color: Col.Onbackground,
                     fontSize: 18,
@@ -147,7 +162,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  "$startTime:00 AM",
+                  "$startingTime",
                   style: TextStyle(
                     color: Col.Onbackground,
                     fontSize: 18,

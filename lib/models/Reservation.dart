@@ -4,11 +4,11 @@ class Reservation{
   String client;
   String reservationPlateNumber;
   String branch;
-  int slot;
-  String price;
+  String branchName;
+  int price;
   int startingTime;
   int duration;
 
-  Reservation(this.client, this.reservationPlateNumber, this.branch, this.slot,
+  Reservation(this.client, this.reservationPlateNumber, this.branch, this.branchName,
       this.price, this.startingTime, this.duration);
 }

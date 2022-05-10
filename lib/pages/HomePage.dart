@@ -14,7 +14,7 @@ import 'ReservationPage.dart';
 
 class HomePage extends StatefulWidget {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
-  var reservationId, reservationPlateNumber, branch, startTime, slot, price, duration, parked;
+  var reservationId, reservationPlateNumber, branch, branchName, startTime, slot, price, duration, parked;
 
   HomePage(
       {required this.id,
@@ -26,6 +26,7 @@ class HomePage extends StatefulWidget {
       this.reservationId,
       this.reservationPlateNumber,
       this.branch,
+      this.branchName,
       this.startTime, this.slot, this.price, this.duration, this.parked});
 
   @override
@@ -39,12 +40,13 @@ class HomePage extends StatefulWidget {
       reservationId,
       reservationPlateNumber,
       branch,
+      branchName,
       startTime, slot, price, duration, parked);
 }
 
 class _HomePageState extends State<HomePage> {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
-  var reservationId, reservationPlateNumber, branch, startTime, slot, price, duration, parked;
+  var reservationId, reservationPlateNumber, branch, branchName, startTime, slot, price, duration, parked;
 
   _HomePageState(
       this.id,
@@ -56,6 +58,7 @@ class _HomePageState extends State<HomePage> {
       this.reservationId,
       this.reservationPlateNumber,
       this.branch,
+      this.branchName,
       this.startTime, this.slot, this.price, this.duration, this.parked);
 
   int currentIndex = 0;

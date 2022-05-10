@@ -1,9 +1,12 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors, no_logic_in_create_state
 
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:sheger_parking/models/BranchDetails.dart';
+import 'package:sheger_parking/models/Reservation.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
 
@@ -18,7 +21,7 @@ class EditReservation extends StatefulWidget {
       email,
       passwordHash,
       defaultPlateNumber;
-  var reservationId, reservationPlateNumber, branch, startTime;
+  var reservationId, reservationPlateNumber, branch, branchName, startTime;
 
   EditReservation(
       {required this.id,
@@ -30,6 +33,7 @@ class EditReservation extends StatefulWidget {
       required this.reservationId,
       required this.reservationPlateNumber,
       required this.branch,
+      required this.branchName,
       required this.startTime});
 
   @override
@@ -43,6 +47,7 @@ class EditReservation extends StatefulWidget {
       reservationId,
       reservationPlateNumber,
       branch,
+      branchName,
       startTime);
 }
 
@@ -54,7 +59,7 @@ class _EditReservationState extends State<EditReservation> {
       passwordHash,
       defaultPlateNumber;
 
-  var reservationId, reservationPlateNumber, branch, startTime;
+  var reservationId, reservationPlateNumber, branch, branchName, startTime;
 
   _EditReservationState(
       this.id,
@@ -66,35 +71,35 @@ class _EditReservationState extends State<EditReservation> {
       this.reservationId,
       this.reservationPlateNumber,
       this.branch,
+      this.branchName,
       this.startTime);
 
   final _formKey = GlobalKey<FormState>();
 
-  final branches = [
-    'Branch 1',
-    'Branch 2',
-    'Branch 3',
-    'Branch 4',
-    'Branch 5',
-    'Branch 6'
-  ];
+  List<String> branchesName = [];
+  List<String> branchesId = [];
 
   String? value;
+  String checker = '';
 
-  DateTime dateTime = DateTime(2022, 12, 24);
+  // DateTime dateTime = DateTime(2022, 12, 24);
+  int timestamp = DateTime.now().millisecondsSinceEpoch;
+  String? currentYear, currentMonth, currentDay, currentHour, currentMinute;
+
+  // bool? slotResponse;
 
   Future editReservation() async {
     var headersList = {
       'Accept': '*/*',
-      'User-Agent': 'Thunder Client (https://www.thunderclient.com)',
       'Content-Type': 'application/json'
     };
     var url = Uri.parse(
-        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/reservations/$reservationId');
+        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/reservations/$reservationId');
 
     var body = {
       "reservationPlateNumber": reservationPlateNumber,
       "branch": branch,
+      "branchName": branchName,
       "startingTime": startTime
     };
     var req = http.Request('PATCH', url);
@@ -106,18 +111,106 @@ class _EditReservationState extends State<EditReservation> {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       print(resBody);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
+      var data = json.decode(resBody);
+      // setState(() {
+      //   slotResponse = data["updated"];
+      // });
+
+      // if(slotResponse == true)
+        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
     } else {
       print(res.reasonPhrase);
     }
   }
 
+  Reservation reservation = Reservation("", "", "", "", 0, 0, 0);
+
+  List<BranchDetails> branches = [];
+  String query = '';
+  Timer? debouncer;
+
+  @override
+  void initState() {
+    super.initState();
+
+    DateTime currentDateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    String currentYear = currentDateTime.year.toString();
+    String currentMonth = currentDateTime.month.toString();
+    String currentDay = currentDateTime.day.toString();
+    String currentHour = currentDateTime.hour.toString();
+    String currentMinute = "0".padLeft(2, '0');
+    this.currentYear = currentYear;
+    this.currentMonth = currentMonth;
+    this.currentDay = currentDay;
+    this.currentHour = currentHour;
+    this.currentMinute = currentMinute;
+
+    init();
+  }
+
+  @override
+  void dispose() {
+    debouncer?.cancel();
+    super.dispose();
+  }
+
+  void debounce(
+      VoidCallback callback, {
+        Duration duration = const Duration(milliseconds: 1000),
+      }) {
+    if (debouncer != null) {
+      debouncer!.cancel();
+    }
+
+    debouncer = Timer(duration, callback);
+  }
+
+  static Future<List<BranchDetails>> getBranchDetails(
+      String query) async {
+    final url = Uri.parse(
+        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/branches');
+    final response = await http.get(url);
+
+    if (response.statusCode == 200) {
+      final List branchDetails = json.decode(response.body);
+
+      return branchDetails
+          .map((json) => BranchDetails.fromJson(json))
+          .where((branchDetail) {
+        final branchNameLower =
+        branchDetail.name.toLowerCase();
+        final branchIdLower = branchDetail.id.toLowerCase();
+        final searchLower = query.toLowerCase();
+
+        return branchNameLower.contains(searchLower) ||
+            branchIdLower.contains(searchLower);
+      }).toList();
+    } else {
+      throw Exception();
+    }
+  }
+
+  Future init() async {
+    final branchDetails = await getBranchDetails(query);
+
+    setState(() => this.branches = branchDetails);
+
+    for(int i = 0; i < branches.length; i++){
+      final branchDetail = branches[i];
+
+      setState(() {
+        branchesName.add(branchDetail.name);
+        branchesId.add(branchDetail.id);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final hours = dateTime.hour.toString().padLeft(2, '0');
+    // final hours = dateTime.hour.toString().padLeft(2, '0');
     // reservation.startingTime = int.parse(hours);
-    startTime = int.parse(hours);
-    final minutes = dateTime.minute.toString().padLeft(2, '0');
+    startTime = timestamp;
+    // final minutes = dateTime.minute.toString().padLeft(2, '0');
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -250,24 +343,60 @@ class _EditReservationState extends State<EditReservation> {
                           width: double.infinity,
                           alignment: Alignment.center,
                           padding:
-                              EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Col.Onsurface, width: 1),
-                          ),
-                          child: DropdownButtonHideUnderline(
-                            child: DropdownButton<String>(
-                              value: value,
-                              isExpanded: true,
-                              items: branches.map(buildMenuBranch).toList(),
-                              onChanged: (value) => setState(() {
-                                this.value = value;
-                                // branch = "62545d01f8edb0abc4946574";
-                              }),
+                          EdgeInsets.symmetric(vertical: 4),
+                          child: DropdownButtonFormField<String>(
+                            value: value,
+                            isExpanded: true,
+                            items: branchesName.map(buildMenuBranch).toList(),
+                            onChanged: (value) => setState(() {
+                              this.value = value;
+                              checker = value!;
+                              setState(() {
+                                branchName = value;
+                              });
+
+                              for(int i = 0; i < branches.length; i++){
+                                final branchDetail = branches[i];
+
+                                if(value == branchDetail.name){
+                                  setState(() {
+                                    branch = branchesId[i];
+                                  });
+                                }
+                              }
+
+                              print(reservation.branch);
+
+                            }),
+                            validator: (value) {
+                              if (checker == '') {
+                                return "This field can not be empty";
+                              }
+                              return null;
+                            },
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.black),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.red),
+                              ),
                             ),
                           ),
                         ),
                       ),
+                      // (slotResponse == true)
+                      //     ? Padding(
+                      //   padding: const EdgeInsets.only(top: 5),
+                      //   child: Text(
+                      //     "No Available Slot",
+                      //     style: TextStyle(
+                      //         color: Colors.redAccent,
+                      //         fontWeight: FontWeight.bold,
+                      //         fontSize: 15),
+                      //   ),
+                      // )
+                      //     : Text(""),
                       Padding(
                         padding: EdgeInsets.fromLTRB(25, 20, 0, 20),
                         child: Container(
@@ -291,7 +420,7 @@ class _EditReservationState extends State<EditReservation> {
                                   color: Col.secondary,
                                   child: Center(
                                     child: Text(
-                                      "${dateTime.year}/${dateTime.month}/${dateTime.day} \n    $hours:$minutes",
+                                      "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
                                       style: TextStyle(
                                         color: Col.Onprimary,
                                         fontSize: 16,
@@ -384,8 +513,21 @@ class _EditReservationState extends State<EditReservation> {
 
     final dateTime =
     DateTime(date.year, date.month, date.day, time.hour, time.minute);
+
+    int timestamp = dateTime.millisecondsSinceEpoch;
+
+    String currentYear = dateTime.year.toString();
+    String currentMonth = dateTime.month.toString();
+    String currentDay = dateTime.day.toString();
+    String currentHour = dateTime.hour.toString().padLeft(2, '0');
+
     setState(() {
-      this.dateTime = dateTime;
+      // this.dateTime = dateTime;
+      this.timestamp = timestamp;
+      this.currentYear = currentYear;
+      this.currentMonth = currentMonth;
+      this.currentDay = currentDay;
+      this.currentHour = currentHour;
     });
   }
 

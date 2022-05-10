@@ -43,7 +43,7 @@ class FilterNetworkListPageState extends State<FilterNetworkListPage> {
 
   static Future<List<ReservationDetails>> getReservationDetails(String query) async {
     final url = Uri.parse(
-        'http://192.168.1.4:5000/token:qwhu67fv56frt5drfx45e/clients/6271835d3c51e34e83c59c8a/reservations');
+        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/clients/6271835d3c51e34e83c59c8a/reservations');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
