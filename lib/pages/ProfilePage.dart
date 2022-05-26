@@ -1,6 +1,7 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors
 
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sheger_parking/pages/EditProfile.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
@@ -84,7 +85,9 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           FlatButton(
-                            onPressed: () {
+                            onPressed: () async {
+                              final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+                              sharedPreferences.remove("email");
                               Navigator.push(
                                   context,
                                   MaterialPageRoute(

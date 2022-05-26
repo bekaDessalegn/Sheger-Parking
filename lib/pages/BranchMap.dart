@@ -1,6 +1,7 @@
 // ignore_for_file: file_names, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:flutter_polyline_points/flutter_polyline_points.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:sheger_parking/constants/colors.dart';
@@ -20,12 +21,14 @@ class _BranchMapState extends State<BranchMap> {
 
   late GoogleMapController _googleMapController;
 
-  final Set<Polyline>_polyline={};
+   Set<Polyline>_polyline={};
 
   List<LatLng> latlng = [];
 
+  PolylinePoints polylinePoints = PolylinePoints();
+
   Marker destination = Marker(
-      markerId: const MarkerId('Destination'),
+      markerId: MarkerId('Destination'),
       infoWindow: const InfoWindow(title: "Destination"),
       icon: BitmapDescriptor.defaultMarkerWithHue(
           BitmapDescriptor.hueRed),
@@ -38,6 +41,35 @@ class _BranchMapState extends State<BranchMap> {
       lat = position.latitude;
       longs = position.longitude;
     });
+
+    // List<PointLatLng> result = await polylinePoints?.getRouteBetweenCoordinates(
+    //     "AIzaSyB7Zz6YPYhozN0Ve28OVol3tnvXOK1hGow",
+    //     lat,
+    //     longs,
+    //     destination.position.latitude,
+    //     destination.position.longitude);
+    // if(result.isNotEmpty){
+    //   // loop through all PointLatLng points and convert them
+    //   // to a list of LatLng, required by the Polyline
+    //   result.forEach((PointLatLng point){
+    //     latlng.add(
+    //         LatLng(point.latitude, point.longitude));
+    //   });
+    // }
+    // setState(() {
+    //   // create a Polyline instance
+    //   // with an id, an RGB color and the list of LatLng pairs
+    //   Polyline polyline = Polyline(
+    //       polylineId: PolylineId(LatLng(lat, longs).toString()),
+    //       color: Color.fromARGB(255, 40, 122, 198),
+    //       points: latlng
+    //   );
+    //
+    //   // add the constructed polyline as a set of points
+    //   // to the polyline set, which will eventually
+    //   // end up showing up on the map
+    //   _polyline.add(polyline);
+    // });
 
     _polyline.add(Polyline(
       polylineId: PolylineId(LatLng(lat, longs).toString()),
@@ -116,7 +148,7 @@ class _BranchMapState extends State<BranchMap> {
             onMapCreated: (controller) => _googleMapController = controller,
             markers: {
               Marker(
-                  markerId: const MarkerId('origin'),
+                  markerId: MarkerId('origin'),
                   infoWindow: const InfoWindow(title: "Origin"),
                   icon: BitmapDescriptor.defaultMarkerWithHue(
                       BitmapDescriptor.hueGreen),

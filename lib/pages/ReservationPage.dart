@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sheger_parking/models/BranchDetails.dart';
 import 'package:sheger_parking/models/Reservation.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
@@ -43,7 +44,8 @@ class _ReservationPageState extends State<ReservationPage> {
 
   // DateTime dateTime = DateTime(2022, 3, 21, 4, 0);
   int timestamp = DateTime.now().millisecondsSinceEpoch;
-  String? currentYear, currentMonth, currentDay, currentHour, currentMinute;
+  // String? currentYear, currentMonth, currentDay, currentHour, currentMinute;
+  String? formattedDate;
 
   final _formKey = GlobalKey<FormState>();
 
@@ -52,7 +54,7 @@ class _ReservationPageState extends State<ReservationPage> {
   Future reserve() async {
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse(
-        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/reservations');
+        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/reservations');
 
     var body = {
       "client": id,
@@ -124,16 +126,21 @@ class _ReservationPageState extends State<ReservationPage> {
     super.initState();
 
     DateTime currentDateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    String currentYear = currentDateTime.year.toString();
-    String currentMonth = currentDateTime.month.toString();
-    String currentDay = currentDateTime.day.toString();
-    String currentHour = currentDateTime.hour.toString().padLeft(2, '0');
-    String currentMinute = "0".padLeft(2, '0');
-    this.currentYear = currentYear;
-    this.currentMonth = currentMonth;
-    this.currentDay = currentDay;
-    this.currentHour = currentHour;
-    this.currentMinute = currentMinute;
+    String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:00 a').format(currentDateTime);
+
+
+    // String currentYear = currentDateTime.year.toString();
+    // String currentMonth = currentDateTime.month.toString();
+    // String currentDay = currentDateTime.day.toString();
+    // String currentHour = currentDateTime.hour.toString().padLeft(2, '0');
+    // String currentMinute = "0".padLeft(2, '0');
+    // this.currentYear = currentYear;
+    // this.currentMonth = currentMonth;
+    // this.currentDay = currentDay;
+    // this.currentHour = currentHour;
+    // this.currentMinute = currentMinute;
+
+    this.formattedDate = formattedDate;
 
     init();
   }
@@ -158,7 +165,7 @@ class _ReservationPageState extends State<ReservationPage> {
   static Future<List<BranchDetails>> getBranchDetails(
       String query) async {
     final url = Uri.parse(
-        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/branches');
+        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/branches');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -337,7 +344,7 @@ class _ReservationPageState extends State<ReservationPage> {
                           ),
                         ),
                       ),
-                    (slotResponse == "No_Available_Slot")
+                    (slotResponse == "INVALID_CALL:|:No_Available_Slot")
                         ? Padding(
                       padding: const EdgeInsets.only(top: 5),
                       child: Text(
@@ -372,7 +379,8 @@ class _ReservationPageState extends State<ReservationPage> {
                                 color: Col.secondary,
                                 child: Center(
                                   child: Text(
-                                    "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
+                                    // "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
+                                    "$formattedDate",
                                     style: TextStyle(
                                       color: Col.Onprimary,
                                       fontSize: 16,
@@ -615,18 +623,21 @@ class _ReservationPageState extends State<ReservationPage> {
 
     int timestamp = dateTime.millisecondsSinceEpoch;
 
-    String currentYear = dateTime.year.toString();
-    String currentMonth = dateTime.month.toString();
-    String currentDay = dateTime.day.toString();
-    String currentHour = dateTime.hour.toString().padLeft(2, '0');
+    // String currentYear = dateTime.year.toString();
+    // String currentMonth = dateTime.month.toString();
+    // String currentDay = dateTime.day.toString();
+    // String currentHour = dateTime.hour.toString().padLeft(2, '0');
+
+    String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:mm a').format(dateTime);
 
     setState(() {
       // this.dateTime = dateTime;
       this.timestamp = timestamp;
-      this.currentYear = currentYear;
-      this.currentMonth = currentMonth;
-      this.currentDay = currentDay;
-      this.currentHour = currentHour;
+      this.formattedDate = formattedDate;
+      // this.currentYear = currentYear;
+      // this.currentMonth = currentMonth;
+      // this.currentDay = currentDay;
+      // this.currentHour = currentHour;
     });
   }
 }

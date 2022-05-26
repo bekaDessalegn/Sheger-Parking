@@ -1,10 +1,11 @@
-// ignore_for_file: file_names
+// ignore_for_file: file_names, prefer_const_constructors
 import 'dart:async';
 import 'dart:convert';
 
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:sheger_parking/constants/colors.dart';
 
 import 'EditReservation.dart';
@@ -79,9 +80,27 @@ class _ReservationsState extends State<Reservations> {
    Future<List<ReservationDetails>> getReservationDetails(String query) async {
 
     final url = Uri.parse(
-        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/clients/$id/reservations');
+        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/clients/$id/reservations');
+
     final response = await http.get(url);
 
+    while(response.statusCode != 200){
+      final response = await http.get(url);
+
+      if (response.statusCode == 200) {
+        final List reservationDetails = json.decode(response.body);
+
+        return reservationDetails.map((json) => ReservationDetails.fromJson(json)).where((reservationDetail) {
+          final reservationPlateNumberLower = reservationDetail.reservationPlateNumber.toLowerCase();
+          final branchLower = reservationDetail.branch.toLowerCase();
+          final searchLower = query.toLowerCase();
+
+          return reservationPlateNumberLower.contains(searchLower) ||
+              branchLower.contains(searchLower);
+        }).toList();
+      }
+
+    }
     if (response.statusCode == 200) {
       final List reservationDetails = json.decode(response.body);
 
@@ -115,131 +134,143 @@ class _ReservationsState extends State<Reservations> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: <Widget>[
-        Center(
-          child: Container(
-            margin: EdgeInsets.fromLTRB(6, 15, 6, 0),
-            // decoration: BoxDecoration(
-            //   borderRadius: BorderRadius.circular(8),
-            //   border: Border.all(color: Colors.black12, width: 1),
-            // ),
-            child: CarouselSlider.builder(
-                itemCount: imageSliders.length,
-                itemBuilder: (context, index, realIndex) {
-                  final imageSlider = imageSliders[index];
-                  return buildImage(imageSlider, index);
-                },
-                options: CarouselOptions(
-                  height: 200,
-                  autoPlay: true,
-                  autoPlayInterval: Duration(seconds: 2),
-                )),
-          ),
-        ),
-        Center(
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
-            child: Text(
-              "Reservations",
-              style: TextStyle(
-                color: Col.Onbackground,
-                fontSize: 28,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Nunito',
-                letterSpacing: 0.1,
+    return
+      // SingleChildScrollView(
+      // child: SizedBox(
+      //   height: MediaQuery.of(context).size.height,
+      //   child:
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: <Widget>[
+            Center(
+              child: Container(
+                margin: EdgeInsets.fromLTRB(6, 15, 6, 0),
+                // decoration: BoxDecoration(
+                //   borderRadius: BorderRadius.circular(8),
+                //   border: Border.all(color: Colors.black12, width: 1),
+                // ),
+                child: CarouselSlider.builder(
+                    itemCount: imageSliders.length,
+                    itemBuilder: (context, index, realIndex) {
+                      final imageSlider = imageSliders[index];
+                      return buildImage(imageSlider, index);
+                    },
+                    options: CarouselOptions(
+                      height: 200,
+                      autoPlay: true,
+                      autoPlayInterval: Duration(seconds: 2),
+                    )),
               ),
             ),
-          ),
+            Center(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+                child: Text(
+                  "Reservations",
+                  style: TextStyle(
+                    color: Col.Onbackground,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.1,
+                  ),
+                ),
+              ),
+            ),
+            isLoading ? Expanded(
+              child: Center(child: CircularProgressIndicator(),
         ),
-        Expanded(
-    child: isLoading ? Center(child: CircularProgressIndicator(),
-    ) : (reservations.length > 0)
-        ? ListView.builder(
-    itemCount: reservations.length,
-    itemBuilder: (context, index) {
-    final reservationDetail = reservations[index];
-    DateTime startTime = DateTime.fromMillisecondsSinceEpoch(reservationDetail.startingTime);
-    String datetime = startTime.hour.toString().padLeft(2, '0') + ":" + startTime.minute.toString().padLeft(2, '0');
-    String finishingTime = (startTime.hour + reservationDetail.duration).toString().padLeft(2, '0') + ":" + (startTime.minute).toString().padLeft(2, '0');
+            ) : (reservations.length > 0)
+            ? Expanded(
+              child: ListView.builder(
+                // physics: NeverScrollableScrollPhysics(),
+        itemCount: reservations.length,
+        itemBuilder: (context, index) {
+        final reservationDetail = reservations[index];
+        DateTime startTime = DateTime.fromMillisecondsSinceEpoch(reservationDetail.startingTime);
+        DateTime finishTime = startTime.add(Duration(hours: reservationDetail.duration));
+        String formattedStartTime = DateFormat('kk:00 a').format(startTime);
+        String formattedFinishTime = DateFormat('kk:00 a').format(finishTime);
+        // String finishingTime = (startTime.hour + reservationDetail.duration).toString().padLeft(2, '0') + ":" + (startTime.minute).toString().padLeft(2, '0');
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-            context,
-            MaterialPageRoute(
-                builder: (context) => ReservationDetailsPage(id: reservationDetail.client, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime.toString(), slot: reservationDetail.slot, price: reservationDetail.price.toString(), duration: reservationDetail.duration.toString(), parked: reservationDetail.toString())));
-      },
-      child: Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
-        child: Card(
-          color: Colors.grey[100],
-          elevation: 8,
+        return GestureDetector(
+          onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ReservationDetailsPage(id: reservationDetail.client, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime.toString(), slot: reservationDetail.slot, price: reservationDetail.price.toString(), duration: reservationDetail.duration.toString(), parked: reservationDetail.toString())));
+          },
           child: Padding(
-            padding: EdgeInsets.fromLTRB(10, 8, 0, 8),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Stack(
-                  children: [
-                    Align(
-                      child: IconButton(
-                        onPressed: () {
-                          Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                  builder: (context) =>
-                                      EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                        },
-                        icon: Icon(Icons.edit),
-                        iconSize: 25,
+              padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+              child: Card(
+                color: Colors.grey[100],
+                elevation: 8,
+                child: Padding(
+                  padding: EdgeInsets.fromLTRB(10, 8, 0, 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Stack(
+                        children: [
+                          Align(
+                            child: IconButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
+                              },
+                              icon: Icon(Icons.edit),
+                              iconSize: 25,
+                            ),
+                            alignment: Alignment.topRight,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.fromLTRB(
+                                0, 15, 0, 0),
+                            child: Text(
+                              "Reservation at ${reservationDetail.branchName}",
+                              style: TextStyle(
+                                color: Col.Onbackground,
+                                fontSize: 20,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Nunito',
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      alignment: Alignment.topRight,
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(
-                          0, 15, 0, 0),
-                      child: Text(
-                        "Reservation at ${reservationDetail.branchName}",
+                      Text(
+                        "$formattedStartTime - $formattedFinishTime",
                         style: TextStyle(
                           color: Col.Onbackground,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
                           fontFamily: 'Nunito',
                         ),
                       ),
-                    ),
-                  ],
-                ),
-                Text(
-                  "$datetime - $finishingTime",
-                  style: TextStyle(
-                    color: Col.Onbackground,
-                    fontSize: 18,
-                    fontFamily: 'Nunito',
+                      Text(
+                        "Slot Number: ${reservationDetail.slot}",
+                        style: TextStyle(
+                          color: Col.Onbackground,
+                          fontSize: 18,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0.3,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-                Text(
-                  "Slot Number: ${reservationDetail.slot}",
-                  style: TextStyle(
-                    color: Col.Onbackground,
-                    fontSize: 18,
-                    fontFamily: 'Nunito',
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ],
-            ),
+                margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+              ),
           ),
-          margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+        );
+        },
         ),
-      ),
-    );
-    },
-    ) : Expanded(child: NoReservation()),
-    )
-      ],
+            ) : Expanded(child: NoReservation()),
+          ],
+      //   ),
+      // ),
     );
   }
 

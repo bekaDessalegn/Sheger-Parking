@@ -58,7 +58,7 @@ class _BranchesPageState extends State<BranchesPage> {
   static Future<List<BranchDetails>> getBranchDetails(
       String query) async {
     final url = Uri.parse(
-        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/branches');
+        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/branches');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -183,6 +183,30 @@ class _BranchesPageState extends State<BranchesPage> {
                                       letterSpacing: 0.3,
                                     ),
                                     text: "${branchDetail.pricePerHour}",
+                                  ),
+                                ],
+                              ),
+                            ),
+                            RichText(
+                              text: TextSpan(
+                                children: [
+                                  TextSpan(
+                                      style: TextStyle(
+                                        color: Col.Onbackground,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.w700,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                      text: "Capacity : "),
+                                  TextSpan(
+                                    style: TextStyle(
+                                      color: Col.Onbackground,
+                                      fontSize: 18,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.3,
+                                    ),
+                                    text: "${branchDetail.capacity}",
                                   ),
                                 ],
                               ),

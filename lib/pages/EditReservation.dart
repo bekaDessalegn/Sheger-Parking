@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:sheger_parking/models/BranchDetails.dart';
 import 'package:sheger_parking/models/Reservation.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
@@ -83,10 +84,12 @@ class _EditReservationState extends State<EditReservation> {
   String checker = '';
 
   // DateTime dateTime = DateTime(2022, 12, 24);
-  int timestamp = DateTime.now().millisecondsSinceEpoch;
-  String? currentYear, currentMonth, currentDay, currentHour, currentMinute;
 
-  // bool? slotResponse;
+  DateTime? startingTime;
+  int? timestamp;
+  // String? currentYear, currentMonth, currentDay, currentHour, currentMinute;
+  String? formattedDate;
+  String? slotResponse;
 
   Future editReservation() async {
     var headersList = {
@@ -94,7 +97,7 @@ class _EditReservationState extends State<EditReservation> {
       'Content-Type': 'application/json'
     };
     var url = Uri.parse(
-        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/reservations/$reservationId');
+        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/reservations/$reservationId');
 
     var body = {
       "reservationPlateNumber": reservationPlateNumber,
@@ -111,15 +114,16 @@ class _EditReservationState extends State<EditReservation> {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       print(resBody);
-      var data = json.decode(resBody);
-      // setState(() {
-      //   slotResponse = data["updated"];
-      // });
-
-      // if(slotResponse == true)
+      setState(() {
+        slotResponse = "There is an available spot";
+      });
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
     } else {
-      print(res.reasonPhrase);
+      var data = json.decode(resBody);
+      setState(() {
+        slotResponse = data["message"];
+      });
+      print(resBody);
     }
   }
 
@@ -133,17 +137,25 @@ class _EditReservationState extends State<EditReservation> {
   void initState() {
     super.initState();
 
+    DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(startTime);
+    int timestamp = startingTime.millisecondsSinceEpoch;
     DateTime currentDateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    String currentYear = currentDateTime.year.toString();
-    String currentMonth = currentDateTime.month.toString();
-    String currentDay = currentDateTime.day.toString();
-    String currentHour = currentDateTime.hour.toString();
-    String currentMinute = "0".padLeft(2, '0');
-    this.currentYear = currentYear;
-    this.currentMonth = currentMonth;
-    this.currentDay = currentDay;
-    this.currentHour = currentHour;
-    this.currentMinute = currentMinute;
+    String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:00 a').format(currentDateTime);
+
+    this.startingTime = startingTime; // DateTime
+    this.timestamp = timestamp;
+    this.formattedDate = formattedDate;
+
+    // String currentYear = currentDateTime.year.toString();
+    // String currentMonth = currentDateTime.month.toString();
+    // String currentDay = currentDateTime.day.toString();
+    // String currentHour = currentDateTime.hour.toString();
+    // String currentMinute = "0".padLeft(2, '0');
+    // this.currentYear = currentYear;
+    // this.currentMonth = currentMonth;
+    // this.currentDay = currentDay;
+    // this.currentHour = currentHour;
+    // this.currentMinute = currentMinute;
 
     init();
   }
@@ -168,7 +180,7 @@ class _EditReservationState extends State<EditReservation> {
   static Future<List<BranchDetails>> getBranchDetails(
       String query) async {
     final url = Uri.parse(
-        'http://192.168.1.5:5000/token:qwhu67fv56frt5drfx45e/branches');
+        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/branches');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -385,18 +397,18 @@ class _EditReservationState extends State<EditReservation> {
                           ),
                         ),
                       ),
-                      // (slotResponse == true)
-                      //     ? Padding(
-                      //   padding: const EdgeInsets.only(top: 5),
-                      //   child: Text(
-                      //     "No Available Slot",
-                      //     style: TextStyle(
-                      //         color: Colors.redAccent,
-                      //         fontWeight: FontWeight.bold,
-                      //         fontSize: 15),
-                      //   ),
-                      // )
-                      //     : Text(""),
+                      (slotResponse == "INVALID_CALL:|:No_Available_Slot")
+                          ? Padding(
+                        padding: const EdgeInsets.only(top: 5),
+                        child: Text(
+                          "No Available Slot",
+                          style: TextStyle(
+                              color: Colors.redAccent,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 15),
+                        ),
+                      )
+                          : Text(""),
                       Padding(
                         padding: EdgeInsets.fromLTRB(25, 20, 0, 20),
                         child: Container(
@@ -420,7 +432,8 @@ class _EditReservationState extends State<EditReservation> {
                                   color: Col.secondary,
                                   child: Center(
                                     child: Text(
-                                      "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
+                                      // "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
+                                      "$formattedDate",
                                       style: TextStyle(
                                         color: Col.Onprimary,
                                         fontSize: 16,
@@ -516,18 +529,22 @@ class _EditReservationState extends State<EditReservation> {
 
     int timestamp = dateTime.millisecondsSinceEpoch;
 
-    String currentYear = dateTime.year.toString();
-    String currentMonth = dateTime.month.toString();
-    String currentDay = dateTime.day.toString();
-    String currentHour = dateTime.hour.toString().padLeft(2, '0');
+    String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:mm a').format(dateTime);
+
+    // String currentYear = dateTime.year.toString();
+    // String currentMonth = dateTime.month.toString();
+    // String currentDay = dateTime.day.toString();
+    // String currentHour = dateTime.hour.toString().padLeft(2, '0');
 
     setState(() {
       // this.dateTime = dateTime;
       this.timestamp = timestamp;
-      this.currentYear = currentYear;
-      this.currentMonth = currentMonth;
-      this.currentDay = currentDay;
-      this.currentHour = currentHour;
+      this.formattedDate = formattedDate;
+
+      // this.currentYear = currentYear;
+      // this.currentMonth = currentMonth;
+      // this.currentDay = currentDay;
+      // this.currentHour = currentHour;
     });
   }
 

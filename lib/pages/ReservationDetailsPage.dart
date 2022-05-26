@@ -2,6 +2,7 @@
 // ignore_for_file: file_names, no_logic_in_create_state, prefer_const_constructors
 
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
@@ -53,9 +54,10 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   void initState() {
     super.initState();
     DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(int.parse(startTime));
-    String datetime = startingTime.hour.toString().padLeft(2, '0') + ":" + startingTime.minute.toString().padLeft(2, '0');
+    String formattedStartTime = DateFormat('kk:00 a').format(startingTime);
+    // String datetime = startingTime.hour.toString().padLeft(2, '0') + ":" + startingTime.minute.toString().padLeft(2, '0');
 
-    this.startingTime = datetime;
+    this.startingTime = formattedStartTime;
 
   }
 
