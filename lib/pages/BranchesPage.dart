@@ -5,6 +5,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/pages/BranchMap.dart';
 
 import '../constants/colors.dart';
@@ -58,7 +59,7 @@ class _BranchesPageState extends State<BranchesPage> {
   static Future<List<BranchDetails>> getBranchDetails(
       String query) async {
     final url = Uri.parse(
-        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/branches');
+        '${base_url}/branches');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

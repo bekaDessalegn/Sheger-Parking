@@ -8,8 +8,7 @@ class NoReservation extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: EdgeInsets.fromLTRB(80, 40, 0, 0),
+    return Center(
       child: Text(
         "no reservations yet ...",
         style: TextStyle(

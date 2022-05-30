@@ -6,6 +6,7 @@ import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/constants/colors.dart';
 
 import 'EditReservation.dart';
@@ -80,7 +81,7 @@ class _ReservationsState extends State<Reservations> {
    Future<List<ReservationDetails>> getReservationDetails(String query) async {
 
     final url = Uri.parse(
-        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/clients/$id/reservations');
+        '${base_url}/clients/$id/reservations');
 
     final response = await http.get(url);
 

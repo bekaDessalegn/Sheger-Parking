@@ -4,6 +4,7 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/LoginPage.dart';
@@ -28,13 +29,14 @@ class _SignUpPageState extends State<SignUpPage> {
   late String verificationCode;
 
   String? hashedPassword;
+  String? signUpresponse;
 
   Future verify() async {
     var headersList = {
       'Accept': '*/*',
       'Content-Type': 'application/json'
     };
-    var url = Uri.parse('http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/clients/signup');
+    var url = Uri.parse('${base_url}/clients/signup');
 
     var body = {
       "fullName": user.fullName,
@@ -55,10 +57,28 @@ class _SignUpPageState extends State<SignUpPage> {
       var verificationCode = json.decode(resBody);
       print(verificationCode["emailVerificationCode"]);
       this.verificationCode = verificationCode["emailVerificationCode"].toString();
+      setState(() {
+        signUpresponse = "It is Ok";
+      });
+      setState(() {
+        isDataEntered = !isDataEntered;
+      });
+      setState(() {
+        isProcessing = true;
+      });
+      Future.delayed(Duration(seconds: 6), () {
+        setState(() {
+          isProcessing = false;
+        });
+      });
       print(resBody);
     }
     else {
-      print(res.reasonPhrase);
+      var data = json.decode(resBody);
+      setState(() {
+        signUpresponse = data["message"];
+      });
+      print(resBody);
     }
   }
 
@@ -67,7 +87,7 @@ class _SignUpPageState extends State<SignUpPage> {
       'Accept': '*/*',
       'Content-Type': 'application/json'
     };
-    var url = Uri.parse('http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/clients');
+    var url = Uri.parse('${base_url}/clients');
 
     var body = {
       "fullName": user.fullName,
@@ -245,6 +265,18 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
+                  (signUpresponse == "INVALID_CALL:|:USER_EMAIL_ALREADY_IN_USE")
+                      ? Padding(
+                    padding: const EdgeInsets.only(top: 5, left: 25),
+                    child: Text(
+                      "Email already in use",
+                      style: TextStyle(
+                          color: Colors.redAccent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                  )
+                      : Text(""),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                     child: Container(
@@ -283,6 +315,18 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
+                  (signUpresponse == "INVALID_CALL:|:USER_PHONE_ALREADY_IN_USE")
+                      ? Padding(
+                    padding: const EdgeInsets.only(top: 5, left: 25),
+                    child: Text(
+                      "Phone number already in use",
+                      style: TextStyle(
+                          color: Colors.redAccent,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 15),
+                    ),
+                  )
+                      : Text(""),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                     child: Container(
@@ -466,23 +510,12 @@ class _SignUpPageState extends State<SignUpPage> {
                         onPressed: () {
                           verify();
                           if (_formKey.currentState!.validate()) {
-                            setState(() {
-                              isDataEntered = !isDataEntered;
-                            });
-                            setState(() {
-                              isProcessing = true;
-                            });
                             if (!isDataEntered) {
                               save();
                             }
                           } else {
                             print("Enter fields");
                           }
-                          Future.delayed(Duration(seconds: 6), () {
-                            setState(() {
-                              isProcessing = false;
-                            });
-                          });
                         },
                       ),
                     ),

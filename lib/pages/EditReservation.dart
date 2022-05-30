@@ -6,6 +6,7 @@ import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/models/BranchDetails.dart';
 import 'package:sheger_parking/models/Reservation.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
@@ -97,7 +98,7 @@ class _EditReservationState extends State<EditReservation> {
       'Content-Type': 'application/json'
     };
     var url = Uri.parse(
-        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/reservations/$reservationId');
+        '${base_url}/reservations/$reservationId');
 
     var body = {
       "reservationPlateNumber": reservationPlateNumber,
@@ -180,7 +181,7 @@ class _EditReservationState extends State<EditReservation> {
   static Future<List<BranchDetails>> getBranchDetails(
       String query) async {
     final url = Uri.parse(
-        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/branches');
+        '${base_url}/branches');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {

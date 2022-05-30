@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/pages/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -31,12 +32,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
       'Accept': '*/*',
       'Content-Type': 'application/json'
     };
-    var url = Uri.parse('http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/clients/${id}');
+    var url = Uri.parse('${base_url}/clients/${id}');
 
     var body = {
       "fullName": fullName,
       "phone": phone,
-      "email": email,
       "defaultPlateNumber": defaultPlateNumber
     };
     var req = http.Request('PATCH', url);
@@ -143,55 +143,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             color: Col.textfieldLabel,
                           ),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          hintText: fullName,
-                          hintStyle: TextStyle(
-                            fontSize: 21,
-                            fontFamily: "Nunito",
-                            letterSpacing: 0.1,
-                            color: Col.Onbackground,
-                          )
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(25, 30, 25, 0),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: TextFormField(
-                      controller: TextEditingController(text: email),
-                      onChanged: (value){
-                        email = value;
-                      },
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "This field can not be empty";
-                        } else if (RegExp(
-                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
-                            .hasMatch(value)) {
-                          return null;
-                        } else {
-                          return "Please enter valid email";
-                        }
-                      },
-                      decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 3),
-                          labelText: "Email",
-                          labelStyle: TextStyle(
-                            fontSize: 17,
-                            fontFamily: "Nunito",
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.3,
-                            color: Col.textfieldLabel,
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          hintText: email,
-                          hintStyle: TextStyle(
-                            fontSize: 21,
-                            fontFamily: "Nunito",
-                            letterSpacing: 0.1,
-                            color: Col.Onbackground,
-                          )
+                          // hintText: fullName,
+                          // hintStyle: TextStyle(
+                          //   fontSize: 21,
+                          //   fontFamily: "Nunito",
+                          //   letterSpacing: 0.1,
+                          //   color: Col.Onbackground,
+                          // )
                       ),
                     ),
                   ),
@@ -224,13 +182,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             color: Col.textfieldLabel,
                           ),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          hintText: phone,
-                          hintStyle: TextStyle(
-                            fontSize: 21,
-                            fontFamily: "Nunito",
-                            letterSpacing: 0.1,
-                            color: Col.Onbackground,
-                          )
+                          // hintText: phone,
+                          // hintStyle: TextStyle(
+                          //   fontSize: 21,
+                          //   fontFamily: "Nunito",
+                          //   letterSpacing: 0.1,
+                          //   color: Col.Onbackground,
+                          // )
                       ),
                     ),
                   ),
@@ -263,13 +221,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                             color: Col.textfieldLabel,
                           ),
                           floatingLabelBehavior: FloatingLabelBehavior.always,
-                          hintText: defaultPlateNumber,
-                          hintStyle: TextStyle(
-                            fontSize: 21,
-                            fontFamily: "Nunito",
-                            letterSpacing: 0.1,
-                            color: Col.Onbackground,
-                          )
+                          // hintText: defaultPlateNumber,
+                          // hintStyle: TextStyle(
+                          //   fontSize: 21,
+                          //   fontFamily: "Nunito",
+                          //   letterSpacing: 0.1,
+                          //   color: Col.Onbackground,
+                          // )
                       ),
                     ),
                   ),

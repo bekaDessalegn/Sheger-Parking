@@ -5,6 +5,7 @@ import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
+import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/constants/colors.dart';
 import 'package:sheger_parking/constants/strings.dart';
 import 'package:sheger_parking/models/User.dart';
@@ -53,7 +54,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   Future<List<UserDetails>> getUserDetails(String query) async {
 
     final url = Uri.parse(
-        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/clients');
+        '${base_url}/clients');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -105,7 +106,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       'Accept': '*/*',
       'Content-Type': 'application/json'
     };
-    var url = Uri.parse('http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/clients/$id');
+    var url = Uri.parse('${base_url}/clients/$id');
 
     var body = {
       "passwordHash": hashedPassword
@@ -129,7 +130,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   Future verify() async {
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse(
-        'http://10.5.197.136:5000/token:qwhu67fv56frt5drfx45e/clients/recover');
+        '${base_url}/clients/recover');
 
     var body = {"email": user.email};
     var req = http.Request('POST', url);
