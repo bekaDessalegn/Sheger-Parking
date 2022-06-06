@@ -3,10 +3,11 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
+import '../constants/colors.dart';
+import '../constants/strings.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -54,8 +55,36 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Container(
-        color: Colors.white,
-        child: SvgPicture.asset('images/shegerLogo.svg')
+          color: Colors.white,
+      child: Center(
+          child: Column(
+            children:[
+              Padding(
+                  padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                  child: Text(
+                    Strings.app_title,
+                    style: TextStyle(
+                      color: Col.primary,
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Nunito',
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                ),
+                Text(
+                  "PARKING",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 28,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.3,
+                  ),
+                ),
+            ]
+          )
+      ),
     );
   }
 }

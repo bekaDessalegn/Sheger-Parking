@@ -29,7 +29,7 @@ class StartUp extends StatelessWidget {
                   Strings.app_title,
                   style: TextStyle(
                     color: Col.primary,
-                    fontSize: 28,
+                    fontSize: 31,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
                     letterSpacing: 0.3,
@@ -40,7 +40,7 @@ class StartUp extends StatelessWidget {
                 "PARKING",
                 style: TextStyle(
                   color: Colors.black,
-                  fontSize: 28,
+                  fontSize: 31,
                   fontWeight: FontWeight.bold,
                   fontFamily: 'Nunito',
                   letterSpacing: 0.3,
@@ -49,8 +49,9 @@ class StartUp extends StatelessWidget {
               Center(
                 child: Container(
                   child: SvgPicture.asset('images/Parking-amico.svg'),
-                  width: 280,
-                  height: 390,
+                  padding: EdgeInsets.symmetric(horizontal:30,vertical: 0),
+                  // width: 280,
+                  // height: 390,
                 ),
               ),
               Text(
@@ -64,29 +65,37 @@ class StartUp extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              SizedBox(height: 30,),
-              RaisedButton(
-                color: Col.primary,
-                padding: EdgeInsets.symmetric(horizontal: 90, vertical: 5),
-                child: Text(
-                  "Sign in",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    letterSpacing: 0.3,
-                  ),
-                ),
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                    side: BorderSide(color: Col.primary)),
-                onPressed: () {
-                  Navigator.push(context,
-                      MaterialPageRoute(builder: (context) => LoginPage()));
-                },
+              SizedBox(
+                height: 30,
               ),
-              SizedBox(height: 10,),
+              Container(
+                width: double.infinity,
+                padding: EdgeInsets.symmetric(horizontal: 30),
+                child: RaisedButton(
+                  color: Col.primary,
+                  padding: EdgeInsets.symmetric(horizontal: 90, vertical: 5),
+                  child: Text(
+                    "Sign in",
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 20,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Nunito',
+                      letterSpacing: 0.3,
+                    ),
+                  ),
+                  shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(8),
+                      side: BorderSide(color: Col.primary)),
+                  onPressed: () {
+                    Navigator.push(context,
+                        MaterialPageRoute(builder: (context) => LoginPage()));
+                  },
+                ),
+              ),
+              SizedBox(
+                height: 10,
+              ),
               Container(
                 width: double.infinity,
                 child: Center(
@@ -116,8 +125,7 @@ class StartUp extends StatelessWidget {
                                 Navigator.push(
                                     context,
                                     MaterialPageRoute(
-                                        builder: (context) =>
-                                            SignUpPage()));
+                                        builder: (context) => SignUpPage()));
                               }),
                       ],
                     ),
