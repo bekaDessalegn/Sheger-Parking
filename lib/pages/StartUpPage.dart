@@ -1,6 +1,7 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors
 
+import 'package:flutter/gestures.dart';
 import 'package:sheger_parking/pages/LoginPage.dart';
 import 'package:sheger_parking/pages/SignUpPage.dart';
 import 'package:flutter/material.dart';
@@ -45,10 +46,12 @@ class StartUp extends StatelessWidget {
                   letterSpacing: 0.3,
                 ),
               ),
-              Container(
-                child: SvgPicture.asset('images/Parking-amico.svg'),
-                width: 280,
-                height: 400,
+              Center(
+                child: Container(
+                  child: SvgPicture.asset('images/Parking-amico.svg'),
+                  width: 280,
+                  height: 390,
+                ),
               ),
               Text(
                 Strings.app_title_desc,
@@ -61,64 +64,65 @@ class StartUp extends StatelessWidget {
                 ),
                 textAlign: TextAlign.center,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: <Widget>[
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0, 60, 0, 0),
-                    child: RaisedButton(
-                      padding:
-                          EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                      color: Colors.white,
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Nunito',
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: BorderSide(color: Col.primary)),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => LoginPage()));
-                      },
+              SizedBox(height: 30,),
+              RaisedButton(
+                color: Col.primary,
+                padding: EdgeInsets.symmetric(horizontal: 90, vertical: 5),
+                child: Text(
+                  "Sign in",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.3,
+                  ),
+                ),
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(color: Col.primary)),
+                onPressed: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => LoginPage()));
+                },
+              ),
+              SizedBox(height: 10,),
+              Container(
+                width: double.infinity,
+                child: Center(
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                            style: TextStyle(
+                              color: Col.Onbackground,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0.3,
+                            ),
+                            text: "New around here?"),
+                        TextSpan(
+                            style: TextStyle(
+                              color: Col.primary,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0.3,
+                            ),
+                            text: " SignUp",
+                            recognizer: TapGestureRecognizer()
+                              ..onTap = () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) =>
+                                            SignUpPage()));
+                              }),
+                      ],
                     ),
                   ),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(0, 60, 0, 0),
-                    child: RaisedButton(
-                      color: Colors.white,
-                      padding:
-                      EdgeInsets.symmetric(horizontal: 50, vertical: 10),
-                      child: Text(
-                        Strings.signup,
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Nunito',
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          side: BorderSide(color: Col.primary)),
-                      onPressed: () {
-                        Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => SignUpPage()));
-                      },
-                    ),
-                  ),
-                ],
+                ),
               ),
             ],
           ),
