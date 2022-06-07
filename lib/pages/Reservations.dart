@@ -17,7 +17,14 @@ import 'package:http/http.dart' as http;
 
 class Reservations extends StatefulWidget {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
-  var reservationId, reservationPlateNumber, branch, startTime, slot, price, duration, parked;
+  var reservationId,
+      reservationPlateNumber,
+      branch,
+      startTime,
+      slot,
+      price,
+      duration,
+      parked;
 
   Reservations(
       {required this.id,
@@ -29,18 +36,56 @@ class Reservations extends StatefulWidget {
       this.reservationId,
       this.reservationPlateNumber,
       this.branch,
-      this.startTime, this.slot, this.price, this.duration, this.parked});
+      this.startTime,
+      this.slot,
+      this.price,
+      this.duration,
+      this.parked});
 
   @override
-  _ReservationsState createState() => _ReservationsState(id, fullName, phone, email, passwordHash, defaultPlateNumber, reservationId, reservationPlateNumber, branch, startTime, slot, price, duration, parked);
+  _ReservationsState createState() => _ReservationsState(
+      id,
+      fullName,
+      phone,
+      email,
+      passwordHash,
+      defaultPlateNumber,
+      reservationId,
+      reservationPlateNumber,
+      branch,
+      startTime,
+      slot,
+      price,
+      duration,
+      parked);
 }
 
 class _ReservationsState extends State<Reservations> {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
-  var reservationId, reservationPlateNumber, branch, startTime, slot, price, duration, parked;
+  var reservationId,
+      reservationPlateNumber,
+      branch,
+      startTime,
+      slot,
+      price,
+      duration,
+      parked;
 
-  _ReservationsState(this.id, this.fullName, this.phone, this.email,
-      this.passwordHash, this.defaultPlateNumber, this.reservationId, this.reservationPlateNumber, this.branch, this.startTime, this.slot, this.price, this.duration, this.parked);
+  _ReservationsState(
+      this.id,
+      this.fullName,
+      this.phone,
+      this.email,
+      this.passwordHash,
+      this.defaultPlateNumber,
+      this.reservationId,
+      this.reservationPlateNumber,
+      this.branch,
+      this.startTime,
+      this.slot,
+      this.price,
+      this.duration,
+      this.parked);
 
   var imageSliders = [
     "images/Parking-bro.svg",
@@ -68,9 +113,9 @@ class _ReservationsState extends State<Reservations> {
   }
 
   void debounce(
-      VoidCallback callback, {
-        Duration duration = const Duration(milliseconds: 1000),
-      }) {
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
     if (debouncer != null) {
       debouncer!.cancel();
     }
@@ -78,21 +123,22 @@ class _ReservationsState extends State<Reservations> {
     debouncer = Timer(duration, callback);
   }
 
-   Future<List<ReservationDetails>> getReservationDetails(String query) async {
-
-    final url = Uri.parse(
-        '${base_url}/clients/$id/reservations');
+  Future<List<ReservationDetails>> getReservationDetails(String query) async {
+    final url = Uri.parse('${base_url}/clients/$id/reservations');
 
     final response = await http.get(url);
 
-    while(response.statusCode != 200){
+    while (response.statusCode != 200) {
       final response = await http.get(url);
 
       if (response.statusCode == 200) {
         final List reservationDetails = json.decode(response.body);
 
-        return reservationDetails.map((json) => ReservationDetails.fromJson(json)).where((reservationDetail) {
-          final reservationPlateNumberLower = reservationDetail.reservationPlateNumber.toLowerCase();
+        return reservationDetails
+            .map((json) => ReservationDetails.fromJson(json))
+            .where((reservationDetail) {
+          final reservationPlateNumberLower =
+              reservationDetail.reservationPlateNumber.toLowerCase();
           final branchLower = reservationDetail.branch.toLowerCase();
           final searchLower = query.toLowerCase();
 
@@ -100,13 +146,15 @@ class _ReservationsState extends State<Reservations> {
               branchLower.contains(searchLower);
         }).toList();
       }
-
     }
     if (response.statusCode == 200) {
       final List reservationDetails = json.decode(response.body);
 
-      return reservationDetails.map((json) => ReservationDetails.fromJson(json)).where((reservationDetail) {
-        final reservationPlateNumberLower = reservationDetail.reservationPlateNumber.toLowerCase();
+      return reservationDetails
+          .map((json) => ReservationDetails.fromJson(json))
+          .where((reservationDetail) {
+        final reservationPlateNumberLower =
+            reservationDetail.reservationPlateNumber.toLowerCase();
         final branchLower = reservationDetail.branch.toLowerCase();
         final searchLower = query.toLowerCase();
 
@@ -119,7 +167,6 @@ class _ReservationsState extends State<Reservations> {
   }
 
   Future init() async {
-
     setState(() {
       isLoading = true;
     });
@@ -136,140 +183,362 @@ class _ReservationsState extends State<Reservations> {
   @override
   Widget build(BuildContext context) {
     return
-      // SingleChildScrollView(
-      // child: SizedBox(
-      //   height: MediaQuery.of(context).size.height,
-      //   child:
+        // SingleChildScrollView(
+        // child: SizedBox(
+        //   height: MediaQuery.of(context).size.height,
+        //   child:
         Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            Center(
-              child: Container(
-                margin: EdgeInsets.fromLTRB(6, 15, 6, 0),
-                // decoration: BoxDecoration(
-                //   borderRadius: BorderRadius.circular(8),
-                //   border: Border.all(color: Colors.black12, width: 1),
-                // ),
-                child: CarouselSlider.builder(
-                    itemCount: imageSliders.length,
-                    itemBuilder: (context, index, realIndex) {
-                      final imageSlider = imageSliders[index];
-                      return buildImage(imageSlider, index);
-                    },
-                    options: CarouselOptions(
-                      height: 200,
-                      autoPlay: true,
-                      autoPlayInterval: Duration(seconds: 2),
-                    )),
-              ),
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: <Widget>[
+        // Center(
+        //   child: Container(
+        //     margin: EdgeInsets.fromLTRB(6, 15, 6, 0),
+        //     // decoration: BoxDecoration(
+        //     //   borderRadius: BorderRadius.circular(8),
+        //     //   border: Border.all(color: Colors.black12, width: 1),
+        //     // ),
+        //     child: CarouselSlider.builder(
+        //         itemCount: imageSliders.length,
+        //         itemBuilder: (context, index, realIndex) {
+        //           final imageSlider = imageSliders[index];
+        //           return buildImage(imageSlider, index);
+        //         },
+        //         options: CarouselOptions(
+        //           height: 200,
+        //           autoPlay: true,
+        //           autoPlayInterval: Duration(seconds: 2),
+        //         )),
+        //   ),
+        // ),
+        // Center(
+        //   child: Padding(
+        //     padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+        //     child: Text(
+        //       "Reservations",
+        //       style: TextStyle(
+        //         color: Col.Onbackground,
+        //         fontSize: 28,
+        //         fontWeight: FontWeight.bold,
+        //         fontFamily: 'Nunito',
+        //         letterSpacing: 0.1,
+        //       ),
+        //     ),
+        //   ),
+        // ),
+        Container(
+          margin: EdgeInsets.only(top: 20, left: 20),
+          child: Text(
+            "Upcoming",
+            style: TextStyle(
+              color: Col.blackColor,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Nunito',
+              letterSpacing: 0.1,
             ),
-            Center(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
-                child: Text(
-                  "Reservations",
-                  style: TextStyle(
-                    color: Col.Onbackground,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    letterSpacing: 0.1,
-                  ),
-                ),
-              ),
-            ),
-            isLoading ? Expanded(
-              child: Center(child: CircularProgressIndicator(),
-        ),
-            ) : (reservations.length > 0)
-            ? Expanded(
-              child: ListView.builder(
-                // physics: NeverScrollableScrollPhysics(),
-        itemCount: reservations.length,
-        itemBuilder: (context, index) {
-        final reservationDetail = reservations[index];
-        DateTime startTime = DateTime.fromMillisecondsSinceEpoch(reservationDetail.startingTime);
-        DateTime finishTime = startTime.add(Duration(hours: reservationDetail.duration));
-        String formattedStartTime = DateFormat('kk:00 a').format(startTime);
-        String formattedFinishTime = DateFormat('kk:00 a').format(finishTime);
-        // String finishingTime = (startTime.hour + reservationDetail.duration).toString().padLeft(2, '0') + ":" + (startTime.minute).toString().padLeft(2, '0');
-
-        return GestureDetector(
-          onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ReservationDetailsPage(id: reservationDetail.client, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime.toString(), slot: reservationDetail.slot, price: reservationDetail.price.toString(), duration: reservationDetail.duration.toString(), parked: reservationDetail.toString())));
-          },
-          child: Padding(
-              padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
-              child: Card(
-                color: Colors.grey[100],
-                elevation: 8,
-                child: Padding(
-                  padding: EdgeInsets.fromLTRB(10, 8, 0, 8),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Stack(
-                        children: [
-                          Align(
-                            child: IconButton(
-                              onPressed: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                              },
-                              icon: Icon(Icons.edit),
-                              iconSize: 25,
-                            ),
-                            alignment: Alignment.topRight,
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(
-                                0, 15, 0, 0),
-                            child: Text(
-                              "Reservation at ${reservationDetail.branchName}",
-                              style: TextStyle(
-                                color: Col.Onbackground,
-                                fontSize: 20,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Nunito',
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        "$formattedStartTime - $formattedFinishTime",
-                        style: TextStyle(
-                          color: Col.Onbackground,
-                          fontSize: 18,
-                          fontFamily: 'Nunito',
-                        ),
-                      ),
-                      Text(
-                        "Slot Number: ${reservationDetail.slot}",
-                        style: TextStyle(
-                          color: Col.Onbackground,
-                          fontSize: 18,
-                          fontFamily: 'Nunito',
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-              ),
           ),
-        );
-        },
         ),
-            ) : Expanded(child: NoReservation()),
-          ],
+        Padding(
+          padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
+          child: Card(
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(15.0),
+            ),
+            color: Col.blackColor,
+            elevation: 8,
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                gradient: LinearGradient(
+                    colors: [Col.gradientColor, Col.blackColor],
+                    begin: Alignment.centerLeft,
+                    end: Alignment.centerRight),
+              ),
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 15,),
+                    Image.asset(
+                      "images/bell.png",
+                      scale: 2.2,
+                    ),
+                    Expanded(child: Row(),),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: <Widget>[
+                        // Stack(
+                        //   children: [
+                        // Align(
+                        //   child: IconButton(
+                        //     onPressed: () {
+                        //       Navigator.push(
+                        //           context,
+                        //           MaterialPageRoute(
+                        //               builder: (context) =>
+                        //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
+                        //     },
+                        //     icon: Icon(Icons.edit),
+                        //     iconSize: 25,
+                        //   ),
+                        //   alignment: Alignment.topRight,
+                        // ),
+                        Center(
+                          child: Text(
+                            "Nifas Silk Lafto",
+                            style: TextStyle(
+                              color: Col.whiteColor,
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Nunito',
+                            ),
+                          ),
+                          //     ),
+                          // ],
+                        ),
+                        Center(
+                          child: Text(
+                            "Jun 1, 2022",
+                            style: TextStyle(
+                              color: Col.whiteColor,
+                              fontSize: 20,
+                              fontFamily: 'Nunito',
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: Text(
+                            "12:00 pm",
+                            style: TextStyle(
+                              color: Col.whiteColor,
+                              fontSize: 20,
+                              fontFamily: 'Nunito',
+                            ),
+                          ),
+                        ),
+                        Center(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    style: TextStyle(
+                                      color: Col.whiteColor,
+                                      fontSize: 20,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.3,
+                                    ),
+                                    text: "Slot"),
+                                TextSpan(
+                                  style: TextStyle(
+                                    color: Col.whiteColor,
+                                    fontSize: 20,
+                                    fontFamily: 'Nunito',
+                                    letterSpacing: 0.3,
+                                  ),
+                                  text: " 22",
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+          ),
+        ),
+        Container(
+          margin: EdgeInsets.only(top: 10, left: 20),
+          child: Text(
+            "All reservations",
+            style: TextStyle(
+              color: Col.blackColor,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              fontFamily: 'Nunito',
+              letterSpacing: 0.1,
+            ),
+          ),
+        ),
+        isLoading
+            ? Expanded(
+                child: Center(
+                  child: CircularProgressIndicator(),
+                ),
+              )
+            : (reservations.length > 0)
+                ? Expanded(
+                    child: ListView.builder(
+                      // physics: NeverScrollableScrollPhysics(),
+                      itemCount: reservations.length,
+                      itemBuilder: (context, index) {
+                        final reservationDetail = reservations[index];
+                        DateTime startTime =
+                            DateTime.fromMillisecondsSinceEpoch(
+                                reservationDetail.startingTime);
+                        DateTime finishTime = startTime
+                            .add(Duration(hours: reservationDetail.duration));
+                        String formattedStartTime =
+                            DateFormat('kk:00 a').format(startTime);
+                        String formattedFinishTime =
+                            DateFormat('kk:00 a').format(finishTime);
+                        // String finishingTime = (startTime.hour + reservationDetail.duration).toString().padLeft(2, '0') + ":" + (startTime.minute).toString().padLeft(2, '0');
+
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        ReservationDetailsPage(
+                                            id: reservationDetail.client,
+                                            fullName: fullName,
+                                            phone: phone,
+                                            email: email,
+                                            passwordHash: passwordHash,
+                                            defaultPlateNumber:
+                                                defaultPlateNumber,
+                                            reservationId: reservationDetail.id,
+                                            reservationPlateNumber:
+                                                reservationDetail
+                                                    .reservationPlateNumber,
+                                            branch: reservationDetail.branch,
+                                            branchName:
+                                                reservationDetail.branchName,
+                                            startTime: reservationDetail
+                                                .startingTime
+                                                .toString(),
+                                            slot: reservationDetail.slot,
+                                            price: reservationDetail.price
+                                                .toString(),
+                                            duration: reservationDetail.duration
+                                                .toString(),
+                                            parked:
+                                                reservationDetail.toString())));
+                          },
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(30, 0, 30, 5),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              color: Col.blackColor,
+                              elevation: 8,
+                              child: Padding(
+                                padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.center,
+                                  children: <Widget>[
+                                    // Stack(
+                                    //   children: [
+                                    // Align(
+                                    //   child: IconButton(
+                                    //     onPressed: () {
+                                    //       Navigator.push(
+                                    //           context,
+                                    //           MaterialPageRoute(
+                                    //               builder: (context) =>
+                                    //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
+                                    //     },
+                                    //     icon: Icon(Icons.edit),
+                                    //     iconSize: 25,
+                                    //   ),
+                                    //   alignment: Alignment.topRight,
+                                    // ),
+                                    Center(
+                                      child: Text(
+                                        "${reservationDetail.branchName}",
+                                        style: TextStyle(
+                                          color: Col.whiteColor,
+                                          fontSize: 22,
+                                          fontWeight: FontWeight.bold,
+                                          fontFamily: 'Nunito',
+                                        ),
+                                      ),
+                                      //     ),
+                                      // ],
+                                    ),
+                                    Container(
+                                      width: double.infinity,
+                                      child: Center(
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.center,
+                                          children: [
+                                            Text(
+                                              // "$formattedStartTime - $formattedFinishTime",
+                                              "Jun 1, 2022 ",
+                                              style: TextStyle(
+                                                color: Col.whiteColor,
+                                                fontSize: 20,
+                                                fontFamily: 'Nunito',
+                                              ),
+                                            ),
+                                            Text(
+                                              // "$formattedStartTime - $formattedFinishTime",
+                                              "|",
+                                              style: TextStyle(
+                                                color: Col.primary,
+                                                fontSize: 20,
+                                                fontFamily: 'Nunito',
+                                              ),
+                                            ),
+                                            Text(
+                                              // "$formattedStartTime - $formattedFinishTime",
+                                              " 12:00",
+                                              style: TextStyle(
+                                                color: Col.whiteColor,
+                                                fontSize: 20,
+                                                fontFamily: 'Nunito',
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                    Center(
+                                      child: RichText(
+                                        text: TextSpan(
+                                          children: [
+                                            TextSpan(
+                                                style: TextStyle(
+                                                  color: Col.whiteColor,
+                                                  fontSize: 20,
+                                                  fontWeight: FontWeight.bold,
+                                                  fontFamily: 'Nunito',
+                                                  letterSpacing: 0.3,
+                                                ),
+                                                text: "Slot "),
+                                            TextSpan(
+                                              style: TextStyle(
+                                                color: Col.whiteColor,
+                                                fontSize: 20,
+                                                fontFamily: 'Nunito',
+                                                letterSpacing: 0.3,
+                                              ),
+                                              text: "${reservationDetail.slot}",
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : Expanded(child: NoReservation()),
+      ],
       //   ),
       // ),
     );

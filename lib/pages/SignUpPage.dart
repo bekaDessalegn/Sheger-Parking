@@ -336,7 +336,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
-                          } else if (value.length <= 6) {
+                          } else if (value.length < 6) {
                             return "Password should be at least 6 characters";
                           }
                           return null;

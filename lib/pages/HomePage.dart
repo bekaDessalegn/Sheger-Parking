@@ -106,7 +106,7 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 4.0,
+        elevation: 7.0,
         toolbarHeight: 70,
         automaticallyImplyLeading: false,
         actions: [
@@ -127,14 +127,14 @@ class _HomePageState extends State<HomePage> {
                             passwordHash: passwordHash,
                             defaultPlateNumber: defaultPlateNumber)));
               },
-              icon: Icon(Icons.account_circle_sharp)),
+              icon: Icon(Icons.person_outline, color: Col.blackColor,)),
         ],
         title: Text(
-          Strings.app_title,
+          "Sheger",
           style: TextStyle(
-            color: Col.Onsurface,
+            color: Col.blackColor,
             fontSize: 28,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,
           ),
@@ -145,7 +145,7 @@ class _HomePageState extends State<HomePage> {
                 bottomLeft: Radius.circular(0),
                 bottomRight: Radius.circular(0)),
             gradient: LinearGradient(
-                colors: [Col.secondary, Col.secondary],
+                colors: [Colors.white, Colors.white],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter),
           ),
@@ -163,11 +163,11 @@ class _HomePageState extends State<HomePage> {
             label: "Home",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_tree),
+            icon: Icon(Icons.location_on),
             label: "Branches",
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.book),
+            icon: Icon(Icons.add_circle_outline),
             label: "Reserve",
           ),
         ],
