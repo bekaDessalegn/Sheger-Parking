@@ -117,7 +117,7 @@ class _SignUpPageState extends State<SignUpPage> {
       body: ListView(
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+            padding: EdgeInsets.fromLTRB(15, 40, 0, 0),
             child: Text(
               Strings.app_title,
               style: TextStyle(
@@ -488,7 +488,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(25, 20, 25, 40),
+                    padding: EdgeInsets.fromLTRB(25, 10, 25, 40),
                     child: Container(
                       width: double.infinity,
                       child: Center(
