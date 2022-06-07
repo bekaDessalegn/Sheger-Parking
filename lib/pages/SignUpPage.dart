@@ -150,12 +150,12 @@ class _SignUpPageState extends State<SignUpPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Padding(
-                    padding: EdgeInsets.fromLTRB(15, 20, 0, 0),
+                    padding: EdgeInsets.fromLTRB(15, 35, 0, 0),
                     child: Text(
                       Strings.signup,
                       style: TextStyle(
                         color: Col.Onbackground,
-                        fontSize: 50,
+                        fontSize: 35,
                         fontWeight: FontWeight.bold,
                         fontFamily: 'Nunito',
                         letterSpacing: 0.1,
@@ -163,7 +163,7 @@ class _SignUpPageState extends State<SignUpPage> {
                     ),
                   ),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(25, 50, 25, 0),
+                    padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
@@ -445,7 +445,7 @@ class _SignUpPageState extends State<SignUpPage> {
                   )
                       : Text(""),
                   Padding(
-                    padding: EdgeInsets.fromLTRB(25, 50, 25, 0),
+                    padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                     child: Container(
                       width: double.infinity,
                       child: RaisedButton(

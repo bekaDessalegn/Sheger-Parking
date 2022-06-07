@@ -23,7 +23,7 @@ class StartUp extends StatelessWidget {
           height: MediaQuery.of(context).size.height,
           padding: EdgeInsets.fromLTRB(0, 40, 0, 25),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            mainAxisAlignment: MainAxisAlignment.start,
             children: <Widget>[
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
@@ -50,6 +50,7 @@ class StartUp extends StatelessWidget {
                   ),
                 ],
               ),
+              SizedBox(height: 30,),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -71,9 +72,8 @@ class StartUp extends StatelessWidget {
                   ),
                 ],
               ),
-              // SizedBox(
-              //   height: 50,
-              // ),
+        
+              Expanded(child: Column()),
               Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [

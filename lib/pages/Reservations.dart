@@ -257,14 +257,14 @@ class _ReservationsState extends State<Reservations> {
               child: Padding(
                 padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    SizedBox(width: 15,),
+                    // SizedBox(width: 15,),
                     Image.asset(
                       "images/bell.png",
-                      scale: 2.2,
+                      scale: 2.4,
                     ),
-                    Expanded(child: Row(),),
+                    // Expanded(child: Row(),),
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: <Widget>[
