@@ -9,4 +9,7 @@ class Col{
  static Color Onsurface = Color(0xFF56646F);
  static Color secondary = Color(0xFFCCFFE7);
  static Color textfieldLabel = Color(0xFF545563);
+ static Color blackColor = Color(0xFF4D4D4D);
+ static Color whiteColor = Color(0xFFB5B5B5);
+ static Color gradientColor = Color(0xFF978B4D).withOpacity(0.6);
 }
