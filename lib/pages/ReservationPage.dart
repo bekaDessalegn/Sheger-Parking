@@ -127,7 +127,12 @@ class _ReservationPageState extends State<ReservationPage> {
     super.initState();
 
     DateTime currentDateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:00 a').format(currentDateTime);
+
+    String startDate = DateFormat.yMMMd().format(currentDateTime);
+    String startTime = DateFormat('h:mm a').format(currentDateTime);
+    String formattedDate = "$startDate | $startTime";
+
+    // String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:00 a').format(currentDateTime);
 
 
     // String currentYear = currentDateTime.year.toString();
@@ -217,26 +222,20 @@ class _ReservationPageState extends State<ReservationPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
-              Padding(
-                padding: EdgeInsets.fromLTRB(30, 25, 0, 0),
+              Container(
+                margin: EdgeInsets.only(top: 20, left: 20),
                 child: Text(
-                  "Reservation",
+                  "Reserve a spot",
                   style: TextStyle(
-                    color: Col.Onbackground,
-                    fontSize: 30,
+                    color: Col.blackColor,
+                    fontSize: 21,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
                     letterSpacing: 0.1,
                   ),
                 ),
               ),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(8),
-                  border: Border.all(color: Colors.black26, width: 1),
-                  color: Col.background,
-                ),
-                child: Column(
+              Column(
                   children: [
                     Padding(
                       padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
@@ -266,11 +265,11 @@ class _ReservationPageState extends State<ReservationPage> {
                             floatingLabelBehavior: FloatingLabelBehavior.always,
                             labelText: "Plate Number",
                             labelStyle: TextStyle(
-                              color: Col.textfieldLabel,
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
+                              color: Col.blackColor,
+                              fontSize: 20,
+                              fontWeight: FontWeight.w600,
                               fontFamily: 'Nunito',
-                              letterSpacing: 0,
+                              letterSpacing: 0.1,
                             ),
                             border: OutlineInputBorder(),
                             errorBorder: OutlineInputBorder(
@@ -287,7 +286,7 @@ class _ReservationPageState extends State<ReservationPage> {
                         child: Text(
                           "Branch",
                           style: TextStyle(
-                            color: Col.textfieldLabel,
+                            color: Col.blackColor,
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                             fontFamily: 'Nunito',
@@ -358,50 +357,96 @@ class _ReservationPageState extends State<ReservationPage> {
                     )
                         : Text(""),
                     Padding(
-                      padding: EdgeInsets.fromLTRB(25, 20, 0, 0),
+                      padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
                       child: Container(
-                        width: 300,
-                        child: Row(
-                          children: <Widget>[
-                            Text(
-                              "Start time : ",
-                              style: TextStyle(
-                                color: Col.textfieldLabel,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Nunito',
-                                letterSpacing: 0,
-                              ),
-                            ),
-                            Container(
-                              width: 170,
-                              margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                              child: RaisedButton(
-                                color: Col.secondary,
-                                child: Center(
-                                  child: Text(
-                                    // "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
-                                    "$formattedDate",
-                                    style: TextStyle(
-                                      color: Col.Onprimary,
-                                      fontSize: 16,
-                                      fontFamily: 'Nunito',
-                                      letterSpacing: 0.1,
-                                    ),
-                                  ),
-                                ),
-                                onPressed: () {
-                                  pickDateTime();
-                                },
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                              ),
-                            ),
-                          ],
+                        width: double.infinity,
+                        child: Text(
+                          "Start time",
+                          style: TextStyle(
+                            color: Col.blackColor,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito',
+                            letterSpacing: 0,
+                          ),
                         ),
                       ),
                     ),
+                    Container(
+                      width: double.infinity,
+                      margin: EdgeInsets.symmetric(horizontal: 25),
+                      child: RaisedButton(
+                        color: Colors.white,
+                        child: Center(
+                          child: Text(
+                            // "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
+                            "$formattedDate",
+                            style: TextStyle(
+                              color: Col.blackColor,
+                              fontSize: 16,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0.1,
+                            ),
+                          ),
+                        ),
+                        onPressed: () {
+                          pickDateTime();
+                        },
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        elevation: 0.0,
+                      ),
+                      decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: Col.blackColor, width: 1),
+                                  ),
+                    ),
+                    // Padding(
+                    //   padding: EdgeInsets.fromLTRB(25, 20, 0, 0),
+                    //   child: Container(
+                    //     width: 300,
+                    //     child: Row(
+                    //       children: <Widget>[
+                    //         Text(
+                    //           "Start time : ",
+                    //           style: TextStyle(
+                    //             color: Col.textfieldLabel,
+                    //             fontSize: 18,
+                    //             fontWeight: FontWeight.bold,
+                    //             fontFamily: 'Nunito',
+                    //             letterSpacing: 0,
+                    //           ),
+                    //         ),
+                    //         Container(
+                    //           width: 170,
+                    //           margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                    //           child: RaisedButton(
+                    //             color: Col.secondary,
+                    //             child: Center(
+                    //               child: Text(
+                    //                 // "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
+                    //                 "$formattedDate",
+                    //                 style: TextStyle(
+                    //                   color: Col.Onprimary,
+                    //                   fontSize: 16,
+                    //                   fontFamily: 'Nunito',
+                    //                   letterSpacing: 0.1,
+                    //                 ),
+                    //               ),
+                    //             ),
+                    //             onPressed: () {
+                    //               pickDateTime();
+                    //             },
+                    //             shape: RoundedRectangleBorder(
+                    //               borderRadius: BorderRadius.circular(8),
+                    //             ),
+                    //           ),
+                    //         ),
+                    //       ],
+                    //     ),
+                    //   ),
+                    // ),
                     // Padding(
                     //   padding: EdgeInsets.fromLTRB(25, 20, 0, 0),
                     //   child: Container(
@@ -510,11 +555,11 @@ class _ReservationPageState extends State<ReservationPage> {
                           },
                           padding: EdgeInsets.symmetric(
                               vertical: 10, horizontal: 100),
-                          color: Col.secondary,
+                          color: Col.primary,
                           child: Text(
                             'Reserve',
                             style: TextStyle(
-                              color: Col.Onbackground,
+                              color: Col.blackColor,
                               fontSize: 16,
                               fontFamily: 'Nunito',
                               letterSpacing: 0.3,
@@ -528,7 +573,6 @@ class _ReservationPageState extends State<ReservationPage> {
                     ),
                   ],
                 ),
-              ),
             ],
           ),
         ),
@@ -629,7 +673,9 @@ class _ReservationPageState extends State<ReservationPage> {
     // String currentDay = dateTime.day.toString();
     // String currentHour = dateTime.hour.toString().padLeft(2, '0');
 
-    String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:mm a').format(dateTime);
+    String startDate = DateFormat.yMMMd().format(dateTime);
+    String startTime = DateFormat('h:mm a').format(dateTime);
+    String formattedDate = "$startDate | $startTime";
 
     setState(() {
       // this.dateTime = dateTime;

@@ -3,6 +3,7 @@
 
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
 import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/pages/ProfilePage.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
   _EditProfilePageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
 
   final _formKey = GlobalKey<FormState>();
+  bool _secureText = true;
+  String password = "";
 
   Future edit() async {
     var headersList = {
@@ -37,6 +40,8 @@ class _EditProfilePageState extends State<EditProfilePage> {
     var body = {
       "fullName": fullName,
       "phone": phone,
+      "email": email,
+      "passwordHash": password,
       "defaultPlateNumber": defaultPlateNumber
     };
     var req = http.Request('PATCH', url);
@@ -63,7 +68,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 4.0,
+        elevation: 7.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -73,11 +78,11 @@ class _EditProfilePageState extends State<EditProfilePage> {
           icon: Icon(Icons.arrow_back),
         ),
         title: Text(
-          Strings.app_title,
+          "Edit Profile",
           style: TextStyle(
-            color: Col.Onsurface,
+            color: Col.blackColor,
             fontSize: 28,
-            fontWeight: FontWeight.bold,
+            fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,
           ),
@@ -88,7 +93,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                 bottomLeft: Radius.circular(0),
                 bottomRight: Radius.circular(0)),
             gradient: LinearGradient(
-                colors: [Col.secondary, Col.secondary],
+                colors: [Colors.white, Colors.white],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter),
           ),
@@ -102,21 +107,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.fromLTRB(30, 50, 0, 0),
-                  child: Text(
-                    "Edit Profile",
-                    style: TextStyle(
-                      color: Col.Onbackground,
-                      fontSize: 36,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.1,
-                    ),
+                SizedBox(
+                  height: 30,
+                ),
+                Center(
+                  child: Icon(
+                    Icons.person_outline,
+                    size: 110,
+                    color: Col.blackColor,
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(25, 60, 25, 0),
+                  padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                   child: Container(
                     alignment: Alignment.center,
                     child: TextFormField(
@@ -133,29 +135,74 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         }
                       },
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 3),
-                          labelText: "Full Name",
-                          labelStyle: TextStyle(
-                            fontSize: 17,
-                            fontFamily: "Nunito",
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.3,
-                            color: Col.textfieldLabel,
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          // hintText: fullName,
-                          // hintStyle: TextStyle(
-                          //   fontSize: 21,
-                          //   fontFamily: "Nunito",
-                          //   letterSpacing: 0.1,
-                          //   color: Col.Onbackground,
-                          // )
+                        hintText: "",
+                        hintStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0.1,
+                        ),
+                        labelText: "Full Name",
+                        labelStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
+                        ),
+                        border: OutlineInputBorder(),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
                       ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(25, 30, 25, 0),
+                  padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: TextFormField(
+                      controller: TextEditingController(text: email),
+                      onChanged: (value){
+                        email = value;
+                      },
+                      validator: (value) {
+                        if (value!.isEmpty) {
+                          return "This field can not be empty";
+                        } else if (RegExp(
+                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                            .hasMatch(value)) {
+                          return null;
+                        } else {
+                          return "Please enter valid email";
+                        }
+                      },
+                      decoration: InputDecoration(
+                        hintText: "",
+                        hintStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0.1,
+                        ),
+                        labelText: "Email",
+                        labelStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
+                        ),
+                        border: OutlineInputBorder(),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                      ),
+                      keyboardType: TextInputType.emailAddress,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                   child: Container(
                     alignment: Alignment.center,
                     child: TextFormField(
@@ -167,34 +214,33 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
                         }
-                        else {
-                          return null;
-                        }
+                        return null;
                       },
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 3),
-                          labelText: "Phone Number",
-                          labelStyle: TextStyle(
-                            fontSize: 17,
-                            fontFamily: "Nunito",
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.3,
-                            color: Col.textfieldLabel,
-                          ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          // hintText: phone,
-                          // hintStyle: TextStyle(
-                          //   fontSize: 21,
-                          //   fontFamily: "Nunito",
-                          //   letterSpacing: 0.1,
-                          //   color: Col.Onbackground,
-                          // )
+                        hintText: "",
+                        hintStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0.1,
+                        ),
+                        labelText: "Phone Number",
+                        labelStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
+                        ),
+                        border: OutlineInputBorder(),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
                       ),
                     ),
                   ),
                 ),
                 Padding(
-                  padding: EdgeInsets.fromLTRB(25, 30, 25, 0),
+                  padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                   child: Container(
                     alignment: Alignment.center,
                     child: TextFormField(
@@ -206,29 +252,115 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
                         }
-                        else {
+                        return null;
+                      },
+                      decoration: InputDecoration(
+                        hintText: "",
+                        hintStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0.1,
+                        ),
+                        labelText: "Plate Number",
+                        labelStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
+                        ),
+                        border: OutlineInputBorder(),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
+                  child: Container(
+                    alignment: Alignment.center,
+                    child: TextFormField(
+                      onChanged: (value) {
+                        password = value;
+                      },
+                      validator: (value) {
+                        if (value!.length>0 && value.length < 6) {
+                          return "Password should be at least 6 characters";
+                        } else {
                           return null;
                         }
                       },
                       decoration: InputDecoration(
-                          contentPadding: EdgeInsets.only(bottom: 3),
-                          labelText: "Plate Number",
-                          labelStyle: TextStyle(
-                            fontSize: 17,
-                            fontFamily: "Nunito",
-                            fontWeight: FontWeight.bold,
-                            letterSpacing: 0.3,
+                        hintText: "unchanged",
+                        hintStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0.1,
+                        ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                        labelText: "Password",
+                        labelStyle: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
+                        ),
+                        border: OutlineInputBorder(),
+                        errorBorder: OutlineInputBorder(
+                          borderSide: BorderSide(color: Colors.red),
+                        ),
+                        suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              _secureText = !_secureText;
+                            });
+                          },
+                          icon: Icon(
+                            _secureText == true
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: Col.textfieldLabel,
                           ),
-                          floatingLabelBehavior: FloatingLabelBehavior.always,
-                          // hintText: defaultPlateNumber,
-                          // hintStyle: TextStyle(
-                          //   fontSize: 21,
-                          //   fontFamily: "Nunito",
-                          //   letterSpacing: 0.1,
-                          //   color: Col.Onbackground,
-                          // )
+                        ),
                       ),
+                      obscureText: _secureText,
+                    ),
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
+                  child: Container(
+                    width: double.infinity,
+                    child: RaisedButton(
+                      padding: EdgeInsets.symmetric(vertical: 10),
+                        color: Col.primary,
+                        child: Text(
+                          "Save",
+                          style: TextStyle(
+                            color: Col.Onprimary,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito',
+                            letterSpacing: 0.3,
+                          ),
+                        ),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8)),
+                        onPressed: (){
+                          if (_formKey.currentState!.validate()) {
+                            if(password == ""){
+                              password = passwordHash;
+                            } else{
+                              var bytes = utf8.encode(password);
+                              var sha512 = sha256.convert(bytes);
+                              password = sha512.toString();
+                            }
+                            edit();
+                          }
+                        }
                     ),
                   ),
                 ),
@@ -237,18 +369,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          if (_formKey.currentState!.validate()) {
-            edit();
-          }
-        },
-        backgroundColor: Col.primary,
-        child: Icon(
-          Icons.check,
-          color: Col.Onbackground,
-        ),
-      ),
+      // floatingActionButton: FloatingActionButton(
+      //   onPressed: () {
+      //     if (_formKey.currentState!.validate()) {
+      //       edit();
+      //     }
+      //   },
+      //   backgroundColor: Col.primary,
+      //   child: Icon(
+      //     Icons.check,
+      //     color: Col.Onbackground,
+      //   ),
+      // ),
     );
   }
 }

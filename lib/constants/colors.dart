@@ -11,5 +11,8 @@ class Col{
  static Color textfieldLabel = Color(0xFF545563);
  static Color blackColor = Color(0xFF4D4D4D);
  static Color whiteColor = Color(0xFFB5B5B5);
+ static Color linkColor = Color(0xFF00A4BA);
+ static Color deleteColor = Color(0xFFAB0000);
  static Color gradientColor = Color(0xFF978B4D).withOpacity(0.6);
+ static Color locationgradientColor = Color(0xFF567556);
 }

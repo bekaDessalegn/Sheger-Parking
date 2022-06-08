@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 
 import '../constants/colors.dart';
 import '../constants/strings.dart';
+import 'EditReservation.dart';
 
 class ReservationDetailsPage extends StatefulWidget {
   String id,
@@ -48,16 +49,19 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   _ReservationDetailsPageState(this.id, this.fullName, this.phone, this.email,
       this.passwordHash, this.defaultPlateNumber, this.reservationId, this.reservationPlateNumber, this.branch, this.branchName, this.startTime, this.slot, this.price, this.duration, this.parked);
 
-  String? startingTime;
+  late String startingTime;
+  late String startDate;
 
   @override
   void initState() {
     super.initState();
     DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(int.parse(startTime));
-    String formattedStartTime = DateFormat('kk:00 a').format(startingTime);
+    String startDate = DateFormat.yMMMd().format(startingTime);
+    String formattedStartTime = DateFormat('h:mm a').format(startingTime);
     // String datetime = startingTime.hour.toString().padLeft(2, '0') + ":" + startingTime.minute.toString().padLeft(2, '0');
 
     this.startingTime = formattedStartTime;
+    this.startDate = startDate;
 
   }
 
@@ -69,7 +73,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 4.0,
+        elevation: 7.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -79,11 +83,11 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           icon: Icon(Icons.arrow_back),
         ),
         title: Text(
-          Strings.app_title,
+          "Reservation details",
           style: TextStyle(
-            color: Col.Onsurface,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
+            color: Col.blackColor,
+            fontSize: 24,
+            fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,
           ),
@@ -94,7 +98,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 bottomLeft: Radius.circular(0),
                 bottomRight: Radius.circular(0)),
             gradient: LinearGradient(
-                colors: [Col.secondary, Col.secondary],
+                colors: [Colors.white, Colors.white],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter),
           ),
@@ -107,53 +111,51 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.fromLTRB(30, 40, 0, 0),
-                child: Text(
-                  "Reservation Details",
-                  style: TextStyle(
-                    color: Col.Onbackground,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    letterSpacing: 0.1,
+                padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+                child: Center(
+                  child: RichText(
+                    text: TextSpan(
+                      children: [
+                        TextSpan(
+                            style: TextStyle(
+                              color: Col.blackColor,
+                              fontSize: 20,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0.3,
+                            ),
+                            text: "Reservation at "),
+                        TextSpan(
+                          style: TextStyle(
+                            color: Col.blackColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito',
+                            letterSpacing: 0.3,
+                          ),
+                          text:
+                          branchName,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(30, 40, 0, 0),
-                child: Text(
-                  "Branch",
-                  style: TextStyle(
-                    color: Col.Onsurface,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    letterSpacing: 0.3,
+              Center(
+                child: SizedBox(
+                  width: 200,
+                  child: Divider(
+                    color: Col.primary,
+                    thickness: 2,
                   ),
                 ),
               ),
-              Padding(
-                padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-                child: Text(
-                  branchName,
-                  style: TextStyle(
-                    color: Col.Onbackground,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ),
-              Divider(
-                color: Col.Onbackground,
-              ),
+              SizedBox(height: 10,),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
-                  "Start Time",
+                  "Plate number",
                   style: TextStyle(
-                    color: Col.Onsurface,
+                    color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
@@ -164,9 +166,22 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  "$startingTime",
+                  defaultPlateNumber,
                   style: TextStyle(
-                    color: Col.Onbackground,
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10,),
+              Padding(
+                padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
+                child: Text(
+                  "Date",
+                  style: TextStyle(
+                    color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
@@ -174,15 +189,51 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              Divider(
-                color: Col.Onbackground,
+              Padding(
+                padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                child: Text(
+                  startDate,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.3,
+                  ),
+                ),
               ),
+              SizedBox(height: 10,),
+              Padding(
+                padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
+                child: Text(
+                  "Start time",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+              Padding(
+                padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                child: Text(
+                  startingTime,
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ),
+              SizedBox(height: 10,),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
                   "Duration",
                   style: TextStyle(
-                    color: Col.Onsurface,
+                    color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
@@ -193,25 +244,22 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  "$duration hours",
+                  "$duration:00 hours",
                   style: TextStyle(
-                    color: Col.Onbackground,
+                    color: Colors.black,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
                     letterSpacing: 0.3,
                   ),
                 ),
               ),
-              Divider(
-                color: Col.Onbackground,
-              ),
+              SizedBox(height: 10,),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
                   "Slot",
                   style: TextStyle(
-                    color: Col.Onsurface,
+                    color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
@@ -224,23 +272,20 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 child: Text(
                   slot,
                   style: TextStyle(
-                    color: Col.Onbackground,
+                    color: Colors.black,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
                     letterSpacing: 0.3,
                   ),
                 ),
               ),
-              Divider(
-                color: Col.Onbackground,
-              ),
+              SizedBox(height: 10,),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
                   "Price",
                   style: TextStyle(
-                    color: Col.Onsurface,
+                    color: Colors.black,
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
@@ -253,16 +298,46 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                 child: Text(
                   "$price birr",
                   style: TextStyle(
-                    color: Col.Onbackground,
+                    color: Colors.black,
                     fontSize: 18,
-                    fontWeight: FontWeight.bold,
                     fontFamily: 'Nunito',
                     letterSpacing: 0.3,
                   ),
                 ),
               ),
-              Divider(
-                color: Col.Onbackground,
+              SizedBox(height: 10,),
+              Center(
+                child: SizedBox(
+                  width: 200,
+                  child: Divider(
+                    color: Col.primary,
+                    thickness: 2,
+                  ),
+                ),
+              ),
+              Center(
+                child: TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) =>
+                                EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationId, reservationPlateNumber: reservationPlateNumber, branch: branch, branchName: branchName, startTime: int.parse(startTime))));
+                  },
+                  style: TextButton.styleFrom(
+                      padding: EdgeInsets.zero,
+                      minimumSize: Size(50, 30),
+                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      alignment: Alignment.centerLeft),
+                  child: Text(
+                    "Edit reservation",
+                    style: TextStyle(
+                      color: Col.linkColor,
+                      fontSize: 18,
+                      fontFamily: 'Nunito',
+                    ),
+                  ),
+                ),
               ),
             ],
           ),

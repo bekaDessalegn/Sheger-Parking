@@ -104,7 +104,7 @@ class _BranchMapState extends State<BranchMap> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 4.0,
+        elevation: 7.0,
         toolbarHeight: 70,
         leading: IconButton(
           color: Col.Onbackground,
@@ -114,11 +114,11 @@ class _BranchMapState extends State<BranchMap> {
           icon: Icon(Icons.arrow_back),
         ),
         title: Text(
-          Strings.app_title,
+          "Branch Map",
           style: TextStyle(
-            color: Col.Onsurface,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
+            color: Col.blackColor,
+            fontSize: 24,
+            fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,
           ),
@@ -129,7 +129,7 @@ class _BranchMapState extends State<BranchMap> {
                 bottomLeft: Radius.circular(0),
                 bottomRight: Radius.circular(0)),
             gradient: LinearGradient(
-                colors: [Col.secondary, Col.secondary],
+                colors: [Colors.white, Colors.white],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter),
           ),
