@@ -1,3 +1,4 @@
+import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:sheger_parking/pages/SplashScreen.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -10,6 +11,19 @@ void main() {
   ]);
   SystemChrome.setEnabledSystemUIMode(
     SystemUiMode.immersive,
+  );
+  AwesomeNotifications().initialize(
+    'resource://drawable/ic_launcher',
+    [
+      NotificationChannel(
+        channelKey: 'basic_channel',
+        channelName: 'Basic Notifications',
+        defaultColor: Colors.teal,
+        importance: NotificationImportance.High,
+        channelShowBadge: true,
+        channelDescription: '',
+      ),
+    ],
   );
   runApp(MyApp());
 }

@@ -23,7 +23,7 @@ class EditReservation extends StatefulWidget {
       email,
       passwordHash,
       defaultPlateNumber;
-  var reservationId, reservationPlateNumber, branch, branchName, startTime;
+  var reservationId, reservationPlateNumber, branch, branchName, duration, startTime;
 
   EditReservation(
       {required this.id,
@@ -36,6 +36,7 @@ class EditReservation extends StatefulWidget {
       required this.reservationPlateNumber,
       required this.branch,
       required this.branchName,
+      required this.duration,
       required this.startTime});
 
   @override
@@ -50,6 +51,7 @@ class EditReservation extends StatefulWidget {
       reservationPlateNumber,
       branch,
       branchName,
+      duration,
       startTime);
 }
 
@@ -61,7 +63,7 @@ class _EditReservationState extends State<EditReservation> {
       passwordHash,
       defaultPlateNumber;
 
-  var reservationId, reservationPlateNumber, branch, branchName, startTime;
+  var reservationId, reservationPlateNumber, branch, branchName, duration, startTime;
 
   _EditReservationState(
       this.id,
@@ -74,6 +76,7 @@ class _EditReservationState extends State<EditReservation> {
       this.reservationPlateNumber,
       this.branch,
       this.branchName,
+      this.duration,
       this.startTime);
 
   final _formKey = GlobalKey<FormState>();
@@ -89,7 +92,7 @@ class _EditReservationState extends State<EditReservation> {
   DateTime? startingTime;
   int? timestamp;
   // String? currentYear, currentMonth, currentDay, currentHour, currentMinute;
-  String? formattedDate;
+  String? formattedstartTime, startDate;
   String? slotResponse;
 
   Future editReservation() async {
@@ -141,11 +144,17 @@ class _EditReservationState extends State<EditReservation> {
     DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(startTime);
     int timestamp = startingTime.millisecondsSinceEpoch;
     DateTime currentDateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:00 a').format(currentDateTime);
+    // String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:00 a').format(currentDateTime);
 
     this.startingTime = startingTime; // DateTime
     this.timestamp = timestamp;
-    this.formattedDate = formattedDate;
+    // this.formattedDate = formattedDate;
+
+    String startDate = DateFormat.yMMMd().format(currentDateTime);
+    String formattedstartTime = DateFormat('h:mm a').format(currentDateTime);
+
+    this.startDate = startDate;
+    this.formattedstartTime = formattedstartTime;
 
     // String currentYear = currentDateTime.year.toString();
     // String currentMonth = currentDateTime.month.toString();
@@ -231,8 +240,8 @@ class _EditReservationState extends State<EditReservation> {
       appBar: AppBar(
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
-        elevation: 4.0,
-        toolbarHeight: 70,
+        elevation: 7.0,
+        toolbarHeight: 60,
         leading: IconButton(
           color: Col.Onbackground,
           onPressed: () {
@@ -241,11 +250,11 @@ class _EditReservationState extends State<EditReservation> {
           icon: Icon(Icons.arrow_back),
         ),
         title: Text(
-          Strings.app_title,
+          "Reservation",
           style: TextStyle(
-            color: Col.Onsurface,
-            fontSize: 28,
-            fontWeight: FontWeight.bold,
+            color: Col.blackColor,
+            fontSize: 20,
+            fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,
           ),
@@ -256,7 +265,7 @@ class _EditReservationState extends State<EditReservation> {
                 bottomLeft: Radius.circular(0),
                 bottomRight: Radius.circular(0)),
             gradient: LinearGradient(
-                colors: [Col.secondary, Col.secondary],
+                colors: [Colors.white, Colors.white],
                 begin: Alignment.bottomCenter,
                 end: Alignment.topCenter),
           ),
@@ -270,31 +279,40 @@ class _EditReservationState extends State<EditReservation> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.fromLTRB(30, 25, 0, 0),
+                Container(
+                  margin: EdgeInsets.only(top: 20, left: 20),
                   child: Text(
-                    "Edit Reservation",
+                    "Editing your reservation",
                     style: TextStyle(
-                      color: Col.Onbackground,
-                      fontSize: 30,
+                      color: Col.blackColor,
+                      fontSize: 19,
                       fontWeight: FontWeight.bold,
                       fontFamily: 'Nunito',
                       letterSpacing: 0.1,
                     ),
                   ),
                 ),
-                Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.black26, width: 1),
-                    color: Col.background,
-                  ),
-                  child: Column(
+                Column(
                     children: [
+                      SizedBox(height: 5,),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
+                        padding: EdgeInsets.fromLTRB(25, 15, 25, 3),
                         child: Container(
                           width: double.infinity,
+                          child: Text(
+                            "Plate Number",
+                            style: TextStyle(
+                              color: Col.textfieldLabel,
+                              fontSize: 14,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                        child: Container(
                           alignment: Alignment.center,
                           child: TextFormField(
                             controller: TextEditingController(
@@ -316,17 +334,18 @@ class _EditReservationState extends State<EditReservation> {
                                 fontFamily: 'Nunito',
                                 letterSpacing: 0.1,
                               ),
-                              floatingLabelBehavior:
-                                  FloatingLabelBehavior.always,
-                              labelText: "Plate Number",
-                              labelStyle: TextStyle(
-                                color: Col.textfieldLabel,
-                                fontSize: 22,
-                                fontWeight: FontWeight.bold,
-                                fontFamily: 'Nunito',
-                                letterSpacing: 0,
-                              ),
+                              // floatingLabelBehavior: FloatingLabelBehavior.always,
+                              // labelText: "Plate Number",
+                              // labelStyle: TextStyle(
+                              //   color: Col.textfieldLabel,
+                              //   fontSize: 14,
+                              //   fontFamily: 'Nunito',
+                              //   letterSpacing: 0,
+                              // ),
                               border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Col.primary),
+                              ),
                               errorBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.red),
                               ),
@@ -342,8 +361,7 @@ class _EditReservationState extends State<EditReservation> {
                             "Branch",
                             style: TextStyle(
                               color: Col.textfieldLabel,
-                              fontSize: 18,
-                              fontWeight: FontWeight.bold,
+                              fontSize: 14,
                               fontFamily: 'Nunito',
                               letterSpacing: 0,
                             ),
@@ -364,8 +382,9 @@ class _EditReservationState extends State<EditReservation> {
                             onChanged: (value) => setState(() {
                               this.value = value;
                               checker = value!;
+
                               setState(() {
-                                branchName = value;
+                                reservation.branchName = value;
                               });
 
                               for(int i = 0; i < branches.length; i++){
@@ -373,7 +392,7 @@ class _EditReservationState extends State<EditReservation> {
 
                                 if(value == branchDetail.name){
                                   setState(() {
-                                    branch = branchesId[i];
+                                    reservation.branch = branchesId[i];
                                   });
                                 }
                               }
@@ -391,6 +410,9 @@ class _EditReservationState extends State<EditReservation> {
                               border: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.black),
                               ),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Col.primary),
+                              ),
                               errorBorder: OutlineInputBorder(
                                 borderSide: BorderSide(color: Colors.red),
                               ),
@@ -398,6 +420,70 @@ class _EditReservationState extends State<EditReservation> {
                           ),
                         ),
                       ),
+                      // Padding(
+                      //   padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
+                      //   child: Container(
+                      //     width: double.infinity,
+                      //     child: Text(
+                      //       "Branch",
+                      //       style: TextStyle(
+                      //         color: Col.textfieldLabel,
+                      //         fontSize: 18,
+                      //         fontWeight: FontWeight.bold,
+                      //         fontFamily: 'Nunito',
+                      //         letterSpacing: 0,
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
+                      // Padding(
+                      //   padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                      //   child: Container(
+                      //     width: double.infinity,
+                      //     alignment: Alignment.center,
+                      //     padding:
+                      //     EdgeInsets.symmetric(vertical: 4),
+                      //     child: DropdownButtonFormField<String>(
+                      //       value: value,
+                      //       isExpanded: true,
+                      //       items: branchesName.map(buildMenuBranch).toList(),
+                      //       onChanged: (value) => setState(() {
+                      //         this.value = value;
+                      //         checker = value!;
+                      //         setState(() {
+                      //           branchName = value;
+                      //         });
+                      //
+                      //         for(int i = 0; i < branches.length; i++){
+                      //           final branchDetail = branches[i];
+                      //
+                      //           if(value == branchDetail.name){
+                      //             setState(() {
+                      //               branch = branchesId[i];
+                      //             });
+                      //           }
+                      //         }
+                      //
+                      //         print(reservation.branch);
+                      //
+                      //       }),
+                      //       validator: (value) {
+                      //         if (checker == '') {
+                      //           return "This field can not be empty";
+                      //         }
+                      //         return null;
+                      //       },
+                      //       decoration: InputDecoration(
+                      //         border: OutlineInputBorder(
+                      //           borderSide: BorderSide(color: Colors.black),
+                      //         ),
+                      //         errorBorder: OutlineInputBorder(
+                      //           borderSide: BorderSide(color: Colors.red),
+                      //         ),
+                      //       ),
+                      //     ),
+                      //   ),
+                      // ),
                       (slotResponse == "INVALID_CALL:|:No_Available_Slot")
                           ? Padding(
                         padding: const EdgeInsets.only(top: 5),
@@ -411,47 +497,136 @@ class _EditReservationState extends State<EditReservation> {
                       )
                           : Text(""),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(25, 20, 0, 20),
+                        padding: EdgeInsets.fromLTRB(25, 0, 25, 3),
                         child: Container(
-                          width: 300,
+                          width: double.infinity,
+                          child: Text(
+                            "Start time",
+                            style: TextStyle(
+                              color: Col.textfieldLabel,
+                              fontSize: 14,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Container(
+                        width: double.infinity,
+                        margin: EdgeInsets.symmetric(horizontal: 25),
+                        padding: EdgeInsets.symmetric(vertical: 5),
+                        child: RaisedButton(
+                          color: Colors.white,
+                          focusElevation: 0.0,
+                          hoverElevation: 0.0,
+                          highlightElevation: 0.0,
+                          focusColor: Colors.transparent,
+                          highlightColor: Colors.transparent,
+                          splashColor: Colors.transparent,
                           child: Row(
-                            children: <Widget>[
+                            mainAxisAlignment:
+                            MainAxisAlignment.center,
+                            children: [
                               Text(
-                                "Start time : ",
+                                // "$formattedStartTime - $formattedFinishTime",
+                                "$startDate ",
                                 style: TextStyle(
-                                  color: Col.textfieldLabel,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black,
+                                  fontSize: 16,
                                   fontFamily: 'Nunito',
-                                  letterSpacing: 0,
                                 ),
                               ),
-                              Container(
-                                width: 170,
-                                margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                                child: RaisedButton(
-                                  color: Col.secondary,
-                                  child: Center(
-                                    child: Text(
-                                      // "$currentYear/$currentMonth/$currentDay \n    $currentHour:$currentMinute",
-                                      "$formattedDate",
-                                      style: TextStyle(
-                                        color: Col.Onprimary,
-                                        fontSize: 16,
-                                        fontFamily: 'Nunito',
-                                        letterSpacing: 0.1,
-                                      ),
-                                    ),
-                                  ),
-                                  onPressed: () {
-                                    pickDateTime();
-                                  },
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
+                              Text(
+                                // "$formattedStartTime - $formattedFinishTime",
+                                "|",
+                                style: TextStyle(
+                                  color: Col.primary,
+                                  fontSize: 16,
+                                  fontFamily: 'Nunito',
+                                ),
+                              ),
+                              Text(
+                                // "$formattedStartTime - $formattedFinishTime",
+                                " $formattedstartTime",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 16,
+                                  fontFamily: 'Nunito',
                                 ),
                               ),
                             ],
+                          ),
+                          onPressed: () {
+                            pickDateTime();
+                          },
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          elevation: 0.0,
+                        ),
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                          border: Border.all(color: Colors.black26, width: 1),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(25, 20, 25, 3),
+                        child: Container(
+                          width: double.infinity,
+                          child: Text(
+                            "Duration (hours)",
+                            style: TextStyle(
+                              color: Col.textfieldLabel,
+                              fontSize: 14,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0,
+                            ),
+                          ),
+                        ),
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                        child: Container(
+                          // color: Colors.grey[350],
+                          alignment: Alignment.center,
+                          child: TextFormField(
+                            enabled: false,
+                            controller: TextEditingController(text: "$duration"),
+                            validator: (value) {
+                              if (value!.isEmpty) {
+                                return "This field can not be empty";
+                              }
+                              return null;
+                            },
+                            onChanged: (value) {
+                              reservation.duration = int.parse(value);
+                            },
+                            decoration: InputDecoration(
+                              filled: true,
+                              fillColor: Colors.grey[200],
+                              hintText: "",
+                              hintStyle: TextStyle(
+                                color: Col.textfieldLabel,
+                                fontSize: 14,
+                                fontFamily: 'Nunito',
+                                letterSpacing: 0.1,
+                              ),
+                              // floatingLabelBehavior: FloatingLabelBehavior.always,
+                              // labelText: "Duration (hours)",
+                              // labelStyle: TextStyle(
+                              //   color: Col.textfieldLabel,
+                              //   fontSize: 14,
+                              //   fontFamily: 'Nunito',
+                              //   letterSpacing: 0,
+                              // ),
+                              border: OutlineInputBorder(),
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Col.primary),
+                              ),
+                              errorBorder: OutlineInputBorder(
+                                borderSide: BorderSide(color: Colors.red),
+                              ),
+                            ),
                           ),
                         ),
                       ),
@@ -466,11 +641,11 @@ class _EditReservationState extends State<EditReservation> {
                             },
                             padding: EdgeInsets.symmetric(
                                 vertical: 10, horizontal: 100),
-                            color: Col.secondary,
+                            color: Col.primary,
                             child: Text(
-                              'Submit',
+                              'Save',
                               style: TextStyle(
-                                color: Col.Onbackground,
+                                color: Col.blackColor,
                                 fontSize: 16,
                                 fontFamily: 'Nunito',
                                 letterSpacing: 0.3,
@@ -484,7 +659,6 @@ class _EditReservationState extends State<EditReservation> {
                       ),
                     ],
                   ),
-                ),
               ],
             ),
           ),
@@ -530,22 +704,13 @@ class _EditReservationState extends State<EditReservation> {
 
     int timestamp = dateTime.millisecondsSinceEpoch;
 
-    String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:mm a').format(dateTime);
-
-    // String currentYear = dateTime.year.toString();
-    // String currentMonth = dateTime.month.toString();
-    // String currentDay = dateTime.day.toString();
-    // String currentHour = dateTime.hour.toString().padLeft(2, '0');
+    String startDate = DateFormat.yMMMd().format(dateTime);
+    String formattedstartTime = DateFormat('h:mm a').format(dateTime);
 
     setState(() {
-      // this.dateTime = dateTime;
       this.timestamp = timestamp;
-      this.formattedDate = formattedDate;
-
-      // this.currentYear = currentYear;
-      // this.currentMonth = currentMonth;
-      // this.currentDay = currentDay;
-      // this.currentHour = currentHour;
+      this.startDate = startDate;
+      this.formattedstartTime = formattedstartTime;
     });
   }
 

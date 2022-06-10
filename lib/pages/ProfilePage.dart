@@ -7,7 +7,9 @@ import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
+import '../constants/api.dart';
 import '../constants/colors.dart';
 import '../constants/strings.dart';
 
@@ -33,6 +35,32 @@ class _ProfilePageState extends State<ProfilePage> {
   _ProfilePageState(this.id, this.fullName, this.phone, this.email,
       this.passwordHash, this.defaultPlateNumber);
 
+  Future deleteUser() async {
+    var headersList = {
+      'Accept': '*/*',
+    };
+    var url = Uri.parse('$base_url/clients/$id');
+
+    var req = http.Request('DELETE', url);
+    req.headers.addAll(headersList);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      sharedPreferences.remove("email");
+      Navigator.push(
+          context,
+          MaterialPageRoute(
+              builder: (context) => StartUp()));
+      print(resBody);
+    }
+    else {
+      print(res.reasonPhrase);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -42,7 +70,7 @@ class _ProfilePageState extends State<ProfilePage> {
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
         elevation: 7.0,
-        toolbarHeight: 70,
+        toolbarHeight: 60,
         leading: IconButton(
           color: Col.Onbackground,
           onPressed: () {
@@ -129,7 +157,7 @@ class _ProfilePageState extends State<ProfilePage> {
           "Profile",
           style: TextStyle(
             color: Col.blackColor,
-            fontSize: 28,
+            fontSize: 20,
             fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,
@@ -426,7 +454,60 @@ class _ProfilePageState extends State<ProfilePage> {
                       minimumSize: Size(50, 30),
                       tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                       alignment: Alignment.centerLeft),
-                  onPressed: () {},
+                  onPressed: () {
+                    showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AlertDialog(
+                            title: Text(
+                              "Sheger Parking",
+                              style: TextStyle(
+                                color: Col.Onbackground,
+                                fontSize: 24,
+                                fontWeight: FontWeight.bold,
+                                fontFamily: 'Nunito',
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            content: Text(
+                              "Your Account is going to be deleted ?",
+                              style: TextStyle(
+                                color: Col.Onbackground,
+                                fontSize: 16,
+                                fontFamily: 'Nunito',
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                            actions: [
+                              FlatButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop(AlertDialog());
+                                },
+                                child: Text(
+                                  "Cancel",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ),
+                              FlatButton(
+                                onPressed: () async {
+                                  deleteUser();
+                                },
+                                child: Text(
+                                  "Delete",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            elevation: 10.0,
+                          );
+                        });
+                  },
                   child: Text(
                     "Delete",
                     style: TextStyle(

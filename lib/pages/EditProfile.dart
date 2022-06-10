@@ -69,7 +69,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
         elevation: 7.0,
-        toolbarHeight: 70,
+        toolbarHeight: 60,
         leading: IconButton(
           color: Col.Onbackground,
           onPressed: () {
@@ -81,7 +81,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
           "Edit Profile",
           style: TextStyle(
             color: Col.blackColor,
-            fontSize: 28,
+            fontSize: 20,
             fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,

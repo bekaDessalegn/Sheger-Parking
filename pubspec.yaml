@@ -44,6 +44,7 @@ dependencies:
   intl: ^0.17.0
   crypto: ^3.0.2
   shared_preferences: ^2.0.15
+  awesome_notifications: ^0.0.6+10
 
   flutter:
     sdk: flutter

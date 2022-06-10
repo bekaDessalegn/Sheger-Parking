@@ -105,7 +105,7 @@ class _BranchMapState extends State<BranchMap> {
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
         elevation: 7.0,
-        toolbarHeight: 70,
+        toolbarHeight: 60,
         leading: IconButton(
           color: Col.Onbackground,
           onPressed: () {
@@ -117,7 +117,7 @@ class _BranchMapState extends State<BranchMap> {
           "Branch Map",
           style: TextStyle(
             color: Col.blackColor,
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,

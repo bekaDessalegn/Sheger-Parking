@@ -74,7 +74,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
         elevation: 7.0,
-        toolbarHeight: 70,
+        toolbarHeight: 60,
         leading: IconButton(
           color: Col.Onbackground,
           onPressed: () {
@@ -86,7 +86,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
           "Reservation details",
           style: TextStyle(
             color: Col.blackColor,
-            fontSize: 24,
+            fontSize: 20,
             fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,
@@ -166,7 +166,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  defaultPlateNumber,
+                  reservationPlateNumber,
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 18,
@@ -322,7 +322,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                         context,
                         MaterialPageRoute(
                             builder: (context) =>
-                                EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationId, reservationPlateNumber: reservationPlateNumber, branch: branch, branchName: branchName, startTime: int.parse(startTime))));
+                                EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationId, reservationPlateNumber: reservationPlateNumber, branch: branch, branchName: branchName, duration: duration, startTime: int.parse(startTime))));
                   },
                   style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,

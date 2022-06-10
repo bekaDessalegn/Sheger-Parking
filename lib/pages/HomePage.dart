@@ -107,7 +107,7 @@ class _HomePageState extends State<HomePage> {
         brightness: Brightness.dark,
         backgroundColor: Colors.transparent,
         elevation: 7.0,
-        toolbarHeight: 70,
+        toolbarHeight: 60,
         automaticallyImplyLeading: false,
         actions: [
           IconButton(
@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage> {
           "Sheger",
           style: TextStyle(
             color: Col.blackColor,
-            fontSize: 28,
+            fontSize: 24,
             fontWeight: FontWeight.w500,
             fontFamily: 'Nunito',
             letterSpacing: 0.3,
