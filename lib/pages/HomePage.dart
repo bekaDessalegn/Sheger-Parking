@@ -2,6 +2,7 @@
 // ignore_for_file: file_names, no_logic_in_create_state, prefer_const_constructors, prefer_const_literals_to_create_immutables
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/bloc/home_event.dart';
 import 'package:sheger_parking/bloc/home_state.dart';
@@ -138,54 +139,66 @@ class _HomePageState extends State<HomePage> {
     return Scaffold(
         resizeToAvoidBottomInset: true,
         backgroundColor: Col.background,
-        appBar: AppBar(
-          brightness: Brightness.dark,
-          backgroundColor: Colors.transparent,
-          elevation: 7.0,
-          toolbarHeight: 60,
-          automaticallyImplyLeading: false,
-          actions: [
-            IconButton(
-                color: Col.Onbackground,
-                padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-                iconSize: 40,
-                onPressed: () {
-                  Navigator.of(context).pop();
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => ProfilePage(
-                              id: id,
-                              fullName: fullName,
-                              phone: phone,
-                              email: email,
-                              passwordHash: passwordHash,
-                              defaultPlateNumber: defaultPlateNumber)));
-                },
-                icon: Icon(
-                  Icons.person_outline,
+        appBar: PreferredSize(
+          preferredSize: Size.fromHeight(kToolbarHeight),
+          child: Container(
+            decoration: BoxDecoration(boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.2),
+                offset: Offset(0, 1.0),
+                blurRadius: 7.0,
+              )
+            ]),
+            child: AppBar(
+              brightness: Brightness.dark,
+              backgroundColor: Colors.transparent,
+              elevation: 0.0,
+              toolbarHeight: 60,
+              automaticallyImplyLeading: false,
+              actions: [
+                IconButton(
+                    color: Col.Onbackground,
+                    padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
+                    iconSize: 40,
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => ProfilePage(
+                                  id: id,
+                                  fullName: fullName,
+                                  phone: phone,
+                                  email: email,
+                                  passwordHash: passwordHash,
+                                  defaultPlateNumber: defaultPlateNumber)));
+                    },
+                    icon: Icon(
+                      Icons.person_outline,
+                      color: Col.blackColor,
+                    )),
+              ],
+              title: Text(
+                "SHEGER",
+                style: TextStyle(
                   color: Col.blackColor,
-                )),
-          ],
-          title: Text(
-            "Sheger",
-            style: TextStyle(
-              color: Col.blackColor,
-              fontSize: 24,
-              fontWeight: FontWeight.w500,
-              fontFamily: 'Nunito',
-              letterSpacing: 0.3,
-            ),
-          ),
-          flexibleSpace: Container(
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(0),
-                  bottomRight: Radius.circular(0)),
-              gradient: LinearGradient(
-                  colors: [Colors.white, Colors.white],
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter),
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Nunito',
+                  letterSpacing: 0.3,
+                ),
+              ),
+              flexibleSpace: Container(
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.only(
+                      bottomLeft: Radius.circular(0),
+                      bottomRight: Radius.circular(0)),
+                  gradient: LinearGradient(
+                      colors: [Colors.white, Colors.white],
+                      begin: Alignment.bottomCenter,
+                      end: Alignment.topCenter),
+                ),
+              ),
             ),
           ),
         ),

@@ -13,28 +13,33 @@ import '../constants/colors.dart';
 import '../constants/strings.dart';
 
 class EditProfilePage extends StatefulWidget {
-
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
-  EditProfilePage({required this.id, required this.fullName, required this.phone, required this.email, required this.passwordHash, required this.defaultPlateNumber});
+
+  EditProfilePage(
+      {required this.id,
+      required this.fullName,
+      required this.phone,
+      required this.email,
+      required this.passwordHash,
+      required this.defaultPlateNumber});
 
   @override
-  _EditProfilePageState createState() => _EditProfilePageState(id, fullName, phone, email, passwordHash, defaultPlateNumber);
+  _EditProfilePageState createState() => _EditProfilePageState(
+      id, fullName, phone, email, passwordHash, defaultPlateNumber);
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
-  _EditProfilePageState(this.id, this.fullName, this.phone, this.email, this.passwordHash, this.defaultPlateNumber);
+
+  _EditProfilePageState(this.id, this.fullName, this.phone, this.email,
+      this.passwordHash, this.defaultPlateNumber);
 
   final _formKey = GlobalKey<FormState>();
   bool _secureText = true;
   String password = "";
 
   Future edit() async {
-    var headersList = {
-      'Accept': '*/*',
-      'Content-Type': 'application/json'
-    };
+    var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse('${base_url}/clients/${id}');
 
     var body = {
@@ -52,10 +57,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => ProfilePage(
+                  id: id,
+                  fullName: fullName,
+                  phone: phone,
+                  email: email,
+                  passwordHash: passwordHash,
+                  defaultPlateNumber: defaultPlateNumber)));
       print(resBody);
-    }
-    else {
+    } else {
       print(res.reasonPhrase);
     }
   }
@@ -65,37 +78,49 @@ class _EditProfilePageState extends State<EditProfilePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Col.background,
-      appBar: AppBar(
-        brightness: Brightness.dark,
-        backgroundColor: Colors.transparent,
-        elevation: 7.0,
-        toolbarHeight: 60,
-        leading: IconButton(
-          color: Col.Onbackground,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
-        title: Text(
-          "Edit Profile",
-          style: TextStyle(
-            color: Col.blackColor,
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Nunito',
-            letterSpacing: 0.3,
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(0),
-                bottomRight: Radius.circular(0)),
-            gradient: LinearGradient(
-                colors: [Colors.white, Colors.white],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              offset: Offset(0, 1.0),
+              blurRadius: 7.0,
+            )
+          ]),
+          child: AppBar(
+            brightness: Brightness.dark,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            toolbarHeight: 60,
+            leading: IconButton(
+              color: Col.Onbackground,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: Icon(Icons.arrow_back),
+            ),
+            title: Text(
+              "Edit Profile",
+              style: TextStyle(
+                color: Col.blackColor,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Nunito',
+                letterSpacing: 0.3,
+              ),
+            ),
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(0),
+                    bottomRight: Radius.circular(0)),
+                gradient: LinearGradient(
+                    colors: [Colors.white, Colors.white],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter),
+              ),
+            ),
           ),
         ),
       ),
@@ -123,14 +148,13 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     alignment: Alignment.center,
                     child: TextFormField(
                       controller: TextEditingController(text: fullName),
-                      onChanged: (value){
+                      onChanged: (value) {
                         fullName = value;
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
-                        }
-                        else {
+                        } else {
                           return null;
                         }
                       },
@@ -163,14 +187,14 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     alignment: Alignment.center,
                     child: TextFormField(
                       controller: TextEditingController(text: email),
-                      onChanged: (value){
+                      onChanged: (value) {
                         email = value;
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
                         } else if (RegExp(
-                            r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                             .hasMatch(value)) {
                           return null;
                         } else {
@@ -207,14 +231,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                     alignment: Alignment.center,
                     child: TextFormField(
                       controller: TextEditingController(text: phone),
-                      onChanged: (value){
+                      onChanged: (value) {
                         phone = value;
                       },
                       validator: (value) {
                         if (value!.isEmpty) {
                           return "This field can not be empty";
+                        } else if (RegExp(r"^(?:[+0]9)?[0-9]{10}$")
+                            .hasMatch(value)) {
+                          return null;
+                        } else {
+                          return "Please enter valid phone number";
                         }
-                        return null;
                       },
                       decoration: InputDecoration(
                         hintText: "",
@@ -244,8 +272,9 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   child: Container(
                     alignment: Alignment.center,
                     child: TextFormField(
-                      controller: TextEditingController(text: defaultPlateNumber),
-                      onChanged: (value){
+                      controller:
+                          TextEditingController(text: defaultPlateNumber),
+                      onChanged: (value) {
                         defaultPlateNumber = value;
                       },
                       validator: (value) {
@@ -286,7 +315,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         password = value;
                       },
                       validator: (value) {
-                        if (value!.length>0 && value.length < 6) {
+                        if (value!.length > 0 && value.length < 6) {
                           return "Password should be at least 6 characters";
                         } else {
                           return null;
@@ -335,7 +364,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   child: Container(
                     width: double.infinity,
                     child: RaisedButton(
-                      padding: EdgeInsets.symmetric(vertical: 10),
+                        padding: EdgeInsets.symmetric(vertical: 10),
                         color: Col.primary,
                         child: Text(
                           "Save",
@@ -349,19 +378,18 @@ class _EditProfilePageState extends State<EditProfilePage> {
                         ),
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
-                        onPressed: (){
+                        onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            if(password == ""){
+                            if (password == "") {
                               password = passwordHash;
-                            } else{
+                            } else {
                               var bytes = utf8.encode(password);
                               var sha512 = sha256.convert(bytes);
                               password = sha512.toString();
                             }
                             edit();
                           }
-                        }
-                    ),
+                        }),
                   ),
                 ),
               ],

@@ -38,6 +38,7 @@ class _SplashScreenState extends State<SplashScreen> {
       email = obtainedEmail.toString();
       passwordHash = obtainedPasswordHash.toString();
       defaultPlateNumber = obtainedDefaultPlateNumber.toString();
+      Strings.userId = id;
     });
   }
 
@@ -46,22 +47,21 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     getValidationData().whenComplete(() async {
       Timer(
-        Duration(seconds: 2),
-        () => Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => finalEmail == null
-                    ? StartUp()
-                    : BlocProvider(
-                        create: (context) => CurrentIndexBloc(),
-                        child: HomePage(
-                            id: id,
-                            fullName: fullName,
-                            phone: phone,
-                            email: email,
-                            passwordHash: passwordHash,
-                            defaultPlateNumber: defaultPlateNumber)))),
-      );
+          Duration(seconds: 2),
+          () => Navigator.pushReplacement(
+              context,
+              MaterialPageRoute(
+                  builder: (context) => finalEmail == null
+                      ? StartUp()
+                      : BlocProvider(
+                      create: (context) => CurrentIndexBloc(),
+                      child: HomePage(
+                          id: id,
+                          fullName: fullName,
+                          phone: phone,
+                          email: email,
+                          passwordHash: passwordHash,
+                          defaultPlateNumber: defaultPlateNumber)))),);
     });
   }
 
@@ -71,31 +71,33 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         child: Center(
-          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
-            Padding(
-              padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
-              child: Text(
-                Strings.app_title,
-                style: TextStyle(
-                  color: Col.primary,
-                  fontSize: 32,
-                  fontWeight: FontWeight.bold,
-                  fontFamily: 'Nunito',
-                  letterSpacing: 0.3,
+          child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Padding(
+                  padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+                  child: Text(
+                    Strings.app_title,
+                    style: TextStyle(
+                      color: Col.primary,
+                      fontSize: 32,
+                      fontWeight: FontWeight.bold,
+                      fontFamily: 'Nunito',
+                      letterSpacing: 0.3,
+                    ),
+                  ),
                 ),
-              ),
-            ),
-            Text(
-              "PARKING",
-              style: TextStyle(
-                color: Colors.black,
-                fontSize: 32,
-                fontWeight: FontWeight.bold,
-                fontFamily: 'Nunito',
-                letterSpacing: 0.3,
-              ),
-            ),
-          ]),
+                Text(
+                  "PARKING",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 32,
+                    fontWeight: FontWeight.bold,
+                    fontFamily: 'Nunito',
+                    letterSpacing: 0.3,
+                  ),
+                ),
+              ]),
         ),
       ),
     );

@@ -8,7 +8,9 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:sheger_parking/constants/api.dart';
+import 'package:sheger_parking/constants/strings.dart';
 import 'package:sheger_parking/pages/BranchMap.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/colors.dart';
 import 'package:sheger_parking/models/BranchDetails.dart';
@@ -44,15 +46,14 @@ class _BranchesPageState extends State<BranchesPage> {
 
   String location = "8.9831, 38.8101";
 
-  late double lat;
-  late double longs;
+  // late double lat;
+  // late double longs;
 
   bool onLoading = true;
 
   @override
   void initState() {
     super.initState();
-
     init();
   }
 
@@ -73,13 +74,29 @@ class _BranchesPageState extends State<BranchesPage> {
     debouncer = Timer(duration, callback);
   }
 
-  Future getCurrentLocation() async {
-    var position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-    setState(() {
-      lat = position.latitude;
-      longs = position.longitude;
-    });
+  // Future getCurrentLocation() async {
+  //   var position = await Geolocator()
+  //       .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+  //   setState(() {
+  //     lat = position.latitude;
+  //     longs = position.longitude;
+  //   });
+  // }
+
+  var url = "https://www.google.com/maps/dir/9.040721,38.762947/8.9622,38.7259";
+
+  void launchUrl(String branchLocation) async {
+    List splittedBranchLocation = branchLocation.split(",");
+    double desLat = double.parse(splittedBranchLocation[0]);
+    double desLong = double.parse(splittedBranchLocation[1]);
+    // if (!await launchUrl(_url)) throw 'Could not launch $_url';
+    if (await canLaunch(
+        "https://www.google.com/maps/dir/${Strings.lat},${Strings.longs}/$desLat,$desLong")) {
+      await launch(
+          "https://www.google.com/maps/dir/${Strings.lat},${Strings.longs}/$desLat,$desLong");
+    } else {
+      throw 'Could not launch google maps';
+    }
   }
 
   List<BranchDetails> sortByLocation(
@@ -124,15 +141,14 @@ class _BranchesPageState extends State<BranchesPage> {
             branchIdLower.contains(searchLower);
       }).toList();
 
-      return sortByLocation("$lat, $longs", branchDetails);
+      return sortByLocation("${Strings.lat}, ${Strings.longs}", branchDetails);
     } else {
       throw Exception();
     }
   }
 
   Future init() async {
-
-    await getCurrentLocation();
+    // await getCurrentLocation();
 
     setState(() {
       isLoading = true;
@@ -145,6 +161,7 @@ class _BranchesPageState extends State<BranchesPage> {
     setState(() {
       isLoading = false;
       onLoading = false;
+      // url = "https://www.google.com/maps/dir/$lat,$longs/8.9622,38.7259";
     });
   }
 
@@ -156,250 +173,126 @@ class _BranchesPageState extends State<BranchesPage> {
         behavior: ScrollConfiguration.of(context).copyWith(
           scrollbars: false,
         ),
-        child: onLoading ? Container(
-          height: MediaQuery.of(context).size.height,
-            child: Center(child: CircularProgressIndicator(color: Col.primary,),)) : SingleChildScrollView(
-          child: ConstrainedBox(
-            constraints: BoxConstraints(
-              minHeight: viewportConstraints.maxHeight,
-              // maxHeight: viewportConstraints.maxHeight*2,
-            ),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Container(
-                  margin: EdgeInsets.only(top: 20, left: 20),
-                  child: Text(
-                    "The nearest",
-                    style: TextStyle(
-                      color: Col.blackColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.1,
-                    ),
+        child: onLoading
+            ? Container(
+                height: MediaQuery.of(context).size.height,
+                child: Center(
+                  child: CircularProgressIndicator(
+                    color: Col.primary,
                   ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(15.0),
-                    ),
-                    color: Col.blackColor,
-                    elevation: 8,
-                    child: Container(
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                        gradient: LinearGradient(
-                            colors: [Col.locationgradientColor, Col.blackColor],
-                            begin: Alignment.centerLeft,
-                            end: Alignment.centerRight),
-                      ),
-                      child: Padding(
-                        padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
-                        child: Row(
-                          children: [
-                            SizedBox(
-                              width: 15,
-                            ),
-                            Icon(
-                              Icons.location_on,
-                              size: 80,
-                              color: Col.primary,
-                            ),
-                            SizedBox(width: 10,),
-                            // Expanded(
-                            //   child: Row(),
-                            // ),
-                            Flexible(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                mainAxisAlignment: MainAxisAlignment.start,
-                                children: <Widget>[
-                                  Text(
-                                    branches[0].name,
-                                    overflow: TextOverflow.fade,
-                                    maxLines: 1,
-                                    softWrap: false,
-                                    style: TextStyle(
-                                      color: Col.whiteColor,
-                                      fontSize: 23,
-                                      fontWeight: FontWeight.bold,
-                                      fontFamily: 'Nunito',
-                                    ),
-                                  ),
-                                  //     ),
-                                  // ],
-                                  Text(
-                                    "${branches[0].capacity} Slots",
-                                    style: TextStyle(
-                                      color: Col.whiteColor,
-                                      fontSize: 20,
-                                      fontFamily: 'Nunito',
-                                    ),
-                                  ),
-
-                                  Text(
-                                    "${branches[0].pricePerHour} birr/hour",
-                                    style: TextStyle(
-                                      color: Col.whiteColor,
-                                      fontSize: 20,
-                                      fontFamily: 'Nunito',
-                                    ),
-                                  ),
-
-                                  TextButton(
-                                    onPressed: () {
-                                      Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                              builder: (context) => BranchMap(location: branches[0].location,)));
-                                    },
-                                    child: Text(
-                                      "See on map",
-                                      style: TextStyle(
-                                        color: Col.linkColor,
-                                        fontSize: 16,
-                                        fontFamily: 'Nunito',
-                                      ),
-                                    ),
-                                    style: TextButton.styleFrom(
-                                        padding: EdgeInsets.zero,
-                                        minimumSize: Size(50, 30),
-                                        tapTargetSize:
-                                            MaterialTapTargetSize.shrinkWrap,
-                                        alignment: Alignment.centerLeft),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                ))
+            : SingleChildScrollView(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minHeight: viewportConstraints.maxHeight,
+                    // maxHeight: viewportConstraints.maxHeight*2,
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Container(
+                        margin: EdgeInsets.only(top: 20, left: 20),
+                        child: Text(
+                          "The nearest",
+                          style: TextStyle(
+                            color: Col.blackColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito',
+                            letterSpacing: 0.1,
+                          ),
                         ),
                       ),
-                    ),
-                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                  ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: 10, left: 20),
-                  child: Text(
-                    "All branches",
-                    style: TextStyle(
-                      color: Col.blackColor,
-                      fontSize: 20,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.1,
-                    ),
-                  ),
-                ),
-                 isLoading
-                      ? Center(
-                          child: CircularProgressIndicator(),
-                        )
-                      : ListView.builder(
-                          itemCount: branches.length,
-                          shrinkWrap: true,
-                          physics: NeverScrollableScrollPhysics(),
-                          itemBuilder: (context, index) {
-                            final branchDetail = branches[index];
-
-                            return Padding(
-                              padding: EdgeInsets.fromLTRB(30, 0, 30, 5),
-                              child: Card(
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(15.0),
-                                ),
-                                color: Col.blackColor,
-                                elevation: 8,
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(0, 16, 0, 16),
-                                  child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: <Widget>[
-                                      // Stack(
-                                      //   children: [
-                                      // Align(
-                                      //   child: IconButton(
-                                      //     onPressed: () {
-                                      //       Navigator.push(
-                                      //           context,
-                                      //           MaterialPageRoute(
-                                      //               builder: (context) =>
-                                      //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                                      //     },
-                                      //     icon: Icon(Icons.edit),
-                                      //     iconSize: 25,
-                                      //   ),
-                                      //   alignment: Alignment.topRight,
-                                      // ),
-                                      Center(
-                                        child: Text(
-                                          "${branchDetail.name}",
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
+                        child: Card(
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(15.0),
+                          ),
+                          color: Col.blackColor,
+                          elevation: 8,
+                          child: Container(
+                            decoration: BoxDecoration(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(15.0)),
+                              gradient: LinearGradient(
+                                  colors: [
+                                    Col.locationgradientColor,
+                                    Col.blackColor
+                                  ],
+                                  begin: Alignment.centerLeft,
+                                  end: Alignment.centerRight),
+                            ),
+                            child: Padding(
+                              padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
+                              child: Row(
+                                mainAxisAlignment:
+                                    MainAxisAlignment.spaceEvenly,
+                                children: [
+                                  // SizedBox(
+                                  //   width: 15,
+                                  // ),
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 80,
+                                    color: Col.primary,
+                                  ),
+                                  // SizedBox(width: 10,),
+                                  // Expanded(
+                                  //   child: Row(),
+                                  // ),
+                                  Flexible(
+                                    child: Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.start,
+                                      children: <Widget>[
+                                        Text(
+                                          branches[0].name,
+                                          overflow: TextOverflow.fade,
+                                          maxLines: 1,
+                                          softWrap: false,
                                           style: TextStyle(
                                             color: Col.whiteColor,
-                                            fontSize: 22,
+                                            fontSize: 25,
                                             fontWeight: FontWeight.bold,
                                             fontFamily: 'Nunito',
                                           ),
                                         ),
                                         //     ),
                                         // ],
-                                      ),
-                                      Container(
-                                        width: double.infinity,
-                                        child: Center(
-                                          child: Row(
-                                            mainAxisAlignment:
-                                                MainAxisAlignment.center,
-                                            children: [
-                                              Text(
-                                                // "$formattedStartTime - $formattedFinishTime",
-                                                "${branchDetail.capacity} Slots ",
-                                                style: TextStyle(
-                                                  color: Col.whiteColor,
-                                                  fontSize: 20,
-                                                  fontFamily: 'Nunito',
-                                                ),
-                                              ),
-                                              Text(
-                                                // "$formattedStartTime - $formattedFinishTime",
-                                                "|",
-                                                style: TextStyle(
-                                                  color: Col.primary,
-                                                  fontSize: 20,
-                                                  fontFamily: 'Nunito',
-                                                ),
-                                              ),
-                                              Text(
-                                                // "$formattedStartTime - $formattedFinishTime",
-                                                " ${branchDetail.pricePerHour} birr/hour",
-                                                style: TextStyle(
-                                                  color: Col.whiteColor,
-                                                  fontSize: 20,
-                                                  fontFamily: 'Nunito',
-                                                ),
-                                              ),
-                                            ],
+                                        Text(
+                                          "${branches[0].capacity} Slots",
+                                          style: TextStyle(
+                                            color: Col.whiteColor,
+                                            fontSize: 20,
+                                            fontFamily: 'Nunito',
                                           ),
                                         ),
-                                      ),
-                                      Center(
-                                        child: TextButton(
+
+                                        Text(
+                                          "${branches[0].pricePerHour} birr/hour",
+                                          style: TextStyle(
+                                            color: Col.whiteColor,
+                                            fontSize: 20,
+                                            fontFamily: 'Nunito',
+                                          ),
+                                        ),
+
+                                        TextButton(
                                           onPressed: () {
-                                            Navigator.push(
-                                                context,
-                                                MaterialPageRoute(
-                                                    builder: (context) =>
-                                                        BranchMap(location: branchDetail.location,)));
+                                            launchUrl(branches[0].location);
+                                            // Navigator.push(
+                                            //     context,
+                                            //     MaterialPageRoute(
+                                            //         builder: (context) => BranchMap(location: branches[0].location,)));
                                           },
                                           child: Text(
                                             "See on map",
                                             style: TextStyle(
                                               color: Col.linkColor,
-                                              fontSize: 16,
+                                              fontSize: 18,
                                               fontFamily: 'Nunito',
                                             ),
                                           ),
@@ -411,140 +304,284 @@ class _BranchesPageState extends State<BranchesPage> {
                                                       .shrinkWrap,
                                               alignment: Alignment.centerLeft),
                                         ),
-                                      ),
-                                    ],
+                                      ],
+                                    ),
                                   ),
-                                ),
-                                margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                ],
                               ),
-                            );
-
-                            //   Padding(
-                            //     padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
-                            //     child: Card(
-                            //       color: Colors.grey[100],
-                            //       elevation: 8,
-                            //       child: Padding(
-                            //         padding: EdgeInsets.fromLTRB(10, 8, 0, 8),
-                            //         child: Column(
-                            //           crossAxisAlignment: CrossAxisAlignment.start,
-                            //           children: <Widget>[
-                            //             Stack(
-                            //               children: [
-                            //                 Align(
-                            //                   child: IconButton(
-                            //                     onPressed: () {
-                            //                       Navigator.push(
-                            //                           context,
-                            //                           MaterialPageRoute(
-                            //                               builder: (context) => BranchMap()));
-                            //                     },
-                            //                     icon: Icon(Icons.location_on),
-                            //                     iconSize: 25,
-                            //                   ),
-                            //                   alignment: Alignment.topRight,
-                            //                 ),
-                            //                 Padding(
-                            //                   padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
-                            //                   child: Text(
-                            //                     "${branchDetail.name}",
-                            //                     style: TextStyle(
-                            //                       color: Col.Onbackground,
-                            //                       fontSize: 20,
-                            //                       fontWeight: FontWeight.bold,
-                            //                       fontFamily: 'Nunito',
-                            //                       letterSpacing: 0.3,
-                            //                     ),
-                            //                   ),
-                            //                 ),
-                            //               ],
-                            //             ),
-                            //             RichText(
-                            //               text: TextSpan(
-                            //                 children: [
-                            //                   TextSpan(
-                            //                       style: TextStyle(
-                            //                         color: Col.Onbackground,
-                            //                         fontSize: 18,
-                            //                         fontWeight: FontWeight.w700,
-                            //                         fontFamily: 'Nunito',
-                            //                         letterSpacing: 0.3,
-                            //                       ),
-                            //                       text: "Price per hour : "),
-                            //                   TextSpan(
-                            //                     style: TextStyle(
-                            //                       color: Col.Onbackground,
-                            //                       fontSize: 18,
-                            //                       fontFamily: 'Nunito',
-                            //                       letterSpacing: 0.3,
-                            //                     ),
-                            //                     text: "${branchDetail.pricePerHour}",
-                            //                   ),
-                            //                 ],
-                            //               ),
-                            //             ),
-                            //             RichText(
-                            //               text: TextSpan(
-                            //                 children: [
-                            //                   TextSpan(
-                            //                       style: TextStyle(
-                            //                         color: Col.Onbackground,
-                            //                         fontSize: 18,
-                            //                         fontWeight: FontWeight.w700,
-                            //                         fontFamily: 'Nunito',
-                            //                         letterSpacing: 0.3,
-                            //                       ),
-                            //                       text: "Capacity : "),
-                            //                   TextSpan(
-                            //                     style: TextStyle(
-                            //                       color: Col.Onbackground,
-                            //                       fontSize: 18,
-                            //                       fontFamily: 'Nunito',
-                            //                       letterSpacing: 0.3,
-                            //                     ),
-                            //                     text: "${branchDetail.capacity}",
-                            //                   ),
-                            //                 ],
-                            //               ),
-                            //             ),
-                            //             RichText(
-                            //               text: TextSpan(
-                            //                 children: [
-                            //                   TextSpan(
-                            //                       style: TextStyle(
-                            //                         color: Col.Onbackground,
-                            //                         fontSize: 18,
-                            //                         fontWeight: FontWeight.w700,
-                            //                         fontFamily: 'Nunito',
-                            //                         letterSpacing: 0.3,
-                            //                       ),
-                            //                       text: "Description : "),
-                            //                   TextSpan(
-                            //                       style: TextStyle(
-                            //                         color: Col.Onbackground,
-                            //                         fontSize: 18,
-                            //                         fontFamily: 'Nunito',
-                            //                         letterSpacing: 0.3,
-                            //                       ),
-                            //                       text: "${branchDetail.description}",
-                            //                       ),
-                            //                 ],
-                            //               ),
-                            //             ),
-                            //           ],
-                            //         ),
-                            //       ),
-                            //       margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                            //     ),
-                            // );
-                          },
+                            ),
+                          ),
+                          margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                         ),
-              ],
-              //   ),
-              // ),
-            ),
-          ),
-        ),
+                      ),
+                      Container(
+                        margin: EdgeInsets.only(top: 10, left: 20),
+                        child: Text(
+                          "All branches",
+                          style: TextStyle(
+                            color: Col.blackColor,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                            fontFamily: 'Nunito',
+                            letterSpacing: 0.1,
+                          ),
+                        ),
+                      ),
+                      isLoading
+                          ? Center(
+                              child: CircularProgressIndicator(),
+                            )
+                          : ListView.builder(
+                              itemCount: branches.length,
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemBuilder: (context, index) {
+                                final branchDetail = branches[index];
+
+                                return Padding(
+                                  padding: EdgeInsets.fromLTRB(30, 0, 30, 5),
+                                  child: Card(
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(15.0),
+                                    ),
+                                    color: Col.blackColor,
+                                    elevation: 8,
+                                    child: Padding(
+                                      padding:
+                                          EdgeInsets.fromLTRB(0, 16, 0, 16),
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.center,
+                                        children: <Widget>[
+                                          // Stack(
+                                          //   children: [
+                                          // Align(
+                                          //   child: IconButton(
+                                          //     onPressed: () {
+                                          //       Navigator.push(
+                                          //           context,
+                                          //           MaterialPageRoute(
+                                          //               builder: (context) =>
+                                          //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
+                                          //     },
+                                          //     icon: Icon(Icons.edit),
+                                          //     iconSize: 25,
+                                          //   ),
+                                          //   alignment: Alignment.topRight,
+                                          // ),
+                                          Center(
+                                            child: Text(
+                                              "${branchDetail.name}",
+                                              style: TextStyle(
+                                                color: Col.whiteColor,
+                                                fontSize: 25,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Nunito',
+                                              ),
+                                            ),
+                                            //     ),
+                                            // ],
+                                          ),
+                                          Container(
+                                            width: double.infinity,
+                                            child: Center(
+                                              child: Row(
+                                                mainAxisAlignment:
+                                                    MainAxisAlignment.center,
+                                                children: [
+                                                  Text(
+                                                    // "$formattedStartTime - $formattedFinishTime",
+                                                    "${branchDetail.capacity} Slots ",
+                                                    style: TextStyle(
+                                                      color: Col.whiteColor,
+                                                      fontSize: 20,
+                                                      fontFamily: 'Nunito',
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    // "$formattedStartTime - $formattedFinishTime",
+                                                    "|",
+                                                    style: TextStyle(
+                                                      color: Col.primary,
+                                                      fontSize: 20,
+                                                      fontFamily: 'Nunito',
+                                                    ),
+                                                  ),
+                                                  Text(
+                                                    // "$formattedStartTime - $formattedFinishTime",
+                                                    " ${branchDetail.pricePerHour} birr/hour",
+                                                    style: TextStyle(
+                                                      color: Col.whiteColor,
+                                                      fontSize: 20,
+                                                      fontFamily: 'Nunito',
+                                                    ),
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                          Center(
+                                            child: TextButton(
+                                              onPressed: () {
+                                                launchUrl(
+                                                    branchDetail.location);
+                                                // Navigator.push(
+                                                //     context,
+                                                //     MaterialPageRoute(
+                                                //         builder: (context) =>
+                                                //             BranchMap(location: branchDetail.location,)));
+                                              },
+                                              child: Text(
+                                                "See on map",
+                                                style: TextStyle(
+                                                  color: Col.linkColor,
+                                                  fontSize: 18,
+                                                  fontFamily: 'Nunito',
+                                                ),
+                                              ),
+                                              style: TextButton.styleFrom(
+                                                  padding: EdgeInsets.zero,
+                                                  minimumSize: Size(50, 30),
+                                                  tapTargetSize:
+                                                      MaterialTapTargetSize
+                                                          .shrinkWrap,
+                                                  alignment:
+                                                      Alignment.centerLeft),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                  ),
+                                );
+
+                                //   Padding(
+                                //     padding: EdgeInsets.fromLTRB(20, 0, 20, 10),
+                                //     child: Card(
+                                //       color: Colors.grey[100],
+                                //       elevation: 8,
+                                //       child: Padding(
+                                //         padding: EdgeInsets.fromLTRB(10, 8, 0, 8),
+                                //         child: Column(
+                                //           crossAxisAlignment: CrossAxisAlignment.start,
+                                //           children: <Widget>[
+                                //             Stack(
+                                //               children: [
+                                //                 Align(
+                                //                   child: IconButton(
+                                //                     onPressed: () {
+                                //                       Navigator.push(
+                                //                           context,
+                                //                           MaterialPageRoute(
+                                //                               builder: (context) => BranchMap()));
+                                //                     },
+                                //                     icon: Icon(Icons.location_on),
+                                //                     iconSize: 25,
+                                //                   ),
+                                //                   alignment: Alignment.topRight,
+                                //                 ),
+                                //                 Padding(
+                                //                   padding: const EdgeInsets.fromLTRB(0, 15, 0, 0),
+                                //                   child: Text(
+                                //                     "${branchDetail.name}",
+                                //                     style: TextStyle(
+                                //                       color: Col.Onbackground,
+                                //                       fontSize: 20,
+                                //                       fontWeight: FontWeight.bold,
+                                //                       fontFamily: 'Nunito',
+                                //                       letterSpacing: 0.3,
+                                //                     ),
+                                //                   ),
+                                //                 ),
+                                //               ],
+                                //             ),
+                                //             RichText(
+                                //               text: TextSpan(
+                                //                 children: [
+                                //                   TextSpan(
+                                //                       style: TextStyle(
+                                //                         color: Col.Onbackground,
+                                //                         fontSize: 18,
+                                //                         fontWeight: FontWeight.w700,
+                                //                         fontFamily: 'Nunito',
+                                //                         letterSpacing: 0.3,
+                                //                       ),
+                                //                       text: "Price per hour : "),
+                                //                   TextSpan(
+                                //                     style: TextStyle(
+                                //                       color: Col.Onbackground,
+                                //                       fontSize: 18,
+                                //                       fontFamily: 'Nunito',
+                                //                       letterSpacing: 0.3,
+                                //                     ),
+                                //                     text: "${branchDetail.pricePerHour}",
+                                //                   ),
+                                //                 ],
+                                //               ),
+                                //             ),
+                                //             RichText(
+                                //               text: TextSpan(
+                                //                 children: [
+                                //                   TextSpan(
+                                //                       style: TextStyle(
+                                //                         color: Col.Onbackground,
+                                //                         fontSize: 18,
+                                //                         fontWeight: FontWeight.w700,
+                                //                         fontFamily: 'Nunito',
+                                //                         letterSpacing: 0.3,
+                                //                       ),
+                                //                       text: "Capacity : "),
+                                //                   TextSpan(
+                                //                     style: TextStyle(
+                                //                       color: Col.Onbackground,
+                                //                       fontSize: 18,
+                                //                       fontFamily: 'Nunito',
+                                //                       letterSpacing: 0.3,
+                                //                     ),
+                                //                     text: "${branchDetail.capacity}",
+                                //                   ),
+                                //                 ],
+                                //               ),
+                                //             ),
+                                //             RichText(
+                                //               text: TextSpan(
+                                //                 children: [
+                                //                   TextSpan(
+                                //                       style: TextStyle(
+                                //                         color: Col.Onbackground,
+                                //                         fontSize: 18,
+                                //                         fontWeight: FontWeight.w700,
+                                //                         fontFamily: 'Nunito',
+                                //                         letterSpacing: 0.3,
+                                //                       ),
+                                //                       text: "Description : "),
+                                //                   TextSpan(
+                                //                       style: TextStyle(
+                                //                         color: Col.Onbackground,
+                                //                         fontSize: 18,
+                                //                         fontFamily: 'Nunito',
+                                //                         letterSpacing: 0.3,
+                                //                       ),
+                                //                       text: "${branchDetail.description}",
+                                //                       ),
+                                //                 ],
+                                //               ),
+                                //             ),
+                                //           ],
+                                //         ),
+                                //       ),
+                                //       margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                                //     ),
+                                // );
+                              },
+                            ),
+                    ],
+                    //   ),
+                    // ),
+                  ),
+                ),
+              ),
       );
     });
   }

@@ -1,7 +1,9 @@
 // ignore: file_names
 // ignore_for_file: file_names, prefer_const_constructors
 
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/pages/EditProfile.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
@@ -48,15 +50,13 @@ class _ProfilePageState extends State<ProfilePage> {
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      final SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
       sharedPreferences.remove("email");
       Navigator.push(
-          context,
-          MaterialPageRoute(
-              builder: (context) => StartUp()));
+          context, MaterialPageRoute(builder: (context) => StartUp()));
       print(resBody);
-    }
-    else {
+    } else {
       print(res.reasonPhrase);
     }
   }
@@ -66,112 +66,126 @@ class _ProfilePageState extends State<ProfilePage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Col.background,
-      appBar: AppBar(
-        brightness: Brightness.dark,
-        backgroundColor: Colors.transparent,
-        elevation: 7.0,
-        toolbarHeight: 60,
-        leading: IconButton(
-          color: Col.Onbackground,
-          onPressed: () {
-            Navigator.push(
-                context,
-                MaterialPageRoute(
-                    builder: (context) => HomePage(
-                        id: id,
-                        fullName: fullName,
-                        phone: phone,
-                        email: email,
-                        passwordHash: passwordHash,
-                        defaultPlateNumber: defaultPlateNumber)));
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
-        // actions: [
-        //   IconButton(
-        //       color: Col.Onbackground,
-        //       padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
-        //       iconSize: 40,
-        //       onPressed: () {
-        //         showDialog(
-        //             context: context,
-        //             builder: (context) {
-        //               return AlertDialog(
-        //                 title: Text(
-        //                   "Sheger Parking",
-        //                   style: TextStyle(
-        //                     color: Col.Onbackground,
-        //                     fontSize: 28,
-        //                     fontWeight: FontWeight.bold,
-        //                     fontFamily: 'Nunito',
-        //                     letterSpacing: 0.3,
-        //                   ),
-        //                 ),
-        //                 content: Text(
-        //                   "Do you want to Log out",
-        //                   style: TextStyle(
-        //                     color: Col.Onbackground,
-        //                     fontSize: 20,
-        //                     fontFamily: 'Nunito',
-        //                     letterSpacing: 0.3,
-        //                   ),
-        //                 ),
-        //                 actions: [
-        //                   FlatButton(
-        //                     onPressed: () {
-        //                       Navigator.of(context).pop(AlertDialog());
-        //                     },
-        //                     child: Text(
-        //                       "Cancel",
-        //                       style: TextStyle(
-        //                         fontSize: 18,
-        //                         letterSpacing: 0.3,
-        //                       ),
-        //                     ),
-        //                   ),
-        //                   FlatButton(
-        //                     onPressed: () async {
-        //                       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-        //                       sharedPreferences.remove("email");
-        //                       Navigator.push(
-        //                           context,
-        //                           MaterialPageRoute(
-        //                               builder: (context) => StartUp()));
-        //                     },
-        //                     child: Text(
-        //                       "Log out",
-        //                       style: TextStyle(
-        //                         fontSize: 18,
-        //                         letterSpacing: 0.3,
-        //                       ),
-        //                     ),
-        //                   ),
-        //                 ],
-        //                 elevation: 10.0,
-        //               );
-        //             });
-        //       },
-        //       icon: Icon(Icons.logout)),
-        // ],
-        title: Text(
-          "Profile",
-          style: TextStyle(
-            color: Col.blackColor,
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Nunito',
-            letterSpacing: 0.3,
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(0),
-                bottomRight: Radius.circular(0)),
-            gradient: LinearGradient(
-                colors: [Colors.white, Colors.white],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              offset: Offset(0, 1.0),
+              blurRadius: 7.0,
+            )
+          ]),
+          child: AppBar(
+            brightness: Brightness.dark,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            toolbarHeight: 60,
+            leading: IconButton(
+              color: Col.Onbackground,
+              onPressed: () {
+                Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => BlocProvider(
+                            create: (context) => CurrentIndexBloc(),
+                            child: HomePage(
+                                id: id,
+                                fullName: fullName,
+                                phone: phone,
+                                email: email,
+                                passwordHash: passwordHash,
+                                defaultPlateNumber: defaultPlateNumber))));
+              },
+              icon: Icon(Icons.arrow_back),
+            ),
+            // actions: [
+            //   IconButton(
+            //       color: Col.Onbackground,
+            //       padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
+            //       iconSize: 40,
+            //       onPressed: () {
+            //         showDialog(
+            //             context: context,
+            //             builder: (context) {
+            //               return AlertDialog(
+            //                 title: Text(
+            //                   "Sheger Parking",
+            //                   style: TextStyle(
+            //                     color: Col.Onbackground,
+            //                     fontSize: 28,
+            //                     fontWeight: FontWeight.bold,
+            //                     fontFamily: 'Nunito',
+            //                     letterSpacing: 0.3,
+            //                   ),
+            //                 ),
+            //                 content: Text(
+            //                   "Do you want to Log out",
+            //                   style: TextStyle(
+            //                     color: Col.Onbackground,
+            //                     fontSize: 20,
+            //                     fontFamily: 'Nunito',
+            //                     letterSpacing: 0.3,
+            //                   ),
+            //                 ),
+            //                 actions: [
+            //                   FlatButton(
+            //                     onPressed: () {
+            //                       Navigator.of(context).pop(AlertDialog());
+            //                     },
+            //                     child: Text(
+            //                       "Cancel",
+            //                       style: TextStyle(
+            //                         fontSize: 18,
+            //                         letterSpacing: 0.3,
+            //                       ),
+            //                     ),
+            //                   ),
+            //                   FlatButton(
+            //                     onPressed: () async {
+            //                       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+            //                       sharedPreferences.remove("email");
+            //                       Navigator.push(
+            //                           context,
+            //                           MaterialPageRoute(
+            //                               builder: (context) => StartUp()));
+            //                     },
+            //                     child: Text(
+            //                       "Log out",
+            //                       style: TextStyle(
+            //                         fontSize: 18,
+            //                         letterSpacing: 0.3,
+            //                       ),
+            //                     ),
+            //                   ),
+            //                 ],
+            //                 elevation: 10.0,
+            //               );
+            //             });
+            //       },
+            //       icon: Icon(Icons.logout)),
+            // ],
+            title: Text(
+              "Profile",
+              style: TextStyle(
+                color: Col.blackColor,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Nunito',
+                letterSpacing: 0.3,
+              ),
+            ),
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(0),
+                    bottomRight: Radius.circular(0)),
+                gradient: LinearGradient(
+                    colors: [Colors.white, Colors.white],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter),
+              ),
+            ),
           ),
         ),
       ),
@@ -238,7 +252,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -264,7 +280,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -290,7 +308,9 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -496,11 +516,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   deleteUser();
                                 },
                                 child: Text(
-                                  "Delete",
+                                  "Delete account",
                                   style: TextStyle(
-                                    fontSize: 16,
-                                    letterSpacing: 0.3,
-                                  ),
+                                      fontSize: 16,
+                                      letterSpacing: 0.3,
+                                      color: Col.deleteColor),
                                 ),
                               ),
                             ],
@@ -509,7 +529,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         });
                   },
                   child: Text(
-                    "Delete",
+                    "Delete account",
                     style: TextStyle(
                       color: Col.deleteColor,
                       fontSize: 18,

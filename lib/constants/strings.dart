@@ -5,4 +5,7 @@ class Strings {
   static String login = "Sign In";
   static String signup = "Sign Up";
   static int notifiyingMinute = 10;
+  static double lat = 0;
+  static double longs = 0;
+  static dynamic userId = false;
 }

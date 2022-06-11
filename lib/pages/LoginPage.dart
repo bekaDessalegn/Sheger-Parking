@@ -4,7 +4,9 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/ForgotPassword.dart';
@@ -55,6 +57,7 @@ class _LoginPageState extends State<LoginPage> {
       String email = data["email"].toString();
       String passwordHash = data["passwordHash"].toString();
       String defaultPlateNumber = data["defaultPlateNumber"].toString();
+      Strings.userId = id;
 
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
@@ -71,13 +74,15 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => HomePage(
+              builder: (context) => BlocProvider(
+          create: (context) => CurrentIndexBloc(),
+          child: HomePage(
                   id: id,
                   fullName: fullName,
                   phone: phone,
                   email: email,
                   passwordHash: passwordHash,
-                  defaultPlateNumber: defaultPlateNumber)));
+                  defaultPlateNumber: defaultPlateNumber))));
     } else {
       print(res.reasonPhrase);
     }

@@ -4,10 +4,15 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/constants/colors.dart';
 import 'package:sheger_parking/constants/strings.dart';
+import 'package:sheger_parking/features/auth/signup/bloc/signup_bloc.dart';
+import 'package:sheger_parking/features/auth/signup/bloc/signup_event.dart';
+import 'package:sheger_parking/features/auth/signup/bloc/signup_state.dart';
+import 'package:sheger_parking/features/auth/signup/models/signup.dart';
 import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/LoginPage.dart';
@@ -22,11 +27,18 @@ class SignUpScreen extends StatefulWidget {
 
 class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
+  final signupformKey = GlobalKey<FormState>();
   bool _secureText = true;
   bool isDataEntered = false;
   bool isProcessing = false;
   late String verificationCode;
   String? hashedPassword;
+
+  final phoneController = TextEditingController();
+  final passwordHashController = TextEditingController();
+  final fullNameController = TextEditingController();
+  final defaultPlateNumberController = TextEditingController();
+  final emailController = TextEditingController();
 
   Future verify() async {
     var headersList = {
@@ -167,10 +179,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
-                        controller: TextEditingController(text: user.fullName),
-                        onChanged: (value){
-                          user.fullName = value;
-                        },
+                        controller: fullNameController,
+                        // onChanged: (value){
+                        //   user.fullName = value;
+                        // },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -205,10 +217,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
-                        controller: TextEditingController(text: user.email),
-                        onChanged: (value){
-                          user.email = value;
-                        },
+                        controller: emailController,
+                        // onChanged: (value){
+                        //   user.email = value;
+                        // },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -249,10 +261,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
-                        controller: TextEditingController(text: user.phone),
-                        onChanged: (value){
-                          user.phone = value;
-                        },
+                        controller: phoneController,
+                        // onChanged: (value){
+                        //   user.phone = value;
+                        // },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -287,10 +299,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
-                        controller: TextEditingController(text: user.defaultPlateNumber),
-                        onChanged: (value){
-                          user.defaultPlateNumber = value;
-                        },
+                        controller: defaultPlateNumberController,
+                        // onChanged: (value){
+                        //   user.defaultPlateNumber = value;
+                        // },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -325,14 +337,14 @@ class _SignUpScreenState extends State<SignUpScreen> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
-                        controller: TextEditingController(text: user.passwordHash),
-                        onChanged: (value){
-                          var bytes = utf8.encode(value);
-                          var sha512 = sha256.convert(bytes);
-                          var hashedPassword = sha512.toString();
-                          this.hashedPassword = hashedPassword;
-                          user.passwordHash = value;
-                        },
+                        controller: passwordHashController,
+                        // onChanged: (value){
+                        //   var bytes = utf8.encode(value);
+                        //   var sha512 = sha256.convert(bytes);
+                        //   var hashedPassword = sha512.toString();
+                        //   this.hashedPassword = hashedPassword;
+                        //   user.passwordHash = value;
+                        // },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
@@ -374,6 +386,183 @@ class _SignUpScreenState extends State<SignUpScreen> {
                               ),
                             )),
                         obscureText: _secureText,
+                      ),
+                    ),
+                  ),
+                  Form(
+                    key: signupformKey,
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
+                      child: Container(
+                        width: double.infinity,
+                        child: BlocConsumer<SignUpBloc, SignUpState>(
+                          listenWhen: (previous, current) {
+                            return current is SignUpSuccessful;
+                          },
+                          listener: (_, SignUpState state) {},
+                          builder: (_, SignUpState state) {
+                            Widget buttonChild = RaisedButton(
+                              color: Col.primary,
+                              padding: EdgeInsets.symmetric(horizontal: 120),
+                              child: Text("Signup",
+                                style: TextStyle(
+                                  color: Col.blackColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Nunito',
+                                  letterSpacing: 0.3,
+                                ),),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              onPressed: () {
+                                final formValid =
+                                _formKey.currentState!.validate();
+                                if (!formValid) return;
+
+                                var bytes = utf8.encode(passwordHashController.text);
+                                var sha512 = sha256.convert(bytes);
+                                var hashedPassword = sha512.toString();
+
+                                final verifyBloc =
+                                BlocProvider.of<SignUpBloc>(context);
+                                verifyBloc.add(SignUpVerify(SignUp(fullName: "fullName", email: "email", phone: "phone", defaultPlateNumber: "defaultPlateNumber", passwordHash: "passwordHash")));
+                              },
+                            );
+
+                            Widget verifyChecker = Text("");
+
+                            if (state is OnLoadingSignUpVerifySuccessful) {
+                              verifyChecker = Center(
+                                child: CircularProgressIndicator(),
+                              );
+                            }
+
+                            Widget isSignupSuccessful = Text("");
+
+                            if (state is SignUpVerifySuccessful) {
+                              verifyChecker = Column(
+                                children: [
+                                  Text(
+                                    "Phone verification code has been sent to your phone : ",
+                                    style: TextStyle(
+                                      color: Col.blackColor,
+                                      fontSize: 16,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                  SizedBox(height: 20,),
+                                  TextFormField(
+                                    onChanged: (value) {},
+                                    validator: (value) {
+                                      if (value!.isEmpty) {
+                                        return "This field can not be empty";
+                                      } else if (value != "12345") {
+                                        return "Please enter the correct verification code";
+                                      } else {
+                                        return null;
+                                      }
+                                    },
+                                    decoration: InputDecoration(
+                                      hintText: "",
+                                      hintStyle: TextStyle(
+                                        color: Col.blackColor,
+                                        fontSize: 14,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.1,
+                                      ),
+                                      labelText: "Verification Code",
+                                      labelStyle: TextStyle(
+                                        color: Col.blackColor,
+                                        fontSize: 14,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0,
+                                      ),
+                                      border: OutlineInputBorder(),
+                                      errorBorder: OutlineInputBorder(
+                                        borderSide:
+                                        BorderSide(color: Colors.red),
+                                      ),
+                                    ),
+                                    keyboardType: TextInputType.emailAddress,
+                                  ),
+                                  Text(
+                                    "*for demo purpose the verification code is 12345",
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                  SizedBox(height: 20,)
+                                ],
+                              );
+
+                              ////////////////////////////////  For The Login  //////////////////////////////////////
+                              // buttonChild = BlocConsumer<AuthBloc, AuthState>(
+                              //   listenWhen: (previous, current) {
+                              //     return current is LoginSuccessful;
+                              //   },
+                              //   listener: (_, AuthState state) {
+                              //     GoRouter.of(context).go('/home');
+                              //   },
+                              //   builder: (_, AuthState state) {
+                              //     return RaisedButton(
+                              //       padding: EdgeInsets.symmetric(horizontal: 120),
+                              //       color: Col.primary,
+                              //       child: Text("Verify",
+                              //         style: TextStyle(
+                              //           color: Col.blackColor,
+                              //           fontSize: 18,
+                              //           fontWeight: FontWeight.bold,
+                              //           fontFamily: 'Nunito',
+                              //           letterSpacing: 0.3,
+                              //         ),),
+                              //       shape: RoundedRectangleBorder(
+                              //           borderRadius: BorderRadius.circular(8)),
+                              //       onPressed: () {
+                              //         if (signupformKey.currentState!
+                              //             .validate()) {
+                              //
+                              //           var bytes = utf8.encode(passwordHashController.text);
+                              //           var sha512 = sha256.convert(bytes);
+                              //           var hashedPassword = sha512.toString();
+                              //
+                              //           final authBloc = BlocProvider.of<SignUpBloc>(context);
+                              //           authBloc.add(SignUpAuth(SignUp(fullName: "fullName", email: "email", phone: "phone", defaultPlateNumber: "defaultPlateNumber", passwordHash: "passwordHash")));
+                              //
+                              //           Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(id: "id", fullName: "fullName", phone: "phone", email: "email", passwordHash: "passwordHash", defaultPlateNumber: "defaultPlateNumber"
+                              //           )));
+                              //         }
+                              //       },
+                              //     );
+                              //   },
+                              // );
+                            }
+
+                            if (state is SignUpVerifyFailed) {
+                              verifyChecker = Text(
+                                "SignUp Failed",
+                                style: TextStyle(
+                                  color: Col.blackColor,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Nunito',
+                                  letterSpacing: 0.3,
+                                ),
+                              );
+                            }
+                            return Column(
+                              children: [
+                                Container(
+                                  child: verifyChecker,
+                                ),
+                                buttonChild
+                              ],
+                            );
+                          },
+                        ),
                       ),
                     ),
                   ),

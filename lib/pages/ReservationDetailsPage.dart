@@ -32,22 +32,68 @@ class ReservationDetailsPage extends StatefulWidget {
       required this.email,
       required this.passwordHash,
       required this.defaultPlateNumber,
-        required this.reservationId,
-        required this.reservationPlateNumber,
-        required this.branch,
-        required this.branchName,
-        required this.startTime, required this.slot, required this.price, required this.duration, required this.parked});
+      required this.reservationId,
+      required this.reservationPlateNumber,
+      required this.branch,
+      required this.branchName,
+      required this.startTime,
+      required this.slot,
+      required this.price,
+      required this.duration,
+      required this.parked});
 
   @override
   _ReservationDetailsPageState createState() => _ReservationDetailsPageState(
-      id, fullName, phone, email, passwordHash, defaultPlateNumber, reservationId, reservationPlateNumber, branch, branchName, startTime, slot, price, duration, parked);
+      id,
+      fullName,
+      phone,
+      email,
+      passwordHash,
+      defaultPlateNumber,
+      reservationId,
+      reservationPlateNumber,
+      branch,
+      branchName,
+      startTime,
+      slot,
+      price,
+      duration,
+      parked);
 }
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
-  String id, fullName, phone, email, passwordHash, defaultPlateNumber, reservationId, reservationPlateNumber, branch, branchName, startTime, slot, price, duration, parked;
+  String id,
+      fullName,
+      phone,
+      email,
+      passwordHash,
+      defaultPlateNumber,
+      reservationId,
+      reservationPlateNumber,
+      branch,
+      branchName,
+      startTime,
+      slot,
+      price,
+      duration,
+      parked;
 
-  _ReservationDetailsPageState(this.id, this.fullName, this.phone, this.email,
-      this.passwordHash, this.defaultPlateNumber, this.reservationId, this.reservationPlateNumber, this.branch, this.branchName, this.startTime, this.slot, this.price, this.duration, this.parked);
+  _ReservationDetailsPageState(
+      this.id,
+      this.fullName,
+      this.phone,
+      this.email,
+      this.passwordHash,
+      this.defaultPlateNumber,
+      this.reservationId,
+      this.reservationPlateNumber,
+      this.branch,
+      this.branchName,
+      this.startTime,
+      this.slot,
+      this.price,
+      this.duration,
+      this.parked);
 
   late String startingTime;
   late String startDate;
@@ -55,14 +101,14 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
   @override
   void initState() {
     super.initState();
-    DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(int.parse(startTime));
+    DateTime startingTime =
+        DateTime.fromMillisecondsSinceEpoch(int.parse(startTime));
     String startDate = DateFormat.yMMMd().format(startingTime);
     String formattedStartTime = DateFormat('h:mm a').format(startingTime);
     // String datetime = startingTime.hour.toString().padLeft(2, '0') + ":" + startingTime.minute.toString().padLeft(2, '0');
 
     this.startingTime = formattedStartTime;
     this.startDate = startDate;
-
   }
 
   @override
@@ -70,37 +116,49 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
     return Scaffold(
       resizeToAvoidBottomInset: false,
       backgroundColor: Col.background,
-      appBar: AppBar(
-        brightness: Brightness.dark,
-        backgroundColor: Colors.transparent,
-        elevation: 7.0,
-        toolbarHeight: 60,
-        leading: IconButton(
-          color: Col.Onbackground,
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          icon: Icon(Icons.arrow_back),
-        ),
-        title: Text(
-          "Reservation details",
-          style: TextStyle(
-            color: Col.blackColor,
-            fontSize: 20,
-            fontWeight: FontWeight.w500,
-            fontFamily: 'Nunito',
-            letterSpacing: 0.3,
-          ),
-        ),
-        flexibleSpace: Container(
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.only(
-                bottomLeft: Radius.circular(0),
-                bottomRight: Radius.circular(0)),
-            gradient: LinearGradient(
-                colors: [Colors.white, Colors.white],
-                begin: Alignment.bottomCenter,
-                end: Alignment.topCenter),
+      appBar: PreferredSize(
+        preferredSize: Size.fromHeight(kToolbarHeight),
+        child: Container(
+          decoration: BoxDecoration(boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.2),
+              offset: Offset(0, 1.0),
+              blurRadius: 7.0,
+            )
+          ]),
+          child: AppBar(
+            brightness: Brightness.dark,
+            backgroundColor: Colors.transparent,
+            elevation: 0.0,
+            toolbarHeight: 60,
+            leading: IconButton(
+              color: Col.Onbackground,
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              icon: Icon(Icons.arrow_back),
+            ),
+            title: Text(
+              "Reservation details",
+              style: TextStyle(
+                color: Col.blackColor,
+                fontSize: 20,
+                fontWeight: FontWeight.w500,
+                fontFamily: 'Nunito',
+                letterSpacing: 0.3,
+              ),
+            ),
+            flexibleSpace: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.only(
+                    bottomLeft: Radius.circular(0),
+                    bottomRight: Radius.circular(0)),
+                gradient: LinearGradient(
+                    colors: [Colors.white, Colors.white],
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.topCenter),
+              ),
+            ),
           ),
         ),
       ),
@@ -132,8 +190,7 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                             fontFamily: 'Nunito',
                             letterSpacing: 0.3,
                           ),
-                          text:
-                          branchName,
+                          text: branchName,
                         ),
                       ],
                     ),
@@ -149,7 +206,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -175,7 +234,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -201,7 +262,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -227,7 +290,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -253,7 +318,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -279,7 +346,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 5, 0, 0),
                 child: Text(
@@ -305,7 +374,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              SizedBox(height: 10,),
+              SizedBox(
+                height: 10,
+              ),
               Center(
                 child: SizedBox(
                   width: 200,
@@ -321,8 +392,19 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                     Navigator.push(
                         context,
                         MaterialPageRoute(
-                            builder: (context) =>
-                                EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationId, reservationPlateNumber: reservationPlateNumber, branch: branch, branchName: branchName, duration: duration, startTime: int.parse(startTime))));
+                            builder: (context) => EditReservation(
+                                id: id,
+                                fullName: fullName,
+                                phone: phone,
+                                email: email,
+                                passwordHash: passwordHash,
+                                defaultPlateNumber: defaultPlateNumber,
+                                reservationId: reservationId,
+                                reservationPlateNumber: reservationPlateNumber,
+                                branch: branch,
+                                branchName: branchName,
+                                duration: duration,
+                                startTime: int.parse(startTime))));
                   },
                   style: TextButton.styleFrom(
                       padding: EdgeInsets.zero,

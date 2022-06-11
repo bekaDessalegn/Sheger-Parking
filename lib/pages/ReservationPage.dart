@@ -5,7 +5,9 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/models/BranchDetails.dart';
 import 'package:sheger_parking/models/Reservation.dart';
@@ -60,6 +62,8 @@ class _ReservationPageState extends State<ReservationPage> {
 
   var url = "https://www.youtube.com";
 
+  bool validDate = true;
+
   void launchUrl() async {
     // if (!await launchUrl(_url)) throw 'Could not launch $_url';
     if (await canLaunch(url)) {
@@ -68,6 +72,8 @@ class _ReservationPageState extends State<ReservationPage> {
       throw 'Could not launch $url';
     }
   }
+
+  Future getDestination() async {}
 
   Future availablility() async {
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
@@ -471,7 +477,6 @@ class _ReservationPageState extends State<ReservationPage> {
                             style: TextStyle(
                               color: Colors.redAccent,
                               fontSize: 15,
-                              fontWeight: FontWeight.bold,
                               fontFamily: 'Nunito',
                               letterSpacing: 0.1,
                             ),
@@ -555,6 +560,20 @@ class _ReservationPageState extends State<ReservationPage> {
                           width: 1),
                     ),
                   ),
+                  validDate
+                      ? Text("")
+                      : Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text(
+                            "Invalid starting time!",
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 15,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0.1,
+                            ),
+                          ),
+                        ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 20, 25, 3),
                     child: Container(
@@ -675,14 +694,17 @@ class _ReservationPageState extends State<ReservationPage> {
                                   Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => HomePage(
-                                              id: id,
-                                              fullName: fullName,
-                                              phone: phone,
-                                              email: email,
-                                              passwordHash: passwordHash,
-                                              defaultPlateNumber:
-                                                  defaultPlateNumber)));
+                                          builder: (context) => BlocProvider(
+                                              create: (context) =>
+                                                  CurrentIndexBloc(),
+                                              child: HomePage(
+                                                  id: id,
+                                                  fullName: fullName,
+                                                  phone: phone,
+                                                  email: email,
+                                                  passwordHash: passwordHash,
+                                                  defaultPlateNumber:
+                                                      defaultPlateNumber))));
                                 }
                               },
                               padding: EdgeInsets.symmetric(
@@ -722,14 +744,26 @@ class _ReservationPageState extends State<ReservationPage> {
                           child: Center(
                             child: RaisedButton(
                               onPressed: () {
-                                if (_formKey.currentState!.validate()) {
+                                bool validForm =
+                                    _formKey.currentState!.validate();
+                                if (reservation.startingTime <
+                                    DateTime.now().millisecondsSinceEpoch) {
                                   setState(() {
-                                    payement =
-                                        pricePerHour * reservation.duration;
+                                    validDate = false;
                                   });
-                                  print(reservation.price);
-                                  print(reservation.duration);
-                                  availablility();
+                                } else {
+                                  setState(() {
+                                    validDate = true;
+                                  });
+                                  if (validForm) {
+                                    setState(() {
+                                      payement =
+                                          pricePerHour * reservation.duration;
+                                    });
+                                    print(reservation.price);
+                                    print(reservation.duration);
+                                    availablility();
+                                  }
                                 }
                               },
                               padding: EdgeInsets.symmetric(
@@ -835,7 +869,7 @@ class _ReservationPageState extends State<ReservationPage> {
         onFailValidation: (context) => print('Unavailable selection'),
         initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
         selectableTimePredicate: (time) {
-          return time!.minute == 0 && time.hour >= fullTime.hour;
+          return time!.minute == 0;
         },
       );
 

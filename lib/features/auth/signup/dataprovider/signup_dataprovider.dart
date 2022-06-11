@@ -49,6 +49,7 @@ class SignUpDataProvider {
     await client.post(url, headers: headersList, body: json.encode(body));
     final resBody = json.decode(res.body);
     if (res.statusCode >= 200 && res.statusCode < 300) {
+
       print(resBody);
     } else {
       print(res.reasonPhrase);

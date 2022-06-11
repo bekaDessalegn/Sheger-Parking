@@ -4,7 +4,9 @@
 import 'dart:convert';
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
@@ -91,6 +93,7 @@ class _SignUpPageState extends State<SignUpPage> {
       String email = data["email"].toString();
       String passwordHash = data["passwordHash"].toString();
       String defaultPlateNumber = data["defaultPlateNumber"].toString();
+      Strings.userId = id;
 
       final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
       sharedPreferences.setString("id", id);
@@ -100,7 +103,9 @@ class _SignUpPageState extends State<SignUpPage> {
       sharedPreferences.setString("passwordHash", passwordHash);
       sharedPreferences.setString("defaultPlateNumber", defaultPlateNumber);
       print(resBody);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
+      Navigator.push(context, MaterialPageRoute(builder: (context) => BlocProvider(
+          create: (context) => CurrentIndexBloc(),
+          child: HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber))));
     }
     else {
       print(res.reasonPhrase);
@@ -258,10 +263,17 @@ class _SignUpPageState extends State<SignUpPage> {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
                           }
-                          return null;
+                          else if (RegExp(
+                              r"^(?:[+0]9)?[0-9]{10}$")
+                              .hasMatch(value)) {
+                            return null;
+                          }
+                          else {
+                            return "Please enter valid phone number";
+                          }
                         },
                         decoration: InputDecoration(
-                          hintText: "",
+                          hintText: "Format: 0987654321",
                           hintStyle: TextStyle(
                             color: Col.textfieldLabel,
                             fontSize: 14,
