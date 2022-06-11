@@ -149,7 +149,7 @@ class _EditReservationState extends State<EditReservation> {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       print(resBody);
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) => BlocProvider(
@@ -160,7 +160,7 @@ class _EditReservationState extends State<EditReservation> {
                       phone: phone,
                       email: email,
                       passwordHash: passwordHash,
-                      defaultPlateNumber: defaultPlateNumber))));
+                      defaultPlateNumber: defaultPlateNumber))), (Route<dynamic> route) => false);
     } else {
       print(resBody);
     }

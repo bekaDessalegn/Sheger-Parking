@@ -33,7 +33,7 @@ class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Future save() async {
+  Future login() async {
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse('${base_url}/clients/login');
 
@@ -71,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
       // phone = content["phone"].toString();
       // passwordHash = content["passwordHash"].toString();
       print(resBody);
-      Navigator.pushReplacement(
+      Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
               builder: (context) => BlocProvider(
@@ -82,7 +82,7 @@ class _LoginPageState extends State<LoginPage> {
                   phone: phone,
                   email: email,
                   passwordHash: passwordHash,
-                  defaultPlateNumber: defaultPlateNumber))));
+                  defaultPlateNumber: defaultPlateNumber))), (Route<dynamic> route) => false);
     } else {
       print(res.reasonPhrase);
     }
@@ -93,7 +93,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: true,
       backgroundColor: Col.background,
       body: SingleChildScrollView(
         child: Container(
@@ -279,7 +279,7 @@ class _LoginPageState extends State<LoginPage> {
                                     borderRadius: BorderRadius.circular(8)),
                                 onPressed: () {
                                   if (_formKey.currentState!.validate()) {
-                                    save();
+                                    login();
                                   }
                                 }),
                           ),

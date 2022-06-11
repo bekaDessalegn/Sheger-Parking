@@ -17,8 +17,6 @@ import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/widget/notifications.dart';
 
 import '../constants/strings.dart';
-import 'EditReservation.dart';
-import 'NoReservation.dart';
 import 'ReservationDetailsPage.dart';
 import 'package:sheger_parking/models/ReservationDetails.dart';
 import 'package:http/http.dart' as http;
@@ -512,7 +510,7 @@ class ReservationsState extends State<Reservations> {
                       ),
                       isLoading
                           ? Center(
-                              child: CircularProgressIndicator(),
+                              child: CircularProgressIndicator(color: Col.primary,),
                             )
                           : (reservations.length > 0)
                               ? ListView.builder(

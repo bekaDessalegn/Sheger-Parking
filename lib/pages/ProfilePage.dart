@@ -53,8 +53,10 @@ class _ProfilePageState extends State<ProfilePage> {
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       sharedPreferences.remove("email");
-      Navigator.push(
-          context, MaterialPageRoute(builder: (context) => StartUp()));
+      Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(builder: (context) => StartUp()),
+          (Route<dynamic> route) => false);
       print(resBody);
     } else {
       print(res.reasonPhrase);
@@ -84,7 +86,7 @@ class _ProfilePageState extends State<ProfilePage> {
             leading: IconButton(
               color: Col.Onbackground,
               onPressed: () {
-                Navigator.push(
+                Navigator.pushAndRemoveUntil(
                     context,
                     MaterialPageRoute(
                         builder: (context) => BlocProvider(
@@ -95,7 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 phone: phone,
                                 email: email,
                                 passwordHash: passwordHash,
-                                defaultPlateNumber: defaultPlateNumber))));
+                                defaultPlateNumber: defaultPlateNumber))),(Route<dynamic> route) => false);
               },
               icon: Icon(Icons.arrow_back),
             ),

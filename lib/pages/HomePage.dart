@@ -161,7 +161,6 @@ class _HomePageState extends State<HomePage> {
                     padding: EdgeInsets.fromLTRB(0, 0, 25, 0),
                     iconSize: 40,
                     onPressed: () {
-                      Navigator.of(context).pop();
                       Navigator.push(
                           context,
                           MaterialPageRoute(

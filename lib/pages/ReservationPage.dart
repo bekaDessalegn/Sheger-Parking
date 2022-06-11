@@ -691,7 +691,7 @@ class _ReservationPageState extends State<ReservationPage> {
                                 if (_formKey.currentState!.validate()) {
                                   reserve();
                                   await Future.delayed(Duration(seconds: 2));
-                                  Navigator.pushReplacement(
+                                  Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
                                           builder: (context) => BlocProvider(
@@ -704,7 +704,7 @@ class _ReservationPageState extends State<ReservationPage> {
                                                   email: email,
                                                   passwordHash: passwordHash,
                                                   defaultPlateNumber:
-                                                      defaultPlateNumber))));
+                                                      defaultPlateNumber))), (Route<dynamic> route) => false);
                                 }
                               },
                               padding: EdgeInsets.symmetric(

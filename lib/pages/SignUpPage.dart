@@ -30,6 +30,7 @@ class _SignUpPageState extends State<SignUpPage> {
   bool isProcessing = false;
   late String verificationCode;
   String? hashedPassword;
+  String? phoneInUse;
 
   Future verify() async {
     var headersList = {
@@ -59,15 +60,20 @@ class _SignUpPageState extends State<SignUpPage> {
       this.verificationCode = verificationCode["emailVerificationCode"].toString();
       setState(() {
         isDataEntered = !isDataEntered;
+        phoneInUse = "PHONE EXISTS";
       });
       print(resBody);
     }
     else {
-      print(res.reasonPhrase);
+      var phoneExists = json.decode(resBody);
+      setState(() {
+        phoneInUse = phoneExists["message"].toString();
+      });
+      print(resBody);
     }
   }
 
-  Future save() async {
+  Future signup() async {
     var headersList = {
       'Accept': '*/*',
       'Content-Type': 'application/json'
@@ -106,9 +112,9 @@ class _SignUpPageState extends State<SignUpPage> {
       sharedPreferences.setString("passwordHash", passwordHash);
       sharedPreferences.setString("defaultPlateNumber", defaultPlateNumber);
       print(resBody);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BlocProvider(
+      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BlocProvider(
           create: (context) => CurrentIndexBloc(),
-          child: HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber))));
+          child: HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber))), (Route<dynamic> route) => false);
     }
     else {
       print(res.reasonPhrase);
@@ -298,6 +304,20 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
+                  (phoneInUse == "INVALID_CALL:|:USER_PHONE_ALREADY_IN_USE")
+                      ? Padding(
+                    padding: const EdgeInsets.only(top: 5),
+                    child: Center(
+                      child: Text(
+                        "Phone already in use",
+                        style: TextStyle(
+                            color: Colors.redAccent,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 15),
+                      ),
+                    ),
+                  )
+                      : SizedBox(),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                     child: Container(
@@ -480,7 +500,7 @@ class _SignUpPageState extends State<SignUpPage> {
                             borderRadius: BorderRadius.circular(8)),
                         onPressed: () {
                           if (_formKey.currentState!.validate()) {
-                            save();
+                            signup();
                             // setState(() {
                             //   isProcessing = true;
                             // });
@@ -513,9 +533,12 @@ class _SignUpPageState extends State<SignUpPage> {
                           // setState(() {
                           //   isDataEntered = !isDataEntered;
                           // });
-                          setState(() {
-                            isProcessing = true;
-                          });
+
+                          if(phoneInUse == "PHONE EXISTS"){
+                            setState(() {
+                              isProcessing = true;
+                            });
+                          }
                           // if (!isDataEntered) {
                           //   save();
                           // }

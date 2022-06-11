@@ -71,13 +71,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     }
   }
 
-  Future init() async {
-
-    final userDetails = await getUserDetails(query);
-
-    setState(() => this.users = userDetails);
-  }
-
   final _formKey = GlobalKey<FormState>();
   bool isDataEntered = false;
   bool isVerified = false;
@@ -88,6 +81,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   String? emailExists;
   bool doesEmailExist = false;
   String? hashedPassword;
+  bool successChange = false;
 
   void verified(){
     setState(() {
@@ -120,7 +114,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       print(resBody);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
     }
     else {
       print(res.reasonPhrase);
@@ -147,7 +140,10 @@ class _ForgotPasswordState extends State<ForgotPassword> {
         emailExists = "Email exists";
       });
       this.verificationCode = verificationCode["emailVerificationCode"].toString();
-      emailExistance();
+      setState(() {
+        isDataEntered = true;
+      });
+      // emailExistance();
       print(resBody);
     } else {
       var emailExists = json.decode(resBody);
@@ -160,24 +156,15 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
   User user = User('', '', '', '', '');
 
-  void trial(){
-    if(doesEmailExist){
-      setState(() {
-        isDataEntered = true;
-      });
-    }
-    if(doesEmailExist){
-      setState(() {
-        isProcessing = true;
-      });
-    }
-    if(doesEmailExist){
-      Future.delayed(Duration(seconds: 6), () {
-        setState(() {
-          isProcessing = false;
-        });
-      });
-    }
+  Future init() async {
+
+    // setState(() {
+    //   isProcessing = true;
+    // });
+
+    final userDetails = await getUserDetails(query);
+
+    setState(() => this.users = userDetails);
   }
 
   @override
@@ -214,168 +201,191 @@ class _ForgotPasswordState extends State<ForgotPassword> {
             ),
           ),
           isVerified
-              ? Container(
-                  margin: EdgeInsets.fromLTRB(10, 60, 10, 0),
-                  padding: EdgeInsets.symmetric(vertical: 20),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: Colors.black26, width: 1),
-                    color: Col.background,
-                  ),
-                  child: Form(
-                    key: _formKey,
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                          child: Text(
-                            "CONFIRM PASSWORD",
-                            style: TextStyle(
-                              color: Col.Onbackground,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Nunito',
-                              letterSpacing: 0.1,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(25, 35, 25, 0),
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                              controller: TextEditingController(text: user.passwordHash),
-                              onChanged: (value){
-                                var bytes = utf8.encode(value);
-                                var sha512 = sha256.convert(bytes);
-                                var hashedPassword = sha512.toString();
-                                this.hashedPassword = hashedPassword;
-                                user.passwordHash = value;
-                              },
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "This field can not be empty";
-                                } else if (value.length <= 6) {
-                                  return "Password should be at least 6 characters";
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                  hintText: "Password",
-                                  hintStyle: TextStyle(
-                                    color: Col.textfieldLabel,
-                                    fontSize: 14,
-                                    fontFamily: 'Nunito',
-                                    letterSpacing: 0.1,
-                                  ),
-                                  labelText: "Password",
-                                  labelStyle: TextStyle(
-                                    color: Col.textfieldLabel,
-                                    fontSize: 14,
-                                    fontFamily: 'Nunito',
-                                    letterSpacing: 0,
-                                  ),
-                                  border: OutlineInputBorder(),
-                                  errorBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.red),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _secureText = !_secureText;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      _secureText == true
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: Col.Onbackground,
-                                    ),
-                                  )),
-                              obscureText: _secureText,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
-                          child: Container(
-                            alignment: Alignment.center,
-                            child: TextFormField(
-                              validator: (value) {
-                                if (value!.isEmpty) {
-                                  return "This field can not be empty";
-                                } else if (value != user.passwordHash) {
-                                  return "Both passwords should be the same";
-                                }
-                                return null;
-                              },
-                              decoration: InputDecoration(
-                                  hintText: "Confirm Password",
-                                  hintStyle: TextStyle(
-                                    color: Col.textfieldLabel,
-                                    fontSize: 14,
-                                    fontFamily: 'Nunito',
-                                    letterSpacing: 0.1,
-                                  ),
-                                  labelText: "Confirm Password",
-                                  labelStyle: TextStyle(
-                                    color: Col.textfieldLabel,
-                                    fontSize: 14,
-                                    fontFamily: 'Nunito',
-                                    letterSpacing: 0,
-                                  ),
-                                  border: OutlineInputBorder(),
-                                  errorBorder: OutlineInputBorder(
-                                    borderSide: BorderSide(color: Colors.red),
-                                  ),
-                                  suffixIcon: IconButton(
-                                    onPressed: () {
-                                      setState(() {
-                                        _secureConfirmText = !_secureConfirmText;
-                                      });
-                                    },
-                                    icon: Icon(
-                                      _secureConfirmText == true
-                                          ? Icons.visibility
-                                          : Icons.visibility_off,
-                                      color: Col.Onbackground,
-                                    ),
-                                  )),
-                              obscureText: _secureConfirmText,
-                            ),
-                          ),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
-                          child: Container(
-                            width: double.infinity,
-                            child: RaisedButton(
-                              color: Col.primary,
+              ? Column(
+                children: [
+                  successChange ? Padding(
+                    padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                    child: Text(
+                      "Password successfully changed!",
+                      style: TextStyle(
+                        color: Col.primary,
+                        fontSize: 20,
+                        // fontWeight: FontWeight.bold,
+                        fontFamily: 'Nunito',
+                        letterSpacing: 0.1,
+                      ),
+                    ),
+                  ) : SizedBox(),
+                  Container(
+                      margin: successChange ? EdgeInsets.fromLTRB(10, 10, 10, 0) : EdgeInsets.fromLTRB(10, 60, 10, 0),
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      decoration: BoxDecoration(
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: Colors.black26, width: 1),
+                        color: Col.background,
+                      ),
+                      child: Form(
+                        key: _formKey,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
                               child: Text(
-                                "Submit",
+                                "CONFIRM PASSWORD",
                                 style: TextStyle(
-                                  color: Col.Onprimary,
-                                  fontSize: 18,
+                                  color: Col.Onbackground,
+                                  fontSize: 20,
                                   fontWeight: FontWeight.bold,
                                   fontFamily: 'Nunito',
-                                  letterSpacing: 0.3,
+                                  letterSpacing: 0.1,
                                 ),
                               ),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  changePassword();
-                                }
-                              },
                             ),
-                          ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(25, 35, 25, 0),
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: TextFormField(
+                                  controller: TextEditingController(text: user.passwordHash),
+                                  onChanged: (value){
+                                    var bytes = utf8.encode(value);
+                                    var sha512 = sha256.convert(bytes);
+                                    var hashedPassword = sha512.toString();
+                                    this.hashedPassword = hashedPassword;
+                                    user.passwordHash = value;
+                                  },
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "This field can not be empty";
+                                    } else if (value.length <= 6) {
+                                      return "Password should be at least 6 characters";
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                      hintText: "Password",
+                                      hintStyle: TextStyle(
+                                        color: Col.textfieldLabel,
+                                        fontSize: 14,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.1,
+                                      ),
+                                      labelText: "Password",
+                                      labelStyle: TextStyle(
+                                        color: Col.textfieldLabel,
+                                        fontSize: 14,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0,
+                                      ),
+                                      border: OutlineInputBorder(),
+                                      errorBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.red),
+                                      ),
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _secureText = !_secureText;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          _secureText == true
+                                              ? Icons.visibility
+                                              : Icons.visibility_off,
+                                          color: Col.Onbackground,
+                                        ),
+                                      )),
+                                  obscureText: _secureText,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
+                              child: Container(
+                                alignment: Alignment.center,
+                                child: TextFormField(
+                                  validator: (value) {
+                                    if (value!.isEmpty) {
+                                      return "This field can not be empty";
+                                    } else if (value != user.passwordHash) {
+                                      return "Both passwords should be the same";
+                                    }
+                                    return null;
+                                  },
+                                  decoration: InputDecoration(
+                                      hintText: "Confirm Password",
+                                      hintStyle: TextStyle(
+                                        color: Col.textfieldLabel,
+                                        fontSize: 14,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.1,
+                                      ),
+                                      labelText: "Confirm Password",
+                                      labelStyle: TextStyle(
+                                        color: Col.textfieldLabel,
+                                        fontSize: 14,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0,
+                                      ),
+                                      border: OutlineInputBorder(),
+                                      errorBorder: OutlineInputBorder(
+                                        borderSide: BorderSide(color: Colors.red),
+                                      ),
+                                      suffixIcon: IconButton(
+                                        onPressed: () {
+                                          setState(() {
+                                            _secureConfirmText = !_secureConfirmText;
+                                          });
+                                        },
+                                        icon: Icon(
+                                          _secureConfirmText == true
+                                              ? Icons.visibility
+                                              : Icons.visibility_off,
+                                          color: Col.Onbackground,
+                                        ),
+                                      )),
+                                  obscureText: _secureConfirmText,
+                                ),
+                              ),
+                            ),
+                            Padding(
+                              padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
+                              child: Container(
+                                width: double.infinity,
+                                child: RaisedButton(
+                                  color: Col.primary,
+                                  child: Text(
+                                    "Submit",
+                                    style: TextStyle(
+                                      color: Col.Onprimary,
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.3,
+                                    ),
+                                  ),
+                                  shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(8)),
+                                  onPressed: () {
+                                    if (_formKey.currentState!.validate()) {
+                                      changePassword();
+                                      setState(() {
+                                        successChange = true;
+                                      });
+                                      Future.delayed(Duration(seconds: 3), () {
+                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                                      });
+                                    }
+                                  },
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
-                  ),
-                )
+                ],
+              )
               : Container(
                   margin: EdgeInsets.fromLTRB(10, 60, 10, 0),
                   padding: EdgeInsets.symmetric(vertical: 20),
@@ -450,12 +460,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         (emailExists == "INVALID_CALL:|:USER_EMAIL_NOT_IN_USE")
                             ? Padding(
                           padding: const EdgeInsets.only(top: 5),
-                          child: Text(
-                            "Email does not exist",
-                            style: TextStyle(
-                                color: Colors.redAccent,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 15),
+                          child: Center(
+                            child: Text(
+                              "Email does not exist",
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
                           ),
                         )
                             : Text(""),
@@ -497,7 +509,6 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                                   verificationCode) {
                                                 return "Please enter the correct verification code";
                                               }
-                                              verified();
                                               for(int i = 0; i < users.length; i++){
                                                 final userDetail = users[i];
 
@@ -537,14 +548,40 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                     ),
                                   )
                                 : Text(""),
-                        Padding(
+                        isDataEntered ? Padding(
                           padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
                           child: Container(
                             width: double.infinity,
                             child: RaisedButton(
                               color: Col.primary,
                               child: Text(
-                                isDataEntered ? "Verify" : "Submit",
+                                "Verify",
+                                style: TextStyle(
+                                  color: Col.Onprimary,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Nunito',
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  verified();
+                                  // trial();
+                                }
+                              },
+                            ),
+                          ),
+                        ) : Padding(
+                          padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
+                          child: Container(
+                            width: double.infinity,
+                            child: RaisedButton(
+                              color: Col.primary,
+                              child: Text(
+                                "Submit",
                                 style: TextStyle(
                                   color: Col.Onprimary,
                                   fontSize: 18,
@@ -558,8 +595,19 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   verify();
-                                  trial();
+                                  // trial();
+                                  setState(() {
+                                    isProcessing = true;
+                                  });
                                 }
+                                else {
+                                  print("Enter fields");
+                                }
+                                Future.delayed(Duration(seconds: 4), () {
+                                  setState(() {
+                                    isProcessing = false;
+                                  });
+                                });
                               },
                             ),
                           ),
