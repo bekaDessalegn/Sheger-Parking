@@ -8,13 +8,20 @@ import 'package:sheger_parking/constants/colors.dart';
 import 'package:sheger_parking/constants/strings.dart';
 
 class BranchMap extends StatefulWidget {
-  const BranchMap({Key? key}) : super(key: key);
+
+  String location;
+  BranchMap({required this.location});
 
   @override
-  _BranchMapState createState() => _BranchMapState();
+  _BranchMapState createState() => _BranchMapState(location);
 }
 
 class _BranchMapState extends State<BranchMap> {
+
+  String location;
+  _BranchMapState(this.location);
+
+  late List splittedBranchLocation;
 
   late double lat = 0.0;
   late double longs = 0.0;
@@ -27,12 +34,7 @@ class _BranchMapState extends State<BranchMap> {
 
   PolylinePoints polylinePoints = PolylinePoints();
 
-  Marker destination = Marker(
-      markerId: MarkerId('Destination'),
-      infoWindow: const InfoWindow(title: "Destination"),
-      icon: BitmapDescriptor.defaultMarkerWithHue(
-          BitmapDescriptor.hueRed),
-      position: LatLng(8.9831, 38.8101));
+  late Marker destination;
 
   void getCurrentLocation() async {
     var position = await Geolocator()
@@ -87,6 +89,16 @@ class _BranchMapState extends State<BranchMap> {
 
   @override
   void initState() {
+
+    splittedBranchLocation = location.split(",");
+
+    destination = Marker(
+        markerId: MarkerId('Destination'),
+        infoWindow: const InfoWindow(title: "Destination"),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+            BitmapDescriptor.hueRed),
+        position: LatLng(double.parse(splittedBranchLocation[0]), double.parse(splittedBranchLocation[1])));
+
     super.initState();
   }
 
@@ -135,7 +147,7 @@ class _BranchMapState extends State<BranchMap> {
           ),
         ),
       ),
-      body: (lat == 0.0 && longs == 0.0) ? Center(child: CircularProgressIndicator(),) : Stack(
+      body: (lat == 0.0 && longs == 0.0) ? Center(child: CircularProgressIndicator(color: Col.primary,),) : Stack(
         alignment: Alignment.center,
         children: [
           GoogleMap(

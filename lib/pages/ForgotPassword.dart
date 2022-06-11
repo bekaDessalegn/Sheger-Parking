@@ -188,7 +188,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
       body: ListView(
         children: [
           Padding(
-            padding: EdgeInsets.fromLTRB(15, 10, 0, 0),
+            padding: EdgeInsets.fromLTRB(15, 35, 0, 0),
             child: Text(
               Strings.app_title,
               style: TextStyle(
@@ -347,7 +347,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                           ),
                         ),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
+                          padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
                           child: Container(
                             width: double.infinity,
                             child: RaisedButton(
@@ -392,9 +392,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         Padding(
                           padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
                           child: Text(
-                            "FORGOT PASSWORD",
+                            "Please enter your email",
                             style: TextStyle(
-                              color: Col.Onbackground,
+                              color: Col.blackColor,
                               fontSize: 22,
                               fontWeight: FontWeight.bold,
                               fontFamily: 'Nunito',
@@ -538,7 +538,7 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                   )
                                 : Text(""),
                         Padding(
-                          padding: EdgeInsets.fromLTRB(25, 50, 25, 0),
+                          padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
                           child: Container(
                             width: double.infinity,
                             child: RaisedButton(

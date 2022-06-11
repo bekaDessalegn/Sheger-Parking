@@ -10,6 +10,7 @@ import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/models/BranchDetails.dart';
 import 'package:sheger_parking/models/Reservation.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../constants/colors.dart';
 import 'package:time_picker_widget/time_picker_widget.dart';
@@ -37,8 +38,9 @@ class _ReservationPageState extends State<ReservationPage> {
   _ReservationPageState(this.id, this.fullName, this.phone, this.email,
       this.passwordHash, this.defaultPlateNumber);
 
-   List<String> branchesName = [];
-   List<String> branchesId = [];
+  List<String> branchesName = [];
+  List<String> branchesId = [];
+  List<int> branchesPricePerHour = [];
 
   String? value;
   String checker = '';
@@ -48,21 +50,73 @@ class _ReservationPageState extends State<ReservationPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  String? slotResponse;
+  bool? slotResponse;
+  bool toPay = false;
+  int payement = 0;
+  int pricePerHour = 0;
+
+  late String plateNumber;
+  late DateTime fullTime;
+
+  var url = "https://www.youtube.com";
+
+  void launchUrl() async {
+    // if (!await launchUrl(_url)) throw 'Could not launch $_url';
+    if (await canLaunch(url)) {
+      await launch(url);
+    } else {
+      throw 'Could not launch $url';
+    }
+  }
+
+  Future availablility() async {
+    var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
+    var url = Uri.parse('${base_url}/reservations/availability');
+
+    var body = {
+      "branch": reservation.branch,
+      "startingTime": reservation.startingTime,
+      "duration": int.parse(reservation.duration.toString())
+    };
+    var req = http.Request('POST', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      var data = json.decode(resBody);
+
+      setState(() {
+        slotResponse = data["slotAvailable"];
+      });
+
+      if (slotResponse == true) {
+        setState(() {
+          toPay = true;
+        });
+      }
+
+      print(resBody);
+    } else {
+      print(res.reasonPhrase);
+    }
+  }
 
   Future reserve() async {
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
-    var url = Uri.parse(
-        '${base_url}/reservations');
+    var url = Uri.parse('${base_url}/payment');
 
     var body = {
       "client": id,
-      "reservationPlateNumber": reservation.reservationPlateNumber,
+      "reservationPlateNumber": plateNumber,
       "branch": reservation.branch,
       "branchName": reservation.branchName,
-      "price": 87,
+      "price": payement,
       "startingTime": reservation.startingTime,
-      "duration": reservation.duration
+      "duration": int.parse(reservation.duration.toString()),
+      "redirectPath": redirect_path
     };
     var req = http.Request('POST', url);
     req.headers.addAll(headersList);
@@ -82,39 +136,42 @@ class _ReservationPageState extends State<ReservationPage> {
       String price = data["price"].toString();
       String duration = data["duration"].toString();
       String parked = data["parked"].toString();
-      setState(() {
-        slotResponse = "There is an available spot";
-      });
       print(resBody);
-      Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => HomePage(
-                  id: id,
-                  fullName: fullName,
-                  phone: phone,
-                  email: email,
-                  passwordHash: passwordHash,
-                  defaultPlateNumber: defaultPlateNumber,
-                  reservationId: reservationId,
-                  reservationPlateNumber: reservationPlateNumber,
-                  branch: branch,
-                  branchName: branchName,
-                  startTime: startingTime,
-                  slot: slot,
-                  price: price,
-                  duration: duration,
-                  parked: parked)));
-    } else {
-      var data = json.decode(resBody);
+
+      var url = data["paymentUrl"];
+
       setState(() {
-        slotResponse = data["message"];
+        this.url = url;
       });
+      launchUrl();
+
+      // if (!await launchUrl(_url)) throw 'Could not launch the payment url';
+
+      // Navigator.pushReplacement(
+      //     context,
+      //     MaterialPageRoute(
+      //         builder: (context) => HomePage(
+      //             id: id,
+      //             fullName: fullName,
+      //             phone: phone,
+      //             email: email,
+      //             passwordHash: passwordHash,
+      //             defaultPlateNumber: defaultPlateNumber,
+      //             reservationId: reservationId,
+      //             reservationPlateNumber: reservationPlateNumber,
+      //             branch: branch,
+      //             branchName: branchName,
+      //             startTime: startingTime,
+      //             slot: slot,
+      //             price: price,
+      //             duration: duration,
+      //             parked: parked)));
+    } else {
       print(resBody);
     }
   }
 
-  Reservation reservation = Reservation("", "", "", "", 0, 0, 0);
+  Reservation reservation = Reservation("", "", "", "", 0, 0, 1);
 
   List<BranchDetails> branches = [];
   String query = '';
@@ -124,7 +181,10 @@ class _ReservationPageState extends State<ReservationPage> {
   void initState() {
     super.initState();
 
-    DateTime currentDateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
+    plateNumber = defaultPlateNumber;
+    final fullTime = timestamp + (3600000 - (timestamp % 3600000));
+    DateTime currentDateTime = DateTime.fromMillisecondsSinceEpoch(fullTime);
+    this.fullTime = currentDateTime;
 
     String startDate = DateFormat.yMMMd().format(currentDateTime);
     String startTime = DateFormat('h:mm a').format(currentDateTime);
@@ -142,9 +202,9 @@ class _ReservationPageState extends State<ReservationPage> {
   }
 
   void debounce(
-      VoidCallback callback, {
-        Duration duration = const Duration(milliseconds: 1000),
-      }) {
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
     if (debouncer != null) {
       debouncer!.cancel();
     }
@@ -152,10 +212,8 @@ class _ReservationPageState extends State<ReservationPage> {
     debouncer = Timer(duration, callback);
   }
 
-  static Future<List<BranchDetails>> getBranchDetails(
-      String query) async {
-    final url = Uri.parse(
-        '${base_url}/branches');
+  static Future<List<BranchDetails>> getBranchDetails(String query) async {
+    final url = Uri.parse('${base_url}/branches');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
@@ -164,8 +222,7 @@ class _ReservationPageState extends State<ReservationPage> {
       return branchDetails
           .map((json) => BranchDetails.fromJson(json))
           .where((branchDetail) {
-        final branchNameLower =
-        branchDetail.name.toLowerCase();
+        final branchNameLower = branchDetail.name.toLowerCase();
         final branchIdLower = branchDetail.id.toLowerCase();
         final searchLower = query.toLowerCase();
 
@@ -182,12 +239,14 @@ class _ReservationPageState extends State<ReservationPage> {
 
     setState(() => this.branches = branchDetails);
 
-    for(int i = 0; i < branches.length; i++){
+    for (int i = 0; i < branches.length; i++) {
       final branchDetail = branches[i];
 
       setState(() {
         branchesName.add(branchDetail.name);
         branchesId.add(branchDetail.id);
+        branchesPricePerHour.add(branchDetail.pricePerHour);
+        // value = branchesName[0];
       });
     }
   }
@@ -220,347 +279,479 @@ class _ReservationPageState extends State<ReservationPage> {
                 ),
               ),
               Column(
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25, 15, 25, 3),
-                      child: Container(
-                        width: double.infinity,
-                        child: Text(
-                          "Plate Number",
-                          style: TextStyle(
-                            color: Col.textfieldLabel,
-                            fontSize: 14,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: TextFormField(
-                          controller: TextEditingController(
-                              text: reservation.reservationPlateNumber),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "This field can not be empty";
-                            }
-                            return null;
-                          },
-                          onChanged: (value) {
-                            reservation.reservationPlateNumber = value;
-                          },
-                          decoration: InputDecoration(
-                            hintText: "",
-                            hintStyle: TextStyle(
-                              color: Col.textfieldLabel,
-                              fontSize: 14,
-                              fontFamily: 'Nunito',
-                              letterSpacing: 0.1,
-                            ),
-                            // floatingLabelBehavior: FloatingLabelBehavior.always,
-                            // labelText: "Plate Number",
-                            // labelStyle: TextStyle(
-                            //   color: Col.textfieldLabel,
-                            //   fontSize: 14,
-                            //   fontFamily: 'Nunito',
-                            //   letterSpacing: 0,
-                            // ),
-                            border: OutlineInputBorder(),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Col.primary),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.red),
-                            ),
-                          ),
-                        ),
-                      ),
-                    ),
-
-                    /////////////////////////////////////////////////////////////////////
-                    // Padding(
-                    //   padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
-                    //   child: Container(
-                    //     width: double.infinity,
-                    //     alignment: Alignment.center,
-                    //     child: TextFormField(
-                    //       controller: TextEditingController(
-                    //           text: reservation.reservationPlateNumber),
-                    //       validator: (value) {
-                    //         if (value!.isEmpty) {
-                    //           return "This field can not be empty";
-                    //         }
-                    //         return null;
-                    //       },
-                    //       onChanged: (value) {
-                    //         reservation.reservationPlateNumber = value;
-                    //       },
-                    //       decoration: InputDecoration(
-                    //         hintText: "",
-                    //         hintStyle: TextStyle(
-                    //           color: Col.textfieldLabel,
-                    //           fontSize: 14,
-                    //           fontFamily: 'Nunito',
-                    //           letterSpacing: 0.1,
-                    //         ),
-                    //         floatingLabelBehavior: FloatingLabelBehavior.always,
-                    //         labelText: "Plate Number",
-                    //         labelStyle: TextStyle(
-                    //           color: Col.blackColor,
-                    //           fontSize: 20,
-                    //           fontWeight: FontWeight.w600,
-                    //           fontFamily: 'Nunito',
-                    //           letterSpacing: 0.1,
-                    //         ),
-                    //         border: OutlineInputBorder(),
-                    //         errorBorder: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: Colors.red),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
-                      child: Container(
-                        width: double.infinity,
-                        child: Text(
-                          "Branch",
-                          style: TextStyle(
-                            color: Col.textfieldLabel,
-                            fontSize: 14,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
-                      child: Container(
-                        width: double.infinity,
-                        alignment: Alignment.center,
-                        padding:
-                            EdgeInsets.symmetric(vertical: 4),
-                        child: DropdownButtonFormField<String>(
-                            value: value,
-                            isExpanded: true,
-                            items: branchesName.map(buildMenuBranch).toList(),
-                            onChanged: (value) => setState(() {
-                              this.value = value;
-                              checker = value!;
-
-                              setState(() {
-                                reservation.branchName = value;
-                              });
-
-                              for(int i = 0; i < branches.length; i++){
-                                final branchDetail = branches[i];
-
-                                if(value == branchDetail.name){
-                                  setState(() {
-                                    reservation.branch = branchesId[i];
-                                  });
-                                }
-                              }
-
-                              print(reservation.branch);
-
-                            }),
-                            validator: (value) {
-                              if (checker == '') {
-                                return "This field can not be empty";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              border: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.black),
-                              ),
-                              focusedBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Col.primary),
-                              ),
-                              errorBorder: OutlineInputBorder(
-                                borderSide: BorderSide(color: Colors.red),
-                              ),
-                            ),
-                          ),
-                        ),
-                      ),
-                    (slotResponse == "INVALID_CALL:|:No_Available_Slot")
-                        ? Padding(
-                      padding: const EdgeInsets.only(top: 5),
-                      child: Text(
-                        "No Available Slot",
-                        style: TextStyle(
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15),
-                      ),
-                    )
-                        : Text(""),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25, 0, 25, 3),
-                      child: Container(
-                        width: double.infinity,
-                        child: Text(
-                          "Start time",
-                          style: TextStyle(
-                            color: Col.textfieldLabel,
-                            fontSize: 14,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0,
-                          ),
-                        ),
-                      ),
-                    ),
-                    Container(
+                children: [
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(25, 15, 25, 3),
+                    child: Container(
                       width: double.infinity,
-                      margin: EdgeInsets.symmetric(horizontal: 25),
-                      padding: EdgeInsets.symmetric(vertical: 5),
-                      child: RaisedButton(
-                        color: Colors.white,
-                        focusElevation: 0.0,
-                        hoverElevation: 0.0,
-                        highlightElevation: 0.0,
-                        focusColor: Colors.transparent,
-                        highlightColor: Colors.transparent,
-                        splashColor: Colors.transparent,
-                        child: Row(
-                          mainAxisAlignment:
-                          MainAxisAlignment.center,
-                          children: [
-                            Text(
-                              // "$formattedStartTime - $formattedFinishTime",
-                              "$startDate ",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontFamily: 'Nunito',
-                              ),
-                            ),
-                            Text(
-                              // "$formattedStartTime - $formattedFinishTime",
-                              "|",
-                              style: TextStyle(
-                                color: Col.primary,
-                                fontSize: 16,
-                                fontFamily: 'Nunito',
-                              ),
-                            ),
-                            Text(
-                              // "$formattedStartTime - $formattedFinishTime",
-                              " $startTime",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 16,
-                                fontFamily: 'Nunito',
-                              ),
-                            ),
-                          ],
+                      child: Text(
+                        "Plate Number",
+                        style: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
                         ),
-                        onPressed: () {
-                          pickDateTime();
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: TextFormField(
+                        controller: TextEditingController(text: plateNumber),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "This field can not be empty";
+                          }
+                          return null;
                         },
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
+                        onChanged: (value) {
+                          reservation.reservationPlateNumber = value;
+                          plateNumber = value;
+                        },
+                        enabled: toPay ? false : true,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: toPay ? Colors.grey[200] : Colors.white,
+                          hintText: "",
+                          hintStyle: TextStyle(
+                            color: Col.textfieldLabel,
+                            fontSize: 14,
+                            fontFamily: 'Nunito',
+                            letterSpacing: 0.1,
+                          ),
+                          // floatingLabelBehavior: FloatingLabelBehavior.always,
+                          // labelText: "Plate Number",
+                          // labelStyle: TextStyle(
+                          //   color: Col.textfieldLabel,
+                          //   fontSize: 14,
+                          //   fontFamily: 'Nunito',
+                          //   letterSpacing: 0,
+                          // ),
+                          border: OutlineInputBorder(),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Col.primary),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
                         ),
-                        elevation: 0.0,
+                      ),
+                    ),
+                  ),
+
+                  /////////////////////////////////////////////////////////////////////
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
+                  //   child: Container(
+                  //     width: double.infinity,
+                  //     alignment: Alignment.center,
+                  //     child: TextFormField(
+                  //       controller: TextEditingController(
+                  //           text: reservation.reservationPlateNumber),
+                  //       validator: (value) {
+                  //         if (value!.isEmpty) {
+                  //           return "This field can not be empty";
+                  //         }
+                  //         return null;
+                  //       },
+                  //       onChanged: (value) {
+                  //         reservation.reservationPlateNumber = value;
+                  //       },
+                  //       decoration: InputDecoration(
+                  //         hintText: "",
+                  //         hintStyle: TextStyle(
+                  //           color: Col.textfieldLabel,
+                  //           fontSize: 14,
+                  //           fontFamily: 'Nunito',
+                  //           letterSpacing: 0.1,
+                  //         ),
+                  //         floatingLabelBehavior: FloatingLabelBehavior.always,
+                  //         labelText: "Plate Number",
+                  //         labelStyle: TextStyle(
+                  //           color: Col.blackColor,
+                  //           fontSize: 20,
+                  //           fontWeight: FontWeight.w600,
+                  //           fontFamily: 'Nunito',
+                  //           letterSpacing: 0.1,
+                  //         ),
+                  //         border: OutlineInputBorder(),
+                  //         errorBorder: OutlineInputBorder(
+                  //           borderSide: BorderSide(color: Colors.red),
+                  //         ),
+                  //       ),
+                  //     ),
+                  //   ),
+                  // ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
+                    child: Container(
+                      width: double.infinity,
+                      child: Text(
+                        "Branch",
+                        style: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                    child: Container(
+                      width: double.infinity,
+                      alignment: Alignment.center,
+                      padding: EdgeInsets.symmetric(vertical: 0),
+                      child: DropdownButtonFormField<String>(
+                        value: value,
+                        isExpanded: true,
+                        hint: Text("Select a branch"),
+                        items: branchesName.map(buildMenuBranch).toList(),
+                        onChanged: toPay
+                            ? null
+                            : (value) => setState(() {
+                                  this.value = value;
+                                  checker = value!;
+
+                                  setState(() {
+                                    reservation.branchName = value;
+                                  });
+
+                                  for (int i = 0; i < branches.length; i++) {
+                                    final branchDetail = branches[i];
+
+                                    if (value == branchDetail.name) {
+                                      setState(() {
+                                        reservation.branch = branchesId[i];
+                                      });
+                                    }
+                                    if (value == branchDetail.name) {
+                                      setState(() {
+                                        pricePerHour = branchesPricePerHour[i];
+                                      });
+                                    }
+                                  }
+
+                                  print(reservation.branch);
+                                }),
+                        validator: (value) {
+                          if (checker == '') {
+                            return "This field can not be empty";
+                          }
+                          return null;
+                        },
+                        decoration: InputDecoration(
+                          border: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Col.primary),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                        ),
                       ),
                       decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Col.blackColor, width: 1),
-                                  ),
-                    ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25, 20, 25, 3),
-                      child: Container(
-                        width: double.infinity,
-                        child: Text(
-                          "Duration (hours)",
-                          style: TextStyle(
-                            color: Col.textfieldLabel,
-                            fontSize: 14,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0,
-                          ),
-                        ),
+                        borderRadius: BorderRadius.circular(10),
+                        color: toPay ? Colors.grey[200] : Colors.white,
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
-                      child: Container(
-                        alignment: Alignment.center,
-                        child: TextFormField(
-                          controller: TextEditingController(text: ""),
-                          validator: (value) {
-                            if (value!.isEmpty) {
-                              return "This field can not be empty";
-                            }
-                            return null;
-                          },
-                          onChanged: (value) {
-                            reservation.duration = int.parse(value);
-                          },
-                          decoration: InputDecoration(
-                            hintText: "",
-                            hintStyle: TextStyle(
-                              color: Col.textfieldLabel,
-                              fontSize: 14,
+                  ),
+                  (slotResponse == false)
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Text(
+                            "No Available Slot",
+                            style: TextStyle(
+                              color: Colors.redAccent,
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
                               fontFamily: 'Nunito',
                               letterSpacing: 0.1,
                             ),
-                            // floatingLabelBehavior: FloatingLabelBehavior.always,
-                            // labelText: "Duration (hours)",
-                            // labelStyle: TextStyle(
-                            //   color: Col.textfieldLabel,
-                            //   fontSize: 14,
-                            //   fontFamily: 'Nunito',
-                            //   letterSpacing: 0,
-                            // ),
-                            border: OutlineInputBorder(),
-                            focusedBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Col.primary),
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderSide: BorderSide(color: Colors.red),
-                            ),
                           ),
+                        )
+                      : Text(""),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(25, 0, 25, 3),
+                    child: Container(
+                      width: double.infinity,
+                      child: Text(
+                        "Start time",
+                        style: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
                         ),
                       ),
                     ),
-                    Padding(
-                      padding: EdgeInsets.fromLTRB(0, 35, 0, 20),
-                      child: Center(
-                        child: RaisedButton(
-                          onPressed: () {
-                            if (_formKey.currentState!.validate()) {
-                              reserve();
-                            }
-                          },
-                          padding: EdgeInsets.symmetric(
-                              vertical: 10, horizontal: 100),
-                          color: Col.primary,
-                          child: Text(
-                            'Reserve',
+                  ),
+                  Container(
+                    width: double.infinity,
+                    margin: EdgeInsets.symmetric(horizontal: 25),
+                    child: RaisedButton(
+                      padding: EdgeInsets.symmetric(vertical: 20),
+                      color: Colors.white,
+                      focusElevation: 0.0,
+                      hoverElevation: 0.0,
+                      highlightElevation: 0.0,
+                      focusColor: Colors.transparent,
+                      highlightColor: Colors.transparent,
+                      splashColor: Colors.transparent,
+                      disabledColor: Colors.grey[200],
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            // "$formattedStartTime - $formattedFinishTime",
+                            "$startDate ",
                             style: TextStyle(
-                              color: Col.blackColor,
+                              color: Colors.black,
                               fontSize: 16,
                               fontFamily: 'Nunito',
-                              letterSpacing: 0.3,
                             ),
-                            textAlign: TextAlign.center,
                           ),
-                          shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(8)),
+                          Text(
+                            // "$formattedStartTime - $formattedFinishTime",
+                            "|",
+                            style: TextStyle(
+                              color: Col.primary,
+                              fontSize: 16,
+                              fontFamily: 'Nunito',
+                            ),
+                          ),
+                          Text(
+                            // "$formattedStartTime - $formattedFinishTime",
+                            " $startTime",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 16,
+                              fontFamily: 'Nunito',
+                            ),
+                          ),
+                        ],
+                      ),
+                      onPressed: toPay
+                          ? null
+                          : () {
+                              pickDateTime();
+                            },
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      elevation: 0.0,
+                    ),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(8),
+                      border: Border.all(
+                          color: toPay ? Col.whiteColor : Col.blackColor,
+                          width: 1),
+                    ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(25, 20, 25, 3),
+                    child: Container(
+                      width: double.infinity,
+                      child: Text(
+                        "Duration (hours)",
+                        style: TextStyle(
+                          color: Col.textfieldLabel,
+                          fontSize: 14,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0,
                         ),
                       ),
                     ),
-                  ],
-                ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                    child: Container(
+                      alignment: Alignment.center,
+                      child: TextFormField(
+                        controller: TextEditingController(
+                            text: reservation.duration.toString()),
+                        validator: (value) {
+                          if (value!.isEmpty) {
+                            return "This field can not be empty";
+                          }
+                          try {
+                            int.parse(value);
+                          } catch (e) {
+                            return "Duration can only be a number";
+                          }
+                          if (int.parse(value) <= 0) {
+                            return "Duration must be greater than 0";
+                          }
+                          return null;
+                        },
+                        onChanged: (value) {
+                          try {
+                            reservation.duration = int.parse(value);
+                          } catch (e) {}
+                        },
+                        enabled: toPay ? false : true,
+                        decoration: InputDecoration(
+                          filled: true,
+                          fillColor: toPay ? Colors.grey[200] : Colors.white,
+                          hintText: "",
+                          hintStyle: TextStyle(
+                            color: Col.textfieldLabel,
+                            fontSize: 14,
+                            fontFamily: 'Nunito',
+                            letterSpacing: 0.1,
+                          ),
+                          // floatingLabelBehavior: FloatingLabelBehavior.always,
+                          // labelText: "Duration (hours)",
+                          // labelStyle: TextStyle(
+                          //   color: Col.textfieldLabel,
+                          //   fontSize: 14,
+                          //   fontFamily: 'Nunito',
+                          //   letterSpacing: 0,
+                          // ),
+                          border: OutlineInputBorder(),
+                          focusedBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Col.primary),
+                          ),
+                          errorBorder: OutlineInputBorder(
+                            borderSide: BorderSide(color: Colors.red),
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 2,
+                  ),
+                  toPay
+                      ? Padding(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: TextButton(
+                            onPressed: () {
+                              setState(() {
+                                toPay = !toPay;
+                              });
+                            },
+                            style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size(50, 30),
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                                alignment: Alignment.centerLeft),
+                            child: Text(
+                              "Edit Reservation",
+                              style: TextStyle(
+                                color: Col.linkColor,
+                                fontSize: 14,
+                                fontFamily: 'Nunito',
+                              ),
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
+                  // toPay ? Text("The Total fee is $payement birr",
+                  //   style: TextStyle(
+                  //   color: Col.blackColor,
+                  //   fontSize: 18,
+                  //   fontWeight: FontWeight.bold,
+                  //   fontFamily: 'Nunito',
+                  //   letterSpacing: 0.1,
+                  // ),
+                  // ) : SizedBox(),
+                  toPay
+                      ? Padding(
+                          padding: EdgeInsets.fromLTRB(0, 15, 0, 5),
+                          child: Center(
+                            child: RaisedButton(
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  reserve();
+                                  await Future.delayed(Duration(seconds: 2));
+                                  Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) => HomePage(
+                                              id: id,
+                                              fullName: fullName,
+                                              phone: phone,
+                                              email: email,
+                                              passwordHash: passwordHash,
+                                              defaultPlateNumber:
+                                                  defaultPlateNumber)));
+                                }
+                              },
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 90),
+                              color: Col.primary,
+                              child: RichText(
+                                text: TextSpan(
+                                  children: [
+                                    TextSpan(
+                                        style: TextStyle(
+                                          color: Col.blackColor,
+                                          fontSize: 16,
+                                          fontFamily: 'Nunito',
+                                          letterSpacing: 0.3,
+                                        ),
+                                        text: "Pay"),
+                                    TextSpan(
+                                      style: TextStyle(
+                                        color: Col.blackColor,
+                                        fontSize: 17,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                      text: " $payement birr",
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                            ),
+                          ),
+                        )
+                      : Padding(
+                          padding: EdgeInsets.fromLTRB(0, 20, 0, 20),
+                          child: Center(
+                            child: RaisedButton(
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  setState(() {
+                                    payement =
+                                        pricePerHour * reservation.duration;
+                                  });
+                                  print(reservation.price);
+                                  print(reservation.duration);
+                                  availablility();
+                                }
+                              },
+                              padding: EdgeInsets.symmetric(
+                                  vertical: 10, horizontal: 100),
+                              color: Col.primary,
+                              child: Text(
+                                'Reserve',
+                                style: TextStyle(
+                                  color: Col.blackColor,
+                                  fontSize: 16,
+                                  fontFamily: 'Nunito',
+                                  letterSpacing: 0.3,
+                                ),
+                                textAlign: TextAlign.center,
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                            ),
+                          ),
+                        ),
+                ],
+              ),
             ],
           ),
         ),
@@ -634,16 +825,19 @@ class _ReservationPageState extends State<ReservationPage> {
 
   Future<DateTime?> pickDate() => showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1991),
+      initialDate: fullTime,
+      firstDate: DateTime.now(),
       lastDate: DateTime(2050));
 
   Future<TimeOfDay?> pickTime() => showCustomTimePicker(
-      context: context,
-      // It is a must if you provide selectableTimePredicate
-      onFailValidation: (context) => print('Unavailable selection'),
-      initialTime: TimeOfDay(hour: 6, minute: 0),
-      selectableTimePredicate: (time) => time!.minute == 0);
+        context: context,
+        // It is a must if you provide selectableTimePredicate
+        onFailValidation: (context) => print('Unavailable selection'),
+        initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
+        selectableTimePredicate: (time) {
+          return time!.minute == 0 && time.hour >= fullTime.hour;
+        },
+      );
 
   Future pickDateTime() async {
     DateTime? date = await pickDate();
@@ -652,7 +846,8 @@ class _ReservationPageState extends State<ReservationPage> {
     TimeOfDay? time = await pickTime();
     if (time == null) return;
 
-    final dateTime = DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    final dateTime =
+        DateTime(date.year, date.month, date.day, time.hour, time.minute);
 
     int timestamp = dateTime.millisecondsSinceEpoch;
 

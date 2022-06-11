@@ -3,8 +3,10 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/pages/BranchMap.dart';
 
@@ -40,6 +42,13 @@ class _BranchesPageState extends State<BranchesPage> {
   String query = '';
   Timer? debouncer;
 
+  String location = "8.9831, 38.8101";
+
+  late double lat;
+  late double longs;
+
+  bool onLoading = true;
+
   @override
   void initState() {
     super.initState();
@@ -64,14 +73,47 @@ class _BranchesPageState extends State<BranchesPage> {
     debouncer = Timer(duration, callback);
   }
 
-  static Future<List<BranchDetails>> getBranchDetails(String query) async {
+  Future getCurrentLocation() async {
+    var position = await Geolocator()
+        .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    setState(() {
+      lat = position.latitude;
+      longs = position.longitude;
+    });
+  }
+
+  List<BranchDetails> sortByLocation(
+      String currentLocation, List<BranchDetails> branches) {
+    List<double> currentLoc = currentLocation
+        .split(",")
+        .map((location) => double.parse(location))
+        .toList();
+    branches.sort(((a, b) {
+      List<double> locA = a.location
+          .split(",")
+          .map((location) => double.parse(location))
+          .toList();
+      List<double> locB = b.location
+          .split(",")
+          .map((location) => double.parse(location))
+          .toList();
+      double distA = sqrt(
+          pow(locA[0] - currentLoc[0], 2) + pow(locA[1] - currentLoc[1], 2));
+      double distB = sqrt(
+          pow(locB[0] - currentLoc[0], 2) + pow(locB[1] - currentLoc[1], 2));
+      return distA.compareTo(distB);
+    }));
+    return branches;
+  }
+
+  Future<List<BranchDetails>> getBranchDetails(String query) async {
     final url = Uri.parse('${base_url}/branches');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
-      final List branchDetails = json.decode(response.body);
+      final List branchDetailsJson = json.decode(response.body);
 
-      return branchDetails
+      List<BranchDetails> branchDetails = branchDetailsJson
           .map((json) => BranchDetails.fromJson(json))
           .where((branchDetail) {
         final branchNameLower = branchDetail.name.toLowerCase();
@@ -81,12 +123,17 @@ class _BranchesPageState extends State<BranchesPage> {
         return branchNameLower.contains(searchLower) ||
             branchIdLower.contains(searchLower);
       }).toList();
+
+      return sortByLocation("$lat, $longs", branchDetails);
     } else {
       throw Exception();
     }
   }
 
   Future init() async {
+
+    await getCurrentLocation();
+
     setState(() {
       isLoading = true;
     });
@@ -97,6 +144,7 @@ class _BranchesPageState extends State<BranchesPage> {
 
     setState(() {
       isLoading = false;
+      onLoading = false;
     });
   }
 
@@ -108,7 +156,9 @@ class _BranchesPageState extends State<BranchesPage> {
         behavior: ScrollConfiguration.of(context).copyWith(
           scrollbars: false,
         ),
-        child: SingleChildScrollView(
+        child: onLoading ? Container(
+          height: MediaQuery.of(context).size.height,
+            child: Center(child: CircularProgressIndicator(color: Col.primary,),)) : SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: viewportConstraints.maxHeight,
@@ -149,7 +199,6 @@ class _BranchesPageState extends State<BranchesPage> {
                       child: Padding(
                         padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             SizedBox(
                               width: 15,
@@ -159,80 +208,71 @@ class _BranchesPageState extends State<BranchesPage> {
                               size: 80,
                               color: Col.primary,
                             ),
-                            Expanded(
-                              child: Row(),
-                            ),
-                            Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: <Widget>[
-                                // Stack(
-                                //   children: [
-                                // Align(
-                                //   child: IconButton(
-                                //     onPressed: () {
-                                //       Navigator.push(
-                                //           context,
-                                //           MaterialPageRoute(
-                                //               builder: (context) =>
-                                //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                                //     },
-                                //     icon: Icon(Icons.edit),
-                                //     iconSize: 25,
-                                //   ),
-                                //   alignment: Alignment.topRight,
-                                // ),
-                                Text(
-                                  "Nifas Silk Lafto",
-                                  style: TextStyle(
-                                    color: Col.whiteColor,
-                                    fontSize: 24,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Nunito',
-                                  ),
-                                ),
-                                //     ),
-                                // ],
-                                Text(
-                                  "200 Slots",
-                                  style: TextStyle(
-                                    color: Col.whiteColor,
-                                    fontSize: 20,
-                                    fontFamily: 'Nunito',
-                                  ),
-                                ),
-
-                                Text(
-                                  "20 birr/hour",
-                                  style: TextStyle(
-                                    color: Col.whiteColor,
-                                    fontSize: 20,
-                                    fontFamily: 'Nunito',
-                                  ),
-                                ),
-
-                                TextButton(
-                                  onPressed: () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) => BranchMap()));
-                                  },
-                                  child: Text(
-                                    "See on map",
+                            SizedBox(width: 10,),
+                            // Expanded(
+                            //   child: Row(),
+                            // ),
+                            Flexible(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisAlignment: MainAxisAlignment.start,
+                                children: <Widget>[
+                                  Text(
+                                    branches[0].name,
+                                    overflow: TextOverflow.fade,
+                                    maxLines: 1,
+                                    softWrap: false,
                                     style: TextStyle(
-                                      color: Col.linkColor,
-                                      fontSize: 16,
+                                      color: Col.whiteColor,
+                                      fontSize: 23,
+                                      fontWeight: FontWeight.bold,
                                       fontFamily: 'Nunito',
                                     ),
                                   ),
-                                  style: TextButton.styleFrom(
-                                      padding: EdgeInsets.zero,
-                                      minimumSize: Size(50, 30),
-                                      tapTargetSize:
-                                          MaterialTapTargetSize.shrinkWrap,
-                                      alignment: Alignment.centerLeft),
-                                ),
-                              ],
+                                  //     ),
+                                  // ],
+                                  Text(
+                                    "${branches[0].capacity} Slots",
+                                    style: TextStyle(
+                                      color: Col.whiteColor,
+                                      fontSize: 20,
+                                      fontFamily: 'Nunito',
+                                    ),
+                                  ),
+
+                                  Text(
+                                    "${branches[0].pricePerHour} birr/hour",
+                                    style: TextStyle(
+                                      color: Col.whiteColor,
+                                      fontSize: 20,
+                                      fontFamily: 'Nunito',
+                                    ),
+                                  ),
+
+                                  TextButton(
+                                    onPressed: () {
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => BranchMap(location: branches[0].location,)));
+                                    },
+                                    child: Text(
+                                      "See on map",
+                                      style: TextStyle(
+                                        color: Col.linkColor,
+                                        fontSize: 16,
+                                        fontFamily: 'Nunito',
+                                      ),
+                                    ),
+                                    style: TextButton.styleFrom(
+                                        padding: EdgeInsets.zero,
+                                        minimumSize: Size(50, 30),
+                                        tapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                        alignment: Alignment.centerLeft),
+                                  ),
+                                ],
+                              ),
                             ),
                           ],
                         ),
@@ -353,7 +393,7 @@ class _BranchesPageState extends State<BranchesPage> {
                                                 context,
                                                 MaterialPageRoute(
                                                     builder: (context) =>
-                                                        BranchMap()));
+                                                        BranchMap(location: branchDetail.location,)));
                                           },
                                           child: Text(
                                             "See on map",

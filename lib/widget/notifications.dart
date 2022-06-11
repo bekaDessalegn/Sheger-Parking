@@ -8,9 +8,8 @@ Future<void> createNotification() async {
     content: NotificationContent(
       id: createUniqueId(),
       channelKey: 'basic_channel',
-      title:
-      'Sheger Parking',
-      body: 'Your reservation is about to expire in 10 minutes so please go and get your fucking car out of this place',
+      title: 'Sheger Parking',
+      body: 'Your reservation at branch branch name is expiring in 10 minutes',
       // bigPicture: 'asset://assets/notification_map.png',
       // notificationLayout: NotificationLayout.BigPicture,
     ),

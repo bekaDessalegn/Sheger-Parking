@@ -5,10 +5,15 @@ import 'dart:convert';
 import 'package:awesome_notifications/awesome_notifications.dart';
 import 'package:carousel_slider/carousel_slider.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:sheger_parking/bloc/home_bloc.dart';
+import 'package:sheger_parking/bloc/home_event.dart';
+import 'package:sheger_parking/bloc/home_state.dart';
 import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/constants/colors.dart';
+import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/widget/notifications.dart';
 
 import '../constants/strings.dart';
@@ -110,7 +115,7 @@ class _ReservationsState extends State<Reservations> {
     super.initState();
 
     AwesomeNotifications().isNotificationAllowed().then(
-          (isAllowed) {
+      (isAllowed) {
         if (!isAllowed) {
           showDialog(
             context: context,
@@ -235,15 +240,15 @@ class _ReservationsState extends State<Reservations> {
     }
   }
 
-  void notifier(){
+  void notifier() {
     reservations.forEach((element) {
       // var durationInMs = element.duration * 3600000;
-      var startTimeInM = element.startingTime/60000;
+      var startTimeInM = element.startingTime / 60000;
       var durationInM = element.duration * 60;
       var endTimeInM = startTimeInM + durationInM;
-      var currentTimestampInM = DateTime.now().millisecondsSinceEpoch/60000;
+      var currentTimestampInM = DateTime.now().millisecondsSinceEpoch / 60000;
       var minutesLeft = endTimeInM - currentTimestampInM;
-      if(minutesLeft <= Strings.notifiyingMinute && minutesLeft > 9){
+      if (minutesLeft <= Strings.notifiyingMinute && minutesLeft > 9) {
         createNotification();
       }
     });
@@ -251,12 +256,10 @@ class _ReservationsState extends State<Reservations> {
 
   @override
   Widget build(BuildContext context) {
-    if(reservations.length<1){
-
-    }
-    else{
+    if (reservations.length < 1) {
+    } else {
       DateTime startingTime =
-      DateTime.fromMillisecondsSinceEpoch(reservations[0].startingTime);
+          DateTime.fromMillisecondsSinceEpoch(reservations[0].startingTime);
       String startDate = DateFormat.yMMMd().format(startingTime);
       String formattedStartTime = DateFormat('h:mm a').format(startingTime);
 
@@ -270,7 +273,9 @@ class _ReservationsState extends State<Reservations> {
         behavior: ScrollConfiguration.of(context).copyWith(
           scrollbars: false,
         ),
-        child: SingleChildScrollView(
+        child: isLoading ? Container(
+            height: MediaQuery.of(context).size.height,
+            child: Center(child: CircularProgressIndicator(color: Col.primary,),)) : SingleChildScrollView(
           child: ConstrainedBox(
             constraints: BoxConstraints(
               minHeight: viewportConstraints.maxHeight,
@@ -293,7 +298,162 @@ class _ReservationsState extends State<Reservations> {
                   ),
                 ),
                 !(reservations.length < 1)
-                    ? Container(
+                    ? GestureDetector(
+                    onTap: () {
+            Navigator.push(
+            context,
+            MaterialPageRoute(
+                builder: (context) =>
+                    ReservationDetailsPage(
+                        id: reservations[0].client,
+                        fullName: fullName,
+                        phone: phone,
+                        email: email,
+                        passwordHash: passwordHash,
+                        defaultPlateNumber:
+                        defaultPlateNumber,
+                        reservationId:
+                        reservations[0].id,
+                        reservationPlateNumber:
+                        reservations[0]
+                            .reservationPlateNumber,
+                        branch:
+                        reservations[0].branch,
+                        branchName: reservations[0]
+                            .branchName,
+                        startTime: reservations[0]
+                            .startingTime
+                            .toString(),
+                        slot: reservations[0].slot,
+                        price: reservations[0].price
+                            .toString(),
+                        duration: reservations[0]
+                            .duration
+                            .toString(),
+                        parked: reservations[0]
+                            .toString())));
+      },
+                      child: Container(
+                          child: Padding(
+                            padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
+                            child: Card(
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(15.0),
+                              ),
+                              color: Col.blackColor,
+                              elevation: 8,
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  borderRadius:
+                                      BorderRadius.all(Radius.circular(15.0)),
+                                  gradient: LinearGradient(
+                                      colors: [Col.gradientColor, Col.blackColor],
+                                      begin: Alignment.centerLeft,
+                                      end: Alignment.centerRight),
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
+                                  child: Row(
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceAround,
+                                    children: [
+                                      // SizedBox(width: 15,),
+                                      Image.asset(
+                                        "images/bell.png",
+                                        scale: 2.4,
+                                      ),
+                                      // Expanded(child: Row(),),
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: <Widget>[
+                                          // Stack(
+                                          //   children: [
+                                          // Align(
+                                          //   child: IconButton(
+                                          //     onPressed: () {
+                                          //       Navigator.push(
+                                          //           context,
+                                          //           MaterialPageRoute(
+                                          //               builder: (context) =>
+                                          //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
+                                          //     },
+                                          //     icon: Icon(Icons.edit),
+                                          //     iconSize: 25,
+                                          //   ),
+                                          //   alignment: Alignment.topRight,
+                                          // ),
+                                          Center(
+                                            child: Text(
+                                              reservations[0].branchName,
+                                              style: TextStyle(
+                                                color: Col.whiteColor,
+                                                fontSize: 24,
+                                                fontWeight: FontWeight.bold,
+                                                fontFamily: 'Nunito',
+                                              ),
+                                            ),
+                                            //     ),
+                                            // ],
+                                          ),
+                                          Text(
+                                            startDate,
+                                            style: TextStyle(
+                                              color: Col.whiteColor,
+                                              fontSize: 20,
+                                              fontFamily: 'Nunito',
+                                            ),
+                                          ),
+                                          Center(
+                                            child: Text(
+                                              this.startingTime,
+                                              style: TextStyle(
+                                                color: Col.whiteColor,
+                                                fontSize: 20,
+                                                fontFamily: 'Nunito',
+                                              ),
+                                            ),
+                                          ),
+                                          Center(
+                                            child: RichText(
+                                              text: TextSpan(
+                                                children: [
+                                                  TextSpan(
+                                                      style: TextStyle(
+                                                        color: Col.whiteColor,
+                                                        fontSize: 20,
+                                                        fontWeight:
+                                                            FontWeight.bold,
+                                                        fontFamily: 'Nunito',
+                                                        letterSpacing: 0.3,
+                                                      ),
+                                                      text: "Slot"),
+                                                  TextSpan(
+                                                    style: TextStyle(
+                                                      color: Col.whiteColor,
+                                                      fontSize: 20,
+                                                      fontFamily: 'Nunito',
+                                                      letterSpacing: 0.3,
+                                                    ),
+                                                    text:
+                                                        " ${reservations[0].slot}",
+                                                  ),
+                                                ],
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                              margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                            ),
+                          ),
+                        ),
+                    )
+                    : Container(
                         child: Padding(
                           padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
                           child: Card(
@@ -320,111 +480,19 @@ class _ReservationsState extends State<Reservations> {
                                     // SizedBox(width: 15,),
                                     Image.asset(
                                       "images/bell.png",
-                                      scale: 2.4,
+                                      scale: 5,
                                     ),
                                     // Expanded(child: Row(),),
-                                    Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: <Widget>[
-                                        // Stack(
-                                        //   children: [
-                                        // Align(
-                                        //   child: IconButton(
-                                        //     onPressed: () {
-                                        //       Navigator.push(
-                                        //           context,
-                                        //           MaterialPageRoute(
-                                        //               builder: (context) =>
-                                        //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                                        //     },
-                                        //     icon: Icon(Icons.edit),
-                                        //     iconSize: 25,
-                                        //   ),
-                                        //   alignment: Alignment.topRight,
-                                        // ),
-                                        Center(
-                                          child: Text(
-                                            reservations[0].branchName,
-                                            style: TextStyle(
-                                              color: Col.whiteColor,
-                                              fontSize: 24,
-                                              fontWeight: FontWeight.bold,
-                                              fontFamily: 'Nunito',
-                                            ),
-                                          ),
-                                          //     ),
-                                          // ],
-                                        ),
-                                        Text(
-                                          startDate,
-                                          style: TextStyle(
-                                            color: Col.whiteColor,
-                                            fontSize: 20,
-                                            fontFamily: 'Nunito',
-                                          ),
-                                        ),
-                                        Center(
-                                          child: Text(
-                                            this.startingTime,
-                                            style: TextStyle(
-                                              color: Col.whiteColor,
-                                              fontSize: 20,
-                                              fontFamily: 'Nunito',
-                                            ),
-                                          ),
-                                        ),
-                                        Center(
-                                          child: RichText(
-                                            text: TextSpan(
-                                              children: [
-                                                TextSpan(
-                                                    style: TextStyle(
-                                                      color: Col.whiteColor,
-                                                      fontSize: 20,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontFamily: 'Nunito',
-                                                      letterSpacing: 0.3,
-                                                    ),
-                                                    text: "Slot"),
-                                                TextSpan(
-                                                  style: TextStyle(
-                                                    color: Col.whiteColor,
-                                                    fontSize: 20,
-                                                    fontFamily: 'Nunito',
-                                                    letterSpacing: 0.3,
-                                                  ),
-                                                  text:
-                                                      " ${reservations[0].slot}",
-                                                ),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ],
+                                    Text(
+                                      "No upcoming reservation",
+                                      style: TextStyle(
+                                          color: Col.whiteColor, fontSize: 16),
                                     ),
                                   ],
                                 ),
                               ),
                             ),
                             margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                          ),
-                        ),
-                      )
-                    : Padding(
-                        padding: EdgeInsets.only(top: 50, bottom: 50),
-                        child: Center(
-                          child: Text(
-                            "Your upcoming reservations \n will appear here",
-                            style: TextStyle(
-                              color: Col.blackColor,
-                              fontSize: 14,
-                              fontWeight: FontWeight.bold,
-                              fontFamily: 'Nunito',
-                              letterSpacing: 0.1,
-                            ),
-                            textAlign: TextAlign.center,
                           ),
                         ),
                       ),
@@ -621,19 +689,112 @@ class _ReservationsState extends State<Reservations> {
                             },
                           )
                         : Padding(
-                            padding: EdgeInsets.only(top: 50, bottom: 50),
-                            child: Center(
-                              child: Text(
-                                "Your reservations will \n appear here",
-                                style: TextStyle(
+                            padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
+                            child: Column(
+                              children: [
+                                Card(
+                                  shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(15.0),
+                                  ),
                                   color: Col.blackColor,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Nunito',
-                                  letterSpacing: 0.1,
+                                  elevation: 8,
+                                  child: ConstrainedBox(
+                                    constraints: BoxConstraints(
+                                        minWidth:
+                                            MediaQuery.of(context).size.width),
+                                    child: Container(
+                                      decoration: BoxDecoration(
+                                        borderRadius:
+                                            BorderRadius.all(Radius.circular(15.0)),
+                                        gradient: LinearGradient(
+                                            colors: [
+                                              Col.locationgradientColor,
+                                              Col.blackColor
+                                            ],
+                                            begin: Alignment.topCenter,
+                                            end: Alignment.bottomCenter),
+                                      ),
+                                      child: Padding(
+                                        padding:
+                                            EdgeInsets.fromLTRB(10, 20, 15, 20),
+                                        child: Column(
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.start,
+                                          children: [
+                                            SizedBox(
+                                              width: 15,
+                                            ),
+                                            Icon(
+                                              Icons.car_repair,
+                                              size: 80,
+                                              color: Col.primary,
+                                            ),
+                                            SizedBox(
+                                              height: 10,
+                                            ),
+                                            Text(
+                                              "Your reservations will appear here",
+                                              style: TextStyle(
+                                                  color: Col.whiteColor,
+                                                  fontSize: 16),
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ),
+                                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
                                 ),
-                                textAlign: TextAlign.center,
-                              ),
+                                SizedBox(
+                                  height: 15,
+                                ),
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                      minWidth:
+                                      MediaQuery.of(context).size.width),
+                                  child: RaisedButton(
+                                    color: Col.primary,
+                                    child: Text(
+                                      "Reserve now",
+                                      style: TextStyle(
+                                        color: Col.blackColor,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    onPressed: () {
+                                      BlocProvider.of<CurrentIndexBloc>(context).add(NewIndexEvent(2));
+                                    },
+                                  ),
+                                ),
+                                ConstrainedBox(
+                                  constraints: BoxConstraints(
+                                      minWidth:
+                                      MediaQuery.of(context).size.width),
+                                  child: RaisedButton(
+                                    color: Col.primary,
+                                    child: Text(
+                                      "Explore branches",
+                                      style: TextStyle(
+                                        color: Col.blackColor,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    onPressed: () {
+                                      BlocProvider.of<CurrentIndexBloc>(context).add(NewIndexEvent(1));
+                                    },
+                                  ),
+                                )
+                              ],
                             ),
                           ),
               ],

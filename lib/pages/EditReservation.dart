@@ -93,7 +93,38 @@ class _EditReservationState extends State<EditReservation> {
   int? timestamp;
   // String? currentYear, currentMonth, currentDay, currentHour, currentMinute;
   String? formattedstartTime, startDate;
-  String? slotResponse;
+  bool? slotResponse;
+
+  late DateTime fullTime;
+
+  Future availablility() async {
+    var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
+    var url = Uri.parse('${base_url}/reservations/availability');
+
+    var body = {
+      "branch": branch,
+      "startingTime": startTime,
+      "duration": duration
+    };
+    var req = http.Request('POST', url);
+    req.headers.addAll(headersList);
+    req.body = json.encode(body);
+
+    var res = await req.send();
+    final resBody = await res.stream.bytesToString();
+
+    if (res.statusCode >= 200 && res.statusCode < 300) {
+      var data = json.decode(resBody);
+      setState(() {
+        slotResponse = data["slotAvailable"];
+      });
+
+      print(resBody);
+    } else {
+      print("mneeeeeeeeeeeeeeeeeeeee");
+      print(res.reasonPhrase);
+    }
+  }
 
   Future editReservation() async {
     var headersList = {
@@ -118,15 +149,8 @@ class _EditReservationState extends State<EditReservation> {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       print(resBody);
-      setState(() {
-        slotResponse = "There is an available spot";
-      });
         Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
     } else {
-      var data = json.decode(resBody);
-      setState(() {
-        slotResponse = data["message"];
-      });
       print(resBody);
     }
   }
@@ -140,6 +164,18 @@ class _EditReservationState extends State<EditReservation> {
   @override
   void initState() {
     super.initState();
+
+    reservation.branch = branch;
+
+    setState(() {
+      checker = branchName;
+      value = branchName;
+    });
+
+    int initialTime = DateTime.now().millisecondsSinceEpoch;
+    final fullTime = initialTime + (3600000 - (initialTime % 3600000));
+    DateTime initialDateTime = DateTime.fromMillisecondsSinceEpoch(fullTime);
+    this.fullTime = initialDateTime;
 
     DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(startTime);
     int timestamp = startingTime.millisecondsSinceEpoch;
@@ -382,9 +418,8 @@ class _EditReservationState extends State<EditReservation> {
                             onChanged: (value) => setState(() {
                               this.value = value;
                               checker = value!;
-
                               setState(() {
-                                reservation.branchName = value;
+                                branchName = value;
                               });
 
                               for(int i = 0; i < branches.length; i++){
@@ -392,7 +427,7 @@ class _EditReservationState extends State<EditReservation> {
 
                                 if(value == branchDetail.name){
                                   setState(() {
-                                    reservation.branch = branchesId[i];
+                                    branch = branchesId[i];
                                   });
                                 }
                               }
@@ -484,7 +519,7 @@ class _EditReservationState extends State<EditReservation> {
                       //     ),
                       //   ),
                       // ),
-                      (slotResponse == "INVALID_CALL:|:No_Available_Slot")
+                      (slotResponse == false)
                           ? Padding(
                         padding: const EdgeInsets.only(top: 5),
                         child: Text(
@@ -634,9 +669,12 @@ class _EditReservationState extends State<EditReservation> {
                         padding: EdgeInsets.fromLTRB(0, 35, 0, 20),
                         child: Center(
                           child: RaisedButton(
-                            onPressed: () {
+                            onPressed: () async {
                               if (_formKey.currentState!.validate()) {
-                                editReservation();
+                                await availablility();
+                                if(slotResponse == true){
+                                  editReservation();
+                                }
                               }
                             },
                             padding: EdgeInsets.symmetric(
@@ -657,6 +695,7 @@ class _EditReservationState extends State<EditReservation> {
                           ),
                         ),
                       ),
+
                     ],
                   ),
               ],
@@ -681,16 +720,18 @@ class _EditReservationState extends State<EditReservation> {
 
   Future<DateTime?> pickDate() => showDatePicker(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(1991),
+      initialDate: fullTime,
+      firstDate: DateTime.now(),
       lastDate: DateTime(2050));
 
   Future<TimeOfDay?> pickTime() => showCustomTimePicker(
       context: context,
       // It is a must if you provide selectableTimePredicate
       onFailValidation: (context) => print('Unavailable selection'),
-      initialTime: TimeOfDay(hour: 6, minute: 0),
-      selectableTimePredicate: (time) => time!.minute == 0);
+      initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
+      selectableTimePredicate: (time) {
+        return time!.minute == 0 && (time.hour >= fullTime.hour);
+      });
 
   Future pickDateTime() async {
     DateTime? date = await pickDate();

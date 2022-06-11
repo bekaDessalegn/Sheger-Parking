@@ -31,17 +31,11 @@ class _LoginPageState extends State<LoginPage> {
 
   final _formKey = GlobalKey<FormState>();
 
-  Future save() async{
-    var headersList = {
-      'Accept': '*/*',
-      'Content-Type': 'application/json'
-    };
+  Future save() async {
+    var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse('${base_url}/clients/login');
 
-    var body = {
-      "phone": user.phone,
-      "passwordHash": hashedPassword
-    };
+    var body = {"phone": user.phone, "passwordHash": hashedPassword};
     var req = http.Request('POST', url);
     req.headers.addAll(headersList);
     req.body = json.encode(body);
@@ -62,7 +56,8 @@ class _LoginPageState extends State<LoginPage> {
       String passwordHash = data["passwordHash"].toString();
       String defaultPlateNumber = data["defaultPlateNumber"].toString();
 
-      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
+      final SharedPreferences sharedPreferences =
+          await SharedPreferences.getInstance();
       sharedPreferences.setString("id", id);
       sharedPreferences.setString("fullName", fullName);
       sharedPreferences.setString("phone", phone);
@@ -73,9 +68,17 @@ class _LoginPageState extends State<LoginPage> {
       // phone = content["phone"].toString();
       // passwordHash = content["passwordHash"].toString();
       print(resBody);
-      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber)));
-    }
-    else {
+      Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => HomePage(
+                  id: id,
+                  fullName: fullName,
+                  phone: phone,
+                  email: email,
+                  passwordHash: passwordHash,
+                  defaultPlateNumber: defaultPlateNumber)));
+    } else {
       print(res.reasonPhrase);
     }
   }
@@ -92,388 +95,372 @@ class _LoginPageState extends State<LoginPage> {
           color: Col.background,
           child: Form(
             key: _formKey,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Padding(
-                  padding: EdgeInsets.fromLTRB(15, 40, 0, 0),
-                  child: Text(
-                    Strings.app_title,
-                    style: TextStyle(
-                      color: Col.primary,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
-                  child: Text(
-                    "PARKING",
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.3,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(15, 40, 0, 0),
-                  child: Text(
-                    Strings.login,
-                    style: TextStyle(
-                      color: Col.Onbackground,
-                      fontSize: 60,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.1,
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(25, 60, 25, 0),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: TextFormField(
-                      controller: TextEditingController(text: user.phone),
-                      onChanged: (value){
-                        user.phone = value;
-                      },
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "This field can not be empty";
-                        }
-                        else {
-                          return null;
-                        }
-                      },
-                      decoration: InputDecoration(
-                        hintText: "",
-                        hintStyle: TextStyle(
-                          color: Col.textfieldLabel,
-                          fontSize: 14,
-                          fontFamily: 'Nunito',
-                          letterSpacing: 0.1,
-                        ),
-                        labelText: "Phone Number",
-                        labelStyle: TextStyle(
-                          color: Col.textfieldLabel,
-                          fontSize: 14,
-                          fontFamily: 'Nunito',
-                          letterSpacing: 0,
-                        ),
-                        border: OutlineInputBorder(),
-                        errorBorder: OutlineInputBorder(
-                          borderSide: BorderSide(color: Colors.red),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
-                  child: Container(
-                    alignment: Alignment.center,
-                    child: TextFormField(
-                      controller: TextEditingController(text: user.passwordHash),
-                      onChanged: (value){
-                        var bytes = utf8.encode(value);
-                        var sha512 = sha256.convert(bytes);
-                        var hashedPassword = sha512.toString();
-                        this.hashedPassword = hashedPassword;
-                        user.passwordHash = value;
-                      },
-                      validator: (value) {
-                        if (value!.isEmpty) {
-                          return "This field can not be empty";
-                        }
-                        else {
-                          return null;
-                        }
-                      },
-                      decoration: InputDecoration(
-                          hintText: "Password",
-                          hintStyle: TextStyle(
-                            color: Col.textfieldLabel,
-                            fontSize: 14,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0.1,
-                          ),
-                          labelText: "Password",
-                          labelStyle: TextStyle(
-                            color: Col.textfieldLabel,
-                            fontSize: 14,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0,
-                          ),
-                          border: OutlineInputBorder(),
-                          suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                _secureText = !_secureText;
-                              });
-                            },
-                            icon: Icon(
-                              _secureText == true
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Col.Onbackground,
+            child: ConstrainedBox(
+              constraints: BoxConstraints(minHeight: MediaQuery.of(context).size.height),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(0,45,0,65),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: <Widget>[
+                    Column(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                          child: Text(
+                            Strings.app_title,
+                            style: TextStyle(
+                              color: Col.primary,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0.3,
                             ),
-                          )),
-                      obscureText: _secureText,
-                    ),
-                  ),
-                ),
-                (response == "Not Found") ?
-                Padding(
-                  padding: const EdgeInsets.only(top: 15, left: 25),
-                  child: Text("One of the credentials is incorrect",
-                  style: TextStyle(
-                    color: Colors.redAccent,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 15
-                  ),
-                  ),
-                ) : Text(""),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(25, 65, 25, 0),
-                  child: Container(
-                    width: double.infinity,
-                    child: RaisedButton(
-                      color: Col.primary,
-                      child: Text(
-                        "Login",
-                        style: TextStyle(
-                          color: Col.Onprimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Nunito',
-                          letterSpacing: 0.3,
+                          ),
                         ),
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      onPressed: (){
-                        if (_formKey.currentState!.validate()) {
-                          save();
-                        }
-                      }
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
-                  child: Container(
-                    width: double.infinity,
-                    child: TextButton(
-                      onPressed: () {
-                        Navigator.push(context, MaterialPageRoute(builder: (context) => ForgotPassword()));
-                        // showDialog(
-                        //     context: context,
-                        //     builder: (context) {
-                        //       return AlertDialog(
-                        //         title: Text(
-                        //           "Forgot Password ?",
-                        //           style: TextStyle(
-                        //             color: Col.Onbackground,
-                        //             fontSize: 20,
-                        //             fontWeight: FontWeight.bold,
-                        //             fontFamily: 'Nunito',
-                        //             letterSpacing: 0.3,
-                        //           ),
-                        //         ),
-                        //         content: TextField(
-                        //           decoration: InputDecoration(
-                        //             hintText: "",
-                        //             hintStyle: TextStyle(
-                        //               color: Col.textfieldLabel,
-                        //               fontSize: 14,
-                        //               fontFamily: 'Nunito',
-                        //               letterSpacing: 0.1,
-                        //             ),
-                        //             labelText: "Email",
-                        //             labelStyle: TextStyle(
-                        //               color: Col.textfieldLabel,
-                        //               fontSize: 14,
-                        //               fontFamily: 'Nunito',
-                        //               letterSpacing: 0,
-                        //             ),
-                        //             border: OutlineInputBorder(),
-                        //           ),
-                        //           keyboardType: TextInputType.emailAddress,
-                        //         ),
-                        //         actions: [
-                        //           FlatButton(
-                        //             onPressed: () async {
-                        //               setState(() {
-                        //                 isLoading = true;
-                        //               });
-                        //
-                        //               await Future.delayed(Duration(seconds: 3),
-                        //                   () {
-                        //                 setState(() {
-                        //                   isLoading = false;
-                        //                 });
-                        //               });
-                        //
-                        //               showDialog(
-                        //                   context: context,
-                        //                   builder: (context) {
-                        //                     return Dialog(
-                        //                       shape: RoundedRectangleBorder(
-                        //                         borderRadius:
-                        //                             BorderRadius.circular(20.0),
-                        //                       ),
-                        //                       child: Container(
-                        //                         height: 200,
-                        //                         child: Padding(
-                        //                           padding: EdgeInsets.all(12.0),
-                        //                           child: isLoading
-                        //                               ? Center(
-                        //                                   child: Container(
-                        //                                     height: 70,
-                        //                                     child: Column(
-                        //                                       children: [
-                        //                                         CircularProgressIndicator(
-                        //                                           color: Col
-                        //                                               .primary,
-                        //                                           strokeWidth:
-                        //                                               2,
-                        //                                         ),
-                        //                                         Text(
-                        //                                             "$isLoading"),
-                        //                                       ],
-                        //                                     ),
-                        //                                   ),
-                        //                                 )
-                        //                               : Column(
-                        //                                   crossAxisAlignment:
-                        //                                       CrossAxisAlignment
-                        //                                           .start,
-                        //                                   children: <Widget>[
-                        //                                     Padding(
-                        //                                       padding:
-                        //                                           const EdgeInsets
-                        //                                               .all(8.0),
-                        //                                       child: Text(
-                        //                                         "Email Sent",
-                        //                                         style:
-                        //                                             TextStyle(
-                        //                                           color: Col
-                        //                                               .Onbackground,
-                        //                                           fontSize: 20,
-                        //                                           fontFamily:
-                        //                                               'Nunito',
-                        //                                           letterSpacing:
-                        //                                               0,
-                        //                                         ),
-                        //                                       ),
-                        //                                     ),
-                        //                                     Padding(
-                        //                                       padding:
-                        //                                           EdgeInsets
-                        //                                               .all(8),
-                        //                                       child: Text(
-                        //                                         "Code has been sent to your email.",
-                        //                                         style:
-                        //                                             TextStyle(
-                        //                                           color: Col
-                        //                                               .textfieldLabel,
-                        //                                           fontSize: 16,
-                        //                                           fontFamily:
-                        //                                               'Nunito',
-                        //                                           letterSpacing:
-                        //                                               0,
-                        //                                         ),
-                        //                                       ),
-                        //                                     ),
-                        //                                     Align(
-                        //                                       alignment: Alignment
-                        //                                           .bottomRight,
-                        //                                       child: Padding(
-                        //                                         padding:
-                        //                                             EdgeInsets
-                        //                                                 .all(2),
-                        //                                         child:
-                        //                                             RaisedButton(
-                        //                                           onPressed: () =>
-                        //                                               Navigator.pop(
-                        //                                                   context),
-                        //                                           child: Text(
-                        //                                             "Ok",
-                        //                                             style:
-                        //                                                 TextStyle(
-                        //                                               color: Col
-                        //                                                   .Onbackground,
-                        //                                               fontSize:
-                        //                                                   16,
-                        //                                               fontFamily:
-                        //                                                   'Nunito',
-                        //                                               letterSpacing:
-                        //                                                   0,
-                        //                                             ),
-                        //                                           ),
-                        //                                           color: Col
-                        //                                               .secondary,
-                        //                                         ),
-                        //                                       ),
-                        //                                     ),
-                        //                                   ],
-                        //                                 ),
-                        //                         ),
-                        //                       ),
-                        //                     );
-                        //                   });
-                        //             },
-                        //             child: Text(
-                        //               "Submit",
-                        //               style: TextStyle(
-                        //                 fontSize: 18,
-                        //                 letterSpacing: 0.3,
-                        //               ),
-                        //             ),
-                        //           ),
-                        //         ],
-                        //         elevation: 24.0,
-                        //       );
-                        //     });
-                      },
-                      child: Text(
-                        "Forgot password",
-                        style: TextStyle(
-                          color: Col.primary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Nunito',
-                          letterSpacing: 0.3,
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                          child: Text(
+                            "PARKING",
+                            style: TextStyle(
+                              color: Colors.black,
+                              fontSize: 28,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0.3,
+                            ),
+                          ),
                         ),
-                        textAlign: TextAlign.center,
-                      ),
+                      ],
                     ),
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.fromLTRB(25, 50, 25, 0),
-                  child: Container(
-                    width: double.infinity,
-                    child: Center(
-                      child: RichText(
-                        text: TextSpan(
-                          children: [
-                            TextSpan(
-                                style: TextStyle(
-                                  color: Col.Onbackground,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(15, 0, 0, 0),
+                          child: Text(
+                            Strings.login,
+                            style: TextStyle(
+                              color: Col.Onbackground,
+                              fontSize: 35,
+                              fontWeight: FontWeight.bold,
+                              fontFamily: 'Nunito',
+                              letterSpacing: 0.1,
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(25, 30, 25, 0),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: TextFormField(
+                              controller: TextEditingController(text: user.phone),
+                              onChanged: (value) {
+                                user.phone = value;
+                              },
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "This field can not be empty";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                hintText: "",
+                                hintStyle: TextStyle(
+                                  color: Col.textfieldLabel,
+                                  fontSize: 14,
                                   fontFamily: 'Nunito',
-                                  letterSpacing: 0.3,
+                                  letterSpacing: 0.1,
                                 ),
-                                text: "Don’t have an account?"),
-                            TextSpan(
+                                labelText: "Phone Number",
+                                labelStyle: TextStyle(
+                                  color: Col.textfieldLabel,
+                                  fontSize: 14,
+                                  fontFamily: 'Nunito',
+                                  letterSpacing: 0,
+                                ),
+                                border: OutlineInputBorder(),
+                                errorBorder: OutlineInputBorder(
+                                  borderSide: BorderSide(color: Colors.red),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
+                          child: Container(
+                            alignment: Alignment.center,
+                            child: TextFormField(
+                              controller:
+                                  TextEditingController(text: user.passwordHash),
+                              onChanged: (value) {
+                                var bytes = utf8.encode(value);
+                                var sha512 = sha256.convert(bytes);
+                                var hashedPassword = sha512.toString();
+                                this.hashedPassword = hashedPassword;
+                                user.passwordHash = value;
+                              },
+                              validator: (value) {
+                                if (value!.isEmpty) {
+                                  return "This field can not be empty";
+                                } else {
+                                  return null;
+                                }
+                              },
+                              decoration: InputDecoration(
+                                  hintText: "Password",
+                                  hintStyle: TextStyle(
+                                    color: Col.textfieldLabel,
+                                    fontSize: 14,
+                                    fontFamily: 'Nunito',
+                                    letterSpacing: 0.1,
+                                  ),
+                                  labelText: "Password",
+                                  labelStyle: TextStyle(
+                                    color: Col.textfieldLabel,
+                                    fontSize: 14,
+                                    fontFamily: 'Nunito',
+                                    letterSpacing: 0,
+                                  ),
+                                  border: OutlineInputBorder(),
+                                  suffixIcon: IconButton(
+                                    onPressed: () {
+                                      setState(() {
+                                        _secureText = !_secureText;
+                                      });
+                                    },
+                                    icon: Icon(
+                                      _secureText == true
+                                          ? Icons.visibility
+                                          : Icons.visibility_off,
+                                      color: Col.Onbackground,
+                                    ),
+                                  )),
+                              obscureText: _secureText,
+                            ),
+                          ),
+                        ),
+                        (response == "Not Found")
+                            ? Padding(
+                                padding: const EdgeInsets.only(top: 15, left: 25),
+                                child: Text(
+                                  "One of the credentials is incorrect",
+                                  style: TextStyle(
+                                      color: Colors.redAccent,
+                                      fontWeight: FontWeight.bold,
+                                      fontSize: 15),
+                                ),
+                              )
+                            : Text(""),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
+                          child: Container(
+                            width: double.infinity,
+                            child: RaisedButton(
+                                color: Col.primary,
+                                child: Text(
+                                  "Sign in",
+                                  style: TextStyle(
+                                    color: Col.Onprimary,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Nunito',
+                                    letterSpacing: 0.3,
+                                  ),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                    borderRadius: BorderRadius.circular(8)),
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    save();
+                                  }
+                                }),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                          child: Container(
+                            width: double.infinity,
+                            child: TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => ForgotPassword()));
+                                // showDialog(
+                                //     context: context,
+                                //     builder: (context) {
+                                //       return AlertDialog(
+                                //         title: Text(
+                                //           "Forgot Password ?",
+                                //           style: TextStyle(
+                                //             color: Col.Onbackground,
+                                //             fontSize: 20,
+                                //             fontWeight: FontWeight.bold,
+                                //             fontFamily: 'Nunito',
+                                //             letterSpacing: 0.3,
+                                //           ),
+                                //         ),
+                                //         content: TextField(
+                                //           decoration: InputDecoration(
+                                //             hintText: "",
+                                //             hintStyle: TextStyle(
+                                //               color: Col.textfieldLabel,
+                                //               fontSize: 14,
+                                //               fontFamily: 'Nunito',
+                                //               letterSpacing: 0.1,
+                                //             ),
+                                //             labelText: "Email",
+                                //             labelStyle: TextStyle(
+                                //               color: Col.textfieldLabel,
+                                //               fontSize: 14,
+                                //               fontFamily: 'Nunito',
+                                //               letterSpacing: 0,
+                                //             ),
+                                //             border: OutlineInputBorder(),
+                                //           ),
+                                //           keyboardType: TextInputType.emailAddress,
+                                //         ),
+                                //         actions: [
+                                //           FlatButton(
+                                //             onPressed: () async {
+                                //               setState(() {
+                                //                 isLoading = true;
+                                //               });
+                                //
+                                //               await Future.delayed(Duration(seconds: 3),
+                                //                   () {
+                                //                 setState(() {
+                                //                   isLoading = false;
+                                //                 });
+                                //               });
+                                //
+                                //               showDialog(
+                                //                   context: context,
+                                //                   builder: (context) {
+                                //                     return Dialog(
+                                //                       shape: RoundedRectangleBorder(
+                                //                         borderRadius:
+                                //                             BorderRadius.circular(20.0),
+                                //                       ),
+                                //                       child: Container(
+                                //                         height: 200,
+                                //                         child: Padding(
+                                //                           padding: EdgeInsets.all(12.0),
+                                //                           child: isLoading
+                                //                               ? Center(
+                                //                                   child: Container(
+                                //                                     height: 70,
+                                //                                     child: Column(
+                                //                                       children: [
+                                //                                         CircularProgressIndicator(
+                                //                                           color: Col
+                                //                                               .primary,
+                                //                                           strokeWidth:
+                                //                                               2,
+                                //                                         ),
+                                //                                         Text(
+                                //                                             "$isLoading"),
+                                //                                       ],
+                                //                                     ),
+                                //                                   ),
+                                //                                 )
+                                //                               : Column(
+                                //                                   crossAxisAlignment:
+                                //                                       CrossAxisAlignment
+                                //                                           .start,
+                                //                                   children: <Widget>[
+                                //                                     Padding(
+                                //                                       padding:
+                                //                                           const EdgeInsets
+                                //                                               .all(8.0),
+                                //                                       child: Text(
+                                //                                         "Email Sent",
+                                //                                         style:
+                                //                                             TextStyle(
+                                //                                           color: Col
+                                //                                               .Onbackground,
+                                //                                           fontSize: 20,
+                                //                                           fontFamily:
+                                //                                               'Nunito',
+                                //                                           letterSpacing:
+                                //                                               0,
+                                //                                         ),
+                                //                                       ),
+                                //                                     ),
+                                //                                     Padding(
+                                //                                       padding:
+                                //                                           EdgeInsets
+                                //                                               .all(8),
+                                //                                       child: Text(
+                                //                                         "Code has been sent to your email.",
+                                //                                         style:
+                                //                                             TextStyle(
+                                //                                           color: Col
+                                //                                               .textfieldLabel,
+                                //                                           fontSize: 16,
+                                //                                           fontFamily:
+                                //                                               'Nunito',
+                                //                                           letterSpacing:
+                                //                                               0,
+                                //                                         ),
+                                //                                       ),
+                                //                                     ),
+                                //                                     Align(
+                                //                                       alignment: Alignment
+                                //                                           .bottomRight,
+                                //                                       child: Padding(
+                                //                                         padding:
+                                //                                             EdgeInsets
+                                //                                                 .all(2),
+                                //                                         child:
+                                //                                             RaisedButton(
+                                //                                           onPressed: () =>
+                                //                                               Navigator.pop(
+                                //                                                   context),
+                                //                                           child: Text(
+                                //                                             "Ok",
+                                //                                             style:
+                                //                                                 TextStyle(
+                                //                                               color: Col
+                                //                                                   .Onbackground,
+                                //                                               fontSize:
+                                //                                                   16,
+                                //                                               fontFamily:
+                                //                                                   'Nunito',
+                                //                                               letterSpacing:
+                                //                                                   0,
+                                //                                             ),
+                                //                                           ),
+                                //                                           color: Col
+                                //                                               .secondary,
+                                //                                         ),
+                                //                                       ),
+                                //                                     ),
+                                //                                   ],
+                                //                                 ),
+                                //                         ),
+                                //                       ),
+                                //                     );
+                                //                   });
+                                //             },
+                                //             child: Text(
+                                //               "Submit",
+                                //               style: TextStyle(
+                                //                 fontSize: 18,
+                                //                 letterSpacing: 0.3,
+                                //               ),
+                                //             ),
+                                //           ),
+                                //         ],
+                                //         elevation: 24.0,
+                                //       );
+                                //     });
+                              },
+                              child: Text(
+                                "Forgot password",
                                 style: TextStyle(
                                   color: Col.primary,
                                   fontSize: 18,
@@ -481,22 +468,56 @@ class _LoginPageState extends State<LoginPage> {
                                   fontFamily: 'Nunito',
                                   letterSpacing: 0.3,
                                 ),
-                                text: " SignUp",
-                                recognizer: TapGestureRecognizer()
-                                  ..onTap = () {
-                                    Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                            builder: (context) =>
-                                                SignUpPage()));
-                                  }),
-                          ],
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Padding(
+                      padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
+                      child: Container(
+                        width: double.infinity,
+                        child: Center(
+                          child: RichText(
+                            text: TextSpan(
+                              children: [
+                                TextSpan(
+                                    style: TextStyle(
+                                      color: Col.blackColor,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.3,
+                                    ),
+                                    text: "Don’t have an account?"),
+                                TextSpan(
+                                    style: TextStyle(
+                                      color: Col.primary,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.3,
+                                    ),
+                                    text: " SignUp",
+                                    recognizer: TapGestureRecognizer()
+                                      ..onTap = () {
+                                        Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SignUpPage()));
+                                      }),
+                              ],
+                            ),
+                          ),
                         ),
                       ),
                     ),
-                  ),
+                  ],
                 ),
-              ],
+              ),
             ),
           ),
         ),

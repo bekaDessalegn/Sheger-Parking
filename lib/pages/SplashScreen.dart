@@ -3,7 +3,9 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/StartUpPage.dart';
 import '../constants/colors.dart';
@@ -44,19 +46,22 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
     getValidationData().whenComplete(() async {
       Timer(
-          Duration(seconds: 3),
-          () => Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(
-                  builder: (context) => finalEmail == null
-                      ? StartUp()
-                      : HomePage(
-                          id: id,
-                          fullName: fullName,
-                          phone: phone,
-                          email: email,
-                          passwordHash: passwordHash,
-                          defaultPlateNumber: defaultPlateNumber))));
+        Duration(seconds: 2),
+        () => Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => finalEmail == null
+                    ? StartUp()
+                    : BlocProvider(
+                        create: (context) => CurrentIndexBloc(),
+                        child: HomePage(
+                            id: id,
+                            fullName: fullName,
+                            phone: phone,
+                            email: email,
+                            passwordHash: passwordHash,
+                            defaultPlateNumber: defaultPlateNumber)))),
+      );
     });
   }
 
@@ -66,33 +71,31 @@ class _SplashScreenState extends State<SplashScreen> {
       body: Container(
         height: MediaQuery.of(context).size.height,
         child: Center(
-          child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Padding(
-                  padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
-                  child: Text(
-                    Strings.app_title,
-                    style: TextStyle(
-                      color: Col.primary,
-                      fontSize: 28,
-                      fontWeight: FontWeight.bold,
-                      fontFamily: 'Nunito',
-                      letterSpacing: 0.3,
-                    ),
-                  ),
+          child: Column(mainAxisAlignment: MainAxisAlignment.center, children: [
+            Padding(
+              padding: EdgeInsets.fromLTRB(0, 40, 0, 0),
+              child: Text(
+                Strings.app_title,
+                style: TextStyle(
+                  color: Col.primary,
+                  fontSize: 32,
+                  fontWeight: FontWeight.bold,
+                  fontFamily: 'Nunito',
+                  letterSpacing: 0.3,
                 ),
-                Text(
-                  "PARKING",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                    fontFamily: 'Nunito',
-                    letterSpacing: 0.3,
-                  ),
-                ),
-              ]),
+              ),
+            ),
+            Text(
+              "PARKING",
+              style: TextStyle(
+                color: Colors.black,
+                fontSize: 32,
+                fontWeight: FontWeight.bold,
+                fontFamily: 'Nunito',
+                letterSpacing: 0.3,
+              ),
+            ),
+          ]),
         ),
       ),
     );

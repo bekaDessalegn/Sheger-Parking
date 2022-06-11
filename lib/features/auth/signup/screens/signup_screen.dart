@@ -6,6 +6,8 @@ import 'dart:convert';
 import 'package:crypto/crypto.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sheger_parking/constants/api.dart';
+import 'package:sheger_parking/constants/colors.dart';
+import 'package:sheger_parking/constants/strings.dart';
 import 'package:sheger_parking/models/User.dart';
 import 'package:sheger_parking/pages/HomePage.dart';
 import 'package:sheger_parking/pages/LoginPage.dart';
@@ -13,15 +15,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
-import '../constants/colors.dart';
-import '../constants/strings.dart';
-
-class SignUpPage extends StatefulWidget {
+class SignUpScreen extends StatefulWidget {
   @override
-  _SignUpPageState createState() => _SignUpPageState();
+  _SignUpScreenState createState() => _SignUpScreenState();
 }
 
-class _SignUpPageState extends State<SignUpPage> {
+class _SignUpScreenState extends State<SignUpScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _secureText = true;
   bool isDataEntered = false;
@@ -378,116 +377,116 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
-                  isProcessing
-                      ? Padding(
-                    padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: Col.primary,
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  )
-                      : isDataEntered
-                      ? Padding(
-                    padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Verification code has been sent to your email",
-                          style: TextStyle(
-                            color: Col.Onbackground,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0.1,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "This field can not be empty";
-                              }else if(value != verificationCode){
-                                return "Please enter the correct verification code";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: "",
-                              hintStyle: TextStyle(
-                                color: Col.textfieldLabel,
-                                fontSize: 14,
-                                fontFamily: 'Nunito',
-                                letterSpacing: 0.1,
-                              ),
-                              labelText: "Verification Code",
-                              labelStyle: TextStyle(
-                                color: Col.textfieldLabel,
-                                fontSize: 14,
-                                fontFamily: 'Nunito',
-                                letterSpacing: 0,
-                              ),
-                              border: OutlineInputBorder(),
-                              errorBorder: OutlineInputBorder(
-                                borderSide:
-                                BorderSide(color: Colors.red),
-                              ),
-                            ),
-                            keyboardType: TextInputType.number,
-                          ),
-                        ),
-                      ],
-                    ),
-                  )
-                      : Text(""),
-                  Padding(
-                    padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
-                    child: Container(
-                      width: double.infinity,
-                      child: RaisedButton(
-                        color: Col.primary,
-                        child: Text(
-                          isDataEntered ? "Verify" : "Sign up",
-                          style: TextStyle(
-                            color: Col.Onprimary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        onPressed: () {
-                          // verify();
-                          if (_formKey.currentState!.validate()) {
-                            save();
-                            // setState(() {
-                            //   isDataEntered = !isDataEntered;
-                            // });
-                            // setState(() {
-                            //   isProcessing = true;
-                            // });
-                            // if (!isDataEntered) {
-                            //   save();
-                            // }
-                          } else {
-                            print("Enter fields");
-                          }
-                          Future.delayed(Duration(seconds: 6), () {
-                            setState(() {
-                              isProcessing = false;
-                            });
-                          });
-                        },
-                      ),
-                    ),
-                  ),
+                  // isProcessing
+                  //     ? Padding(
+                  //   padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                  //   child: Center(
+                  //     child: CircularProgressIndicator(
+                  //       color: Col.primary,
+                  //       strokeWidth: 2,
+                  //     ),
+                  //   ),
+                  // )
+                  //     : isDataEntered
+                  //     ? Padding(
+                  //   padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
+                  //   child: Column(
+                  //     children: [
+                  //       Text(
+                  //         "Verification code has been sent to your email",
+                  //         style: TextStyle(
+                  //           color: Col.Onbackground,
+                  //           fontSize: 15,
+                  //           fontWeight: FontWeight.bold,
+                  //           fontFamily: 'Nunito',
+                  //           letterSpacing: 0.1,
+                  //         ),
+                  //       ),
+                  //       SizedBox(
+                  //         height: 10,
+                  //       ),
+                  //       Container(
+                  //         alignment: Alignment.center,
+                  //         child: TextFormField(
+                  //           validator: (value) {
+                  //             if (value!.isEmpty) {
+                  //               return "This field can not be empty";
+                  //             }else if(value != verificationCode){
+                  //               return "Please enter the correct verification code";
+                  //             }
+                  //             return null;
+                  //           },
+                  //           decoration: InputDecoration(
+                  //             hintText: "",
+                  //             hintStyle: TextStyle(
+                  //               color: Col.textfieldLabel,
+                  //               fontSize: 14,
+                  //               fontFamily: 'Nunito',
+                  //               letterSpacing: 0.1,
+                  //             ),
+                  //             labelText: "Verification Code",
+                  //             labelStyle: TextStyle(
+                  //               color: Col.textfieldLabel,
+                  //               fontSize: 14,
+                  //               fontFamily: 'Nunito',
+                  //               letterSpacing: 0,
+                  //             ),
+                  //             border: OutlineInputBorder(),
+                  //             errorBorder: OutlineInputBorder(
+                  //               borderSide:
+                  //               BorderSide(color: Colors.red),
+                  //             ),
+                  //           ),
+                  //           keyboardType: TextInputType.number,
+                  //         ),
+                  //       ),
+                  //     ],
+                  //   ),
+                  // )
+                  //     : Text(""),
+                  // Padding(
+                  //   padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
+                  //   child: Container(
+                  //     width: double.infinity,
+                  //     child: RaisedButton(
+                  //       color: Col.primary,
+                  //       child: Text(
+                  //         isDataEntered ? "Verify" : "Sign up",
+                  //         style: TextStyle(
+                  //           color: Col.Onprimary,
+                  //           fontSize: 18,
+                  //           fontWeight: FontWeight.bold,
+                  //           fontFamily: 'Nunito',
+                  //           letterSpacing: 0.3,
+                  //         ),
+                  //       ),
+                  //       shape: RoundedRectangleBorder(
+                  //           borderRadius: BorderRadius.circular(8)),
+                  //       onPressed: () {
+                  //         // verify();
+                  //         if (_formKey.currentState!.validate()) {
+                  //           save();
+                  //           // setState(() {
+                  //           //   isDataEntered = !isDataEntered;
+                  //           // });
+                  //           // setState(() {
+                  //           //   isProcessing = true;
+                  //           // });
+                  //           // if (!isDataEntered) {
+                  //           //   save();
+                  //           // }
+                  //         } else {
+                  //           print("Enter fields");
+                  //         }
+                  //         Future.delayed(Duration(seconds: 6), () {
+                  //           setState(() {
+                  //             isProcessing = false;
+                  //           });
+                  //         });
+                  //       },
+                  //     ),
+                  //   ),
+                  // ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 10, 25, 40),
                     child: Container(
