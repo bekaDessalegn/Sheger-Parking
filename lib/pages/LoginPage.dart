@@ -508,7 +508,7 @@ class _LoginPageState extends State<LoginPage> {
                                     text: " SignUp",
                                     recognizer: TapGestureRecognizer()
                                       ..onTap = () {
-                                        Navigator.push(
+                                        Navigator.pushReplacement(
                                             context,
                                             MaterialPageRoute(
                                                 builder: (context) =>

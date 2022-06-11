@@ -438,10 +438,11 @@ class _ProfilePageState extends State<ProfilePage> {
                                   final SharedPreferences sharedPreferences =
                                       await SharedPreferences.getInstance();
                                   sharedPreferences.remove("email");
-                                  Navigator.push(
+                                  Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) => StartUp()));
+                                          builder: (context) => StartUp()),
+                                      (Route<dynamic> route) => false);
                                 },
                                 child: Text(
                                   "Log out",

@@ -57,6 +57,9 @@ class _SignUpPageState extends State<SignUpPage> {
       var verificationCode = json.decode(resBody);
       print(verificationCode["emailVerificationCode"]);
       this.verificationCode = verificationCode["emailVerificationCode"].toString();
+      setState(() {
+        isDataEntered = !isDataEntered;
+      });
       print(resBody);
     }
     else {
@@ -103,7 +106,7 @@ class _SignUpPageState extends State<SignUpPage> {
       sharedPreferences.setString("passwordHash", passwordHash);
       sharedPreferences.setString("defaultPlateNumber", defaultPlateNumber);
       print(resBody);
-      Navigator.push(context, MaterialPageRoute(builder: (context) => BlocProvider(
+      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => BlocProvider(
           create: (context) => CurrentIndexBloc(),
           child: HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber))));
     }
@@ -461,10 +464,10 @@ class _SignUpPageState extends State<SignUpPage> {
                     padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                     child: Container(
                       width: double.infinity,
-                      child: RaisedButton(
+                      child: isDataEntered ? RaisedButton(
                         color: Col.primary,
                         child: Text(
-                          isDataEntered ? "Verify" : "Sign up",
+                          "Verify",
                           style: TextStyle(
                             color: Col.Onprimary,
                             fontSize: 18,
@@ -476,28 +479,56 @@ class _SignUpPageState extends State<SignUpPage> {
                         shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(8)),
                         onPressed: () {
-                          // verify();
                           if (_formKey.currentState!.validate()) {
                             save();
                             // setState(() {
-                            //   isDataEntered = !isDataEntered;
-                            // });
-                            // setState(() {
                             //   isProcessing = true;
                             // });
-                            // if (!isDataEntered) {
-                            //   save();
-                            // }
                           } else {
                             print("Enter fields");
                           }
-                          Future.delayed(Duration(seconds: 6), () {
-                            setState(() {
-                              isProcessing = false;
-                            });
-                          });
+                          // Future.delayed(Duration(seconds: 6), () {
+                          //   setState(() {
+                          //     isProcessing = false;
+                          //   });
+                          // });
                         },
+                      ) : RaisedButton(
+                      color: Col.primary,
+                      child: Text(
+                        "Sign up",
+                        style: TextStyle(
+                          color: Col.Onprimary,
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          fontFamily: 'Nunito',
+                          letterSpacing: 0.3,
+                        ),
                       ),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
+                      onPressed: () {
+                        if (_formKey.currentState!.validate()) {
+                          verify();
+                          // setState(() {
+                          //   isDataEntered = !isDataEntered;
+                          // });
+                          setState(() {
+                            isProcessing = true;
+                          });
+                          // if (!isDataEntered) {
+                          //   save();
+                          // }
+                        } else {
+                          print("Enter fields");
+                        }
+                        Future.delayed(Duration(seconds: 6), () {
+                          setState(() {
+                            isProcessing = false;
+                          });
+                        });
+                      },
+                    ),
                     ),
                   ),
                   Padding(
@@ -528,7 +559,7 @@ class _SignUpPageState extends State<SignUpPage> {
                                   text: " Sign in",
                                   recognizer: TapGestureRecognizer()
                                     ..onTap = () {
-                                      Navigator.push(
+                                      Navigator.pushReplacement(
                                           context,
                                           MaterialPageRoute(
                                               builder: (context) =>
