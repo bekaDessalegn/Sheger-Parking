@@ -23,6 +23,47 @@ import 'ReservationDetailsPage.dart';
 import 'package:sheger_parking/models/ReservationDetails.dart';
 import 'package:http/http.dart' as http;
 
+Widget noUpComing = Container(
+  child: Padding(
+    padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
+    child: Card(
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(15.0),
+      ),
+      color: Col.blackColor,
+      elevation: 8,
+      child: Container(
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.all(Radius.circular(15.0)),
+          gradient: LinearGradient(
+              colors: [Col.gradientColor, Col.blackColor],
+              begin: Alignment.centerLeft,
+              end: Alignment.centerRight),
+        ),
+        child: Padding(
+          padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceAround,
+            children: [
+              // SizedBox(width: 15,),
+              Image.asset(
+                "images/bell.png",
+                scale: 5,
+              ),
+              // Expanded(child: Row(),),
+              Text(
+                "No upcoming reservation",
+                style: TextStyle(color: Col.whiteColor, fontSize: 17),
+              ),
+            ],
+          ),
+        ),
+      ),
+      margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+    ),
+  ),
+);
+
 class Reservations extends StatefulWidget {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
   var reservationId,
@@ -235,15 +276,162 @@ class ReservationsState extends State<Reservations> {
 
   @override
   Widget build(BuildContext context) {
-    if (reservations.length < 1) {
-    } else {
-      DateTime startingTime =
-          DateTime.fromMillisecondsSinceEpoch(reservations[0].startingTime);
-      String startDate = DateFormat.yMMMd().format(startingTime);
-      String formattedStartTime = DateFormat('h:mm a').format(startingTime);
+    Widget upComing = noUpComing;
+    late ReservationDetails upComingReservation;
+    if (reservations.length > 0) {
+      for (int index = 0; index < reservations.length; index++) {
+        ReservationDetails reservation = reservations[index];
+        if (!reservation.parked) {
+          // ///////////////////////////////////////////////////
+          upComingReservation = reservation;
+          DateTime startingTime =
+              DateTime.fromMillisecondsSinceEpoch(reservation.startingTime);
+          String startDate = DateFormat.yMMMd().format(startingTime);
+          String formattedStartTime = DateFormat('h:mm a').format(startingTime);
 
-      this.startingTime = formattedStartTime;
-      this.startDate = startDate;
+          this.startingTime = formattedStartTime;
+          this.startDate = startDate;
+          upComing = GestureDetector(
+            onTap: () {
+              Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                      builder: (context) => ReservationDetailsPage(
+                          id: reservation.client,
+                          fullName: fullName,
+                          phone: phone,
+                          email: email,
+                          passwordHash: passwordHash,
+                          defaultPlateNumber: defaultPlateNumber,
+                          reservationId: reservation.id,
+                          reservationPlateNumber:
+                              reservation.reservationPlateNumber,
+                          branch: reservation.branch,
+                          branchName: reservation.branchName,
+                          startTime: reservation.startingTime.toString(),
+                          slot: reservation.slot,
+                          price: reservation.price.toString(),
+                          duration: reservation.duration.toString(),
+                          parked: reservation.toString())));
+            },
+            child: Container(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
+                child: Card(
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15.0),
+                  ),
+                  color: Col.blackColor,
+                  elevation: 8,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
+                      gradient: LinearGradient(
+                          colors: [Col.gradientColor, Col.blackColor],
+                          begin: Alignment.centerLeft,
+                          end: Alignment.centerRight),
+                    ),
+                    child: Padding(
+                      padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          // SizedBox(width: 15,),
+                          Image.asset(
+                            "images/bell.png",
+                            scale: 2.4,
+                          ),
+                          // Expanded(child: Row(),),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              // Stack(
+                              //   children: [
+                              // Align(
+                              //   child: IconButton(
+                              //     onPressed: () {
+                              //       Navigator.push(
+                              //           context,
+                              //           MaterialPageRoute(
+                              //               builder: (context) =>
+                              //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
+                              //     },
+                              //     icon: Icon(Icons.edit),
+                              //     iconSize: 25,
+                              //   ),
+                              //   alignment: Alignment.topRight,
+                              // ),
+                              Center(
+                                child: Text(
+                                  reservation.branchName,
+                                  style: TextStyle(
+                                    color: Col.whiteColor,
+                                    fontSize: 26,
+                                    fontWeight: FontWeight.bold,
+                                    fontFamily: 'Nunito',
+                                  ),
+                                ),
+                                //     ),
+                                // ],
+                              ),
+                              Text(
+                                startDate,
+                                style: TextStyle(
+                                  color: Col.whiteColor,
+                                  fontSize: 20,
+                                  fontFamily: 'Nunito',
+                                ),
+                              ),
+                              Center(
+                                child: Text(
+                                  this.startingTime,
+                                  style: TextStyle(
+                                    color: Col.whiteColor,
+                                    fontSize: 20,
+                                    fontFamily: 'Nunito',
+                                  ),
+                                ),
+                              ),
+                              Center(
+                                child: RichText(
+                                  text: TextSpan(
+                                    children: [
+                                      TextSpan(
+                                          style: TextStyle(
+                                            color: Col.whiteColor,
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.bold,
+                                            fontFamily: 'Nunito',
+                                            letterSpacing: 0.3,
+                                          ),
+                                          text: "Slot No."),
+                                      TextSpan(
+                                        style: TextStyle(
+                                          color: Col.whiteColor,
+                                          fontSize: 20,
+                                          fontFamily: 'Nunito',
+                                          letterSpacing: 0.3,
+                                        ),
+                                        text: " ${reservation.slot}",
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
+                ),
+              ),
+            ),
+          );
+          break;
+        }
+      }
     }
 
     return LayoutBuilder(
@@ -282,221 +470,7 @@ class ReservationsState extends State<Reservations> {
                           ),
                         ),
                       ),
-                      !(reservations.length < 1)
-                          ? GestureDetector(
-                              onTap: () {
-                                Navigator.push(
-                                    context,
-                                    MaterialPageRoute(
-                                        builder: (context) =>
-                                            ReservationDetailsPage(
-                                                id: reservations[0].client,
-                                                fullName: fullName,
-                                                phone: phone,
-                                                email: email,
-                                                passwordHash: passwordHash,
-                                                defaultPlateNumber:
-                                                    defaultPlateNumber,
-                                                reservationId:
-                                                    reservations[0].id,
-                                                reservationPlateNumber:
-                                                    reservations[0]
-                                                        .reservationPlateNumber,
-                                                branch: reservations[0].branch,
-                                                branchName:
-                                                    reservations[0].branchName,
-                                                startTime: reservations[0]
-                                                    .startingTime
-                                                    .toString(),
-                                                slot: reservations[0].slot,
-                                                price: reservations[0]
-                                                    .price
-                                                    .toString(),
-                                                duration: reservations[0]
-                                                    .duration
-                                                    .toString(),
-                                                parked: reservations[0]
-                                                    .toString())));
-                              },
-                              child: Container(
-                                child: Padding(
-                                  padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
-                                  child: Card(
-                                    shape: RoundedRectangleBorder(
-                                      borderRadius: BorderRadius.circular(15.0),
-                                    ),
-                                    color: Col.blackColor,
-                                    elevation: 8,
-                                    child: Container(
-                                      decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.all(
-                                            Radius.circular(15.0)),
-                                        gradient: LinearGradient(
-                                            colors: [
-                                              Col.gradientColor,
-                                              Col.blackColor
-                                            ],
-                                            begin: Alignment.centerLeft,
-                                            end: Alignment.centerRight),
-                                      ),
-                                      child: Padding(
-                                        padding:
-                                            EdgeInsets.fromLTRB(10, 20, 15, 20),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              MainAxisAlignment.spaceAround,
-                                          children: [
-                                            // SizedBox(width: 15,),
-                                            Image.asset(
-                                              "images/bell.png",
-                                              scale: 2.4,
-                                            ),
-                                            // Expanded(child: Row(),),
-                                            Column(
-                                              crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
-                                              children: <Widget>[
-                                                // Stack(
-                                                //   children: [
-                                                // Align(
-                                                //   child: IconButton(
-                                                //     onPressed: () {
-                                                //       Navigator.push(
-                                                //           context,
-                                                //           MaterialPageRoute(
-                                                //               builder: (context) =>
-                                                //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                                                //     },
-                                                //     icon: Icon(Icons.edit),
-                                                //     iconSize: 25,
-                                                //   ),
-                                                //   alignment: Alignment.topRight,
-                                                // ),
-                                                Center(
-                                                  child: Text(
-                                                    reservations[0].branchName,
-                                                    style: TextStyle(
-                                                      color: Col.whiteColor,
-                                                      fontSize: 24,
-                                                      fontWeight:
-                                                          FontWeight.bold,
-                                                      fontFamily: 'Nunito',
-                                                    ),
-                                                  ),
-                                                  //     ),
-                                                  // ],
-                                                ),
-                                                Text(
-                                                  startDate,
-                                                  style: TextStyle(
-                                                    color: Col.whiteColor,
-                                                    fontSize: 20,
-                                                    fontFamily: 'Nunito',
-                                                  ),
-                                                ),
-                                                Center(
-                                                  child: Text(
-                                                    this.startingTime,
-                                                    style: TextStyle(
-                                                      color: Col.whiteColor,
-                                                      fontSize: 20,
-                                                      fontFamily: 'Nunito',
-                                                    ),
-                                                  ),
-                                                ),
-                                                Center(
-                                                  child: RichText(
-                                                    text: TextSpan(
-                                                      children: [
-                                                        TextSpan(
-                                                            style: TextStyle(
-                                                              color: Col
-                                                                  .whiteColor,
-                                                              fontSize: 20,
-                                                              fontWeight:
-                                                                  FontWeight
-                                                                      .bold,
-                                                              fontFamily:
-                                                                  'Nunito',
-                                                              letterSpacing:
-                                                                  0.3,
-                                                            ),
-                                                            text: "Slot"),
-                                                        TextSpan(
-                                                          style: TextStyle(
-                                                            color:
-                                                                Col.whiteColor,
-                                                            fontSize: 20,
-                                                            fontFamily:
-                                                                'Nunito',
-                                                            letterSpacing: 0.3,
-                                                          ),
-                                                          text:
-                                                              " ${reservations[0].slot}",
-                                                        ),
-                                                      ],
-                                                    ),
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                          ],
-                                        ),
-                                      ),
-                                    ),
-                                    margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                                  ),
-                                ),
-                              ),
-                            )
-                          : Container(
-                              child: Padding(
-                                padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
-                                child: Card(
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(15.0),
-                                  ),
-                                  color: Col.blackColor,
-                                  elevation: 8,
-                                  child: Container(
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.all(
-                                          Radius.circular(15.0)),
-                                      gradient: LinearGradient(
-                                          colors: [
-                                            Col.gradientColor,
-                                            Col.blackColor
-                                          ],
-                                          begin: Alignment.centerLeft,
-                                          end: Alignment.centerRight),
-                                    ),
-                                    child: Padding(
-                                      padding:
-                                          EdgeInsets.fromLTRB(10, 20, 15, 20),
-                                      child: Row(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.spaceAround,
-                                        children: [
-                                          // SizedBox(width: 15,),
-                                          Image.asset(
-                                            "images/bell.png",
-                                            scale: 5,
-                                          ),
-                                          // Expanded(child: Row(),),
-                                          Text(
-                                            "No upcoming reservation",
-                                            style: TextStyle(
-                                                color: Col.whiteColor,
-                                                fontSize: 16),
-                                          ),
-                                        ],
-                                      ),
-                                    ),
-                                  ),
-                                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                                ),
-                              ),
-                            ),
+                      upComing,
                       Container(
                         margin: EdgeInsets.only(top: 10, left: 20),
                         child: Text(
@@ -536,7 +510,16 @@ class ReservationsState extends State<Reservations> {
                                     String formattedFinishTime =
                                         DateFormat('h:mm a').format(finishTime);
                                     // String finishingTime = (startTime.hour + reservationDetail.duration).toString().padLeft(2, '0') + ":" + (startTime.minute).toString().padLeft(2, '0');
-
+                                    String statusText =
+                                        !reservationDetail.parked
+                                            ? "Reserved"
+                                            : reservationDetail.expired
+                                                ? "Expired"
+                                                : "Parked";
+                                    Color statusColor =
+                                        reservationDetail.expired
+                                            ? Col.deleteColor.withRed(255)
+                                            : Col.primary;
                                     return GestureDetector(
                                       onTap: () {
                                         Navigator.push(
@@ -585,8 +568,8 @@ class ReservationsState extends State<Reservations> {
                                           color: Col.blackColor,
                                           elevation: 8,
                                           child: Padding(
-                                            padding: EdgeInsets.fromLTRB(
-                                                0, 16, 0, 16),
+                                            padding: EdgeInsets.symmetric(
+                                                horizontal: 14, vertical: 16),
                                             child: Column(
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
@@ -673,7 +656,7 @@ class ReservationsState extends State<Reservations> {
                                                             style: TextStyle(
                                                               color: Col
                                                                   .whiteColor,
-                                                              fontSize: 20,
+                                                              fontSize: 18,
                                                               fontWeight:
                                                                   FontWeight
                                                                       .bold,
@@ -682,7 +665,7 @@ class ReservationsState extends State<Reservations> {
                                                               letterSpacing:
                                                                   0.3,
                                                             ),
-                                                            text: "Slot "),
+                                                            text: "Slot No. "),
                                                         TextSpan(
                                                           style: TextStyle(
                                                             color:
@@ -694,6 +677,51 @@ class ReservationsState extends State<Reservations> {
                                                           ),
                                                           text:
                                                               "${reservationDetail.slot}",
+                                                        ),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                                Center(
+                                                  child: SizedBox(
+                                                    width:
+                                                        MediaQuery.of(context)
+                                                                .size
+                                                                .width *
+                                                            0.6,
+                                                    child: Divider(
+                                                      color: Col.whiteColor,
+                                                      thickness: 1.4,
+                                                    ),
+                                                  ),
+                                                ),
+                                                Center(
+                                                  child: RichText(
+                                                    text: TextSpan(
+                                                      children: [
+                                                        TextSpan(
+                                                            style: TextStyle(
+                                                              color: Col
+                                                                  .whiteColor,
+                                                              fontSize: 20,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .bold,
+                                                              fontFamily:
+                                                                  'Nunito',
+                                                              letterSpacing:
+                                                                  0.3,
+                                                            ),
+                                                            text: "Status "),
+                                                        TextSpan(
+                                                          style: TextStyle(
+                                                            color: statusColor,
+                                                            fontSize: 20,
+                                                            fontFamily:
+                                                                'Nunito',
+                                                            letterSpacing: 0.3,
+                                                          ),
+                                                          text: statusText,
                                                         ),
                                                       ],
                                                     ),
