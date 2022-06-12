@@ -1,4 +1,5 @@
-// ignore_for_file: file_names, prefer_const_constructors
+// ignore_for_file: no_logic_in_create_state, prefer_typing_uninitialized_variables, prefer_const_constructors
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -21,48 +22,7 @@ import 'ReservationDetailsPage.dart';
 import 'package:sheger_parking/models/ReservationDetails.dart';
 import 'package:http/http.dart' as http;
 
-Widget noUpComing = Container(
-  child: Padding(
-    padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
-    child: Card(
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(15.0),
-      ),
-      color: Col.blackColor,
-      elevation: 8,
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.all(Radius.circular(15.0)),
-          gradient: LinearGradient(
-              colors: [Col.gradientColor, Col.blackColor],
-              begin: Alignment.centerLeft,
-              end: Alignment.centerRight),
-        ),
-        child: Padding(
-          padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.spaceAround,
-            children: [
-              // SizedBox(width: 15,),
-              Image.asset(
-                "images/bell.png",
-                scale: 5,
-              ),
-              // Expanded(child: Row(),),
-              Text(
-                "No upcoming reservation",
-                style: TextStyle(color: Col.whiteColor, fontSize: 17),
-              ),
-            ],
-          ),
-        ),
-      ),
-      margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-    ),
-  ),
-);
-
-class Reservations extends StatefulWidget {
+class HistoryPage extends StatefulWidget {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
   var reservationId,
       reservationPlateNumber,
@@ -73,7 +33,7 @@ class Reservations extends StatefulWidget {
       duration,
       parked;
 
-  Reservations(
+  HistoryPage(
       {required this.id,
       required this.fullName,
       required this.phone,
@@ -90,7 +50,7 @@ class Reservations extends StatefulWidget {
       this.parked});
 
   @override
-  ReservationsState createState() => ReservationsState(
+  _HistoryPageState createState() => _HistoryPageState(
       id,
       fullName,
       phone,
@@ -107,7 +67,7 @@ class Reservations extends StatefulWidget {
       parked);
 }
 
-class ReservationsState extends State<Reservations> {
+class _HistoryPageState extends State<HistoryPage> {
   String id, fullName, phone, email, passwordHash, defaultPlateNumber;
   var reservationId,
       reservationPlateNumber,
@@ -118,7 +78,7 @@ class ReservationsState extends State<Reservations> {
       duration,
       parked;
 
-  ReservationsState(
+  _HistoryPageState(
       this.id,
       this.fullName,
       this.phone,
@@ -152,45 +112,6 @@ class ReservationsState extends State<Reservations> {
   @override
   void initState() {
     super.initState();
-
-    AwesomeNotifications().isNotificationAllowed().then(
-      (isAllowed) {
-        if (!isAllowed) {
-          showDialog(
-            context: context,
-            builder: (context) => AlertDialog(
-              title: Text('Allow Notifications'),
-              content: Text('Our app would like to send you notifications'),
-              actions: [
-                TextButton(
-                  onPressed: () {
-                    Navigator.pop(context);
-                  },
-                  child: Text(
-                    'Don\'t Allow',
-                    style: TextStyle(color: Colors.grey, fontSize: 18),
-                  ),
-                ),
-                TextButton(
-                  onPressed: () => AwesomeNotifications()
-                      .requestPermissionToSendNotifications()
-                      .then((_) => Navigator.pop(context)),
-                  child: Text(
-                    'Allow',
-                    style: TextStyle(
-                      color: Colors.teal,
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-      },
-    );
-
     // DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(reservations[0].startingTime);
     // String startDate = DateFormat.yMMMd().format(startingTime);
     // String formattedStartTime = DateFormat('h:mm a').format(startingTime);
@@ -220,7 +141,8 @@ class ReservationsState extends State<Reservations> {
   }
 
   static Future<List<ReservationDetails>> getReservationDetails() async {
-    final url = Uri.parse('${base_url}/clients/${Strings.userId}/reservations');
+    final url = Uri.parse(
+        '${base_url}/clients/${Strings.userId}/reservations?includeCompleted=true');
 
     final response = await http.get(url);
 
@@ -274,164 +196,6 @@ class ReservationsState extends State<Reservations> {
 
   @override
   Widget build(BuildContext context) {
-    Widget upComing = noUpComing;
-    late ReservationDetails upComingReservation;
-    if (reservations.length > 0) {
-      for (int index = 0; index < reservations.length; index++) {
-        ReservationDetails reservation = reservations[index];
-        if (!reservation.parked) {
-          // ///////////////////////////////////////////////////
-          upComingReservation = reservation;
-          DateTime startingTime =
-              DateTime.fromMillisecondsSinceEpoch(reservation.startingTime);
-          String startDate = DateFormat.yMMMd().format(startingTime);
-          String formattedStartTime = DateFormat('h:mm a').format(startingTime);
-
-          this.startingTime = formattedStartTime;
-          this.startDate = startDate;
-          upComing = GestureDetector(
-            onTap: () {
-              Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => ReservationDetailsPage(
-                          id: reservation.client,
-                          fullName: fullName,
-                          phone: phone,
-                          email: email,
-                          passwordHash: passwordHash,
-                          defaultPlateNumber: defaultPlateNumber,
-                          reservationId: reservation.id,
-                          reservationPlateNumber:
-                              reservation.reservationPlateNumber,
-                          branch: reservation.branch,
-                          branchName: reservation.branchName,
-                          startTime: reservation.startingTime.toString(),
-                          slot: reservation.slot,
-                          price: reservation.price.toString(),
-                          duration: reservation.duration.toString(),
-                          parked: reservation.toString())));
-            },
-            child: Container(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(30, 0, 30, 10),
-                child: Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15.0),
-                  ),
-                  color: Col.blackColor,
-                  elevation: 8,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.all(Radius.circular(15.0)),
-                      gradient: LinearGradient(
-                          colors: [Col.gradientColor, Col.blackColor],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight),
-                    ),
-                    child: Padding(
-                      padding: EdgeInsets.fromLTRB(10, 20, 15, 20),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceAround,
-                        children: [
-                          // SizedBox(width: 15,),
-                          Image.asset(
-                            "images/bell.png",
-                            scale: 2.4,
-                          ),
-                          // Expanded(child: Row(),),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              // Stack(
-                              //   children: [
-                              // Align(
-                              //   child: IconButton(
-                              //     onPressed: () {
-                              //       Navigator.push(
-                              //           context,
-                              //           MaterialPageRoute(
-                              //               builder: (context) =>
-                              //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                              //     },
-                              //     icon: Icon(Icons.edit),
-                              //     iconSize: 25,
-                              //   ),
-                              //   alignment: Alignment.topRight,
-                              // ),
-                              Center(
-                                child: Text(
-                                  reservation.branchName,
-                                  style: TextStyle(
-                                    color: Col.whiteColor,
-                                    fontSize: 26,
-                                    fontWeight: FontWeight.bold,
-                                    fontFamily: 'Nunito',
-                                  ),
-                                ),
-                                //     ),
-                                // ],
-                              ),
-                              Text(
-                                startDate,
-                                style: TextStyle(
-                                  color: Col.whiteColor,
-                                  fontSize: 20,
-                                  fontFamily: 'Nunito',
-                                ),
-                              ),
-                              Center(
-                                child: Text(
-                                  this.startingTime,
-                                  style: TextStyle(
-                                    color: Col.whiteColor,
-                                    fontSize: 20,
-                                    fontFamily: 'Nunito',
-                                  ),
-                                ),
-                              ),
-                              Center(
-                                child: RichText(
-                                  text: TextSpan(
-                                    children: [
-                                      TextSpan(
-                                          style: TextStyle(
-                                            color: Col.whiteColor,
-                                            fontSize: 18,
-                                            fontWeight: FontWeight.bold,
-                                            fontFamily: 'Nunito',
-                                            letterSpacing: 0.3,
-                                          ),
-                                          text: "Slot No."),
-                                      TextSpan(
-                                        style: TextStyle(
-                                          color: Col.whiteColor,
-                                          fontSize: 20,
-                                          fontFamily: 'Nunito',
-                                          letterSpacing: 0.3,
-                                        ),
-                                        text: " ${reservation.slot}",
-                                      ),
-                                    ],
-                                  ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 0),
-                ),
-              ),
-            ),
-          );
-          break;
-        }
-      }
-    }
-
     return LayoutBuilder(
         builder: (BuildContext context, BoxConstraints viewportConstraints) {
       return ScrollConfiguration(
@@ -458,21 +222,7 @@ class ReservationsState extends State<Reservations> {
                       Container(
                         margin: EdgeInsets.only(top: 20, left: 20),
                         child: Text(
-                          "Upcoming",
-                          style: TextStyle(
-                            color: Col.blackColor,
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0.1,
-                          ),
-                        ),
-                      ),
-                      upComing,
-                      Container(
-                        margin: EdgeInsets.only(top: 10, left: 20),
-                        child: Text(
-                          "All reservations",
+                          "Reservation History",
                           style: TextStyle(
                             color: Col.blackColor,
                             fontSize: 20,
@@ -784,7 +534,7 @@ class ReservationsState extends State<Reservations> {
                                                     height: 10,
                                                   ),
                                                   Text(
-                                                    "No Reservations!",
+                                                    "No History!",
                                                     style: TextStyle(
                                                       color: Col.whiteColor,
                                                       fontSize: 22,
@@ -797,10 +547,11 @@ class ReservationsState extends State<Reservations> {
                                                     height: 10,
                                                   ),
                                                   Text(
-                                                    "Your reservations will appear here!",
+                                                    "Your reservation history will appear here!",
                                                     style: TextStyle(
-                                                        color: Col.whiteColor,
-                                                        fontSize: 16),
+                                                      color: Col.whiteColor,
+                                                      fontSize: 16,
+                                                    ),
                                                     textAlign: TextAlign.center,
                                                   ),
                                                 ],

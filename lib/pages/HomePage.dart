@@ -7,6 +7,7 @@ import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/bloc/home_event.dart';
 import 'package:sheger_parking/bloc/home_state.dart';
 import 'package:sheger_parking/pages/BranchesPage.dart';
+import 'package:sheger_parking/pages/HistoryPage.dart';
 import 'package:sheger_parking/pages/ProfilePage.dart';
 import 'package:flutter/material.dart';
 import 'package:sheger_parking/pages/Reservations.dart';
@@ -128,7 +129,22 @@ class _HomePageState extends State<HomePage> {
           phone: phone,
           email: email,
           passwordHash: passwordHash,
-          defaultPlateNumber: defaultPlateNumber)
+          defaultPlateNumber: defaultPlateNumber),
+      HistoryPage(
+          id: id,
+          fullName: fullName,
+          phone: phone,
+          email: email,
+          passwordHash: passwordHash,
+          defaultPlateNumber: defaultPlateNumber,
+          reservationId: reservationId,
+          reservationPlateNumber: reservationPlateNumber,
+          branch: branch,
+          startTime: startTime,
+          slot: slot,
+          price: price,
+          duration: duration,
+          parked: parked)
     ];
   }
 
@@ -209,6 +225,7 @@ class _HomePageState extends State<HomePage> {
         bottomNavigationBar: BlocBuilder<CurrentIndexBloc, CurrentIndexState>(
           builder: (context, state) {
             return BottomNavigationBar(
+              type: BottomNavigationBarType.fixed,
               selectedItemColor: Col.primary,
               iconSize: 28,
               currentIndex:
@@ -227,6 +244,10 @@ class _HomePageState extends State<HomePage> {
                 BottomNavigationBarItem(
                   icon: Icon(Icons.add_circle_outline),
                   label: "Reserve",
+                ),
+                BottomNavigationBarItem(
+                  icon: Icon(Icons.history),
+                  label: "History",
                 ),
               ],
             );
