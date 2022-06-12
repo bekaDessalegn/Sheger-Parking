@@ -31,12 +31,13 @@ class _SignUpPageState extends State<SignUpPage> {
   late String verificationCode;
   String? hashedPassword;
   String? phoneInUse;
+  String? emailInUse;
+  String? socketError;
+
+  bool phoneExists = false;
 
   Future verify() async {
-    var headersList = {
-      'Accept': '*/*',
-      'Content-Type': 'application/json'
-    };
+    var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse('${base_url}/clients/signup');
 
     var body = {
@@ -47,37 +48,44 @@ class _SignUpPageState extends State<SignUpPage> {
       "defaultPlateNumber": user.defaultPlateNumber
     };
 
-    var req = http.Request('POST', url);
-    req.headers.addAll(headersList);
-    req.body = json.encode(body);
+    try{
+      var req = http.Request('POST', url);
+      req.headers.addAll(headersList);
+      req.body = json.encode(body);
 
-    var res = await req.send();
-    final resBody = await res.stream.bytesToString();
+      var res = await req.send();
+      final resBody = await res.stream.bytesToString();
 
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      var verificationCode = json.decode(resBody);
-      print(verificationCode["emailVerificationCode"]);
-      this.verificationCode = verificationCode["emailVerificationCode"].toString();
-      setState(() {
-        isDataEntered = !isDataEntered;
-        phoneInUse = "PHONE EXISTS";
-      });
-      print(resBody);
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        var verificationCode = json.decode(resBody);
+        print(verificationCode["emailVerificationCode"]);
+        this.verificationCode =
+            verificationCode["emailVerificationCode"].toString();
+        setState(() {
+          phoneExists = true;
+          isDataEntered = !isDataEntered;
+          phoneInUse = "PHONE DOES NOT EXIST";
+          emailInUse = "EMAIL DOES NOT EXIST";
+        });
+        print(resBody);
+      } else {
+        var exists = json.decode(resBody);
+        setState(() {
+          phoneInUse = exists["message"].toString();
+          emailInUse = exists["message"].toString();
+        });
+        print(resBody);
+      }
     }
-    else {
-      var phoneExists = json.decode(resBody);
+    catch (e) {
       setState(() {
-        phoneInUse = phoneExists["message"].toString();
+        socketError = "There is an internet connection problem, Try again";
       });
-      print(resBody);
     }
   }
 
   Future signup() async {
-    var headersList = {
-      'Accept': '*/*',
-      'Content-Type': 'application/json'
-    };
+    var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse('${base_url}/clients');
 
     var body = {
@@ -87,38 +95,55 @@ class _SignUpPageState extends State<SignUpPage> {
       "passwordHash": hashedPassword,
       "defaultPlateNumber": user.defaultPlateNumber
     };
-    var req = http.Request('POST', url);
-    req.headers.addAll(headersList);
-    req.body = json.encode(body);
 
-    var res = await req.send();
-    final resBody = await res.stream.bytesToString();
+    try {
+      var req = http.Request('POST', url);
+      req.headers.addAll(headersList);
+      req.body = json.encode(body);
 
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      var data = json.decode(resBody);
-      String id = data["id"].toString();
-      String fullName = data["fullName"].toString();
-      String phone = data["phone"].toString();
-      String email = data["email"].toString();
-      String passwordHash = data["passwordHash"].toString();
-      String defaultPlateNumber = data["defaultPlateNumber"].toString();
-      Strings.userId = id;
+      var res = await req.send();
+      final resBody = await res.stream.bytesToString();
 
-      final SharedPreferences sharedPreferences = await SharedPreferences.getInstance();
-      sharedPreferences.setString("id", id);
-      sharedPreferences.setString("fullName", fullName);
-      sharedPreferences.setString("phone", phone);
-      sharedPreferences.setString("email", email);
-      sharedPreferences.setString("passwordHash", passwordHash);
-      sharedPreferences.setString("defaultPlateNumber", defaultPlateNumber);
-      print(resBody);
-      Navigator.pushAndRemoveUntil(context, MaterialPageRoute(builder: (context) => BlocProvider(
-          create: (context) => CurrentIndexBloc(),
-          child: HomePage(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber))), (Route<dynamic> route) => false);
-    }
-    else {
-      print(res.reasonPhrase);
-      print(resBody);
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        var data = json.decode(resBody);
+        String id = data["id"].toString();
+        String fullName = data["fullName"].toString();
+        String phone = data["phone"].toString();
+        String email = data["email"].toString();
+        String passwordHash = data["passwordHash"].toString();
+        String defaultPlateNumber = data["defaultPlateNumber"].toString();
+        Strings.userId = id;
+
+        final SharedPreferences sharedPreferences =
+            await SharedPreferences.getInstance();
+        sharedPreferences.setString("id", id);
+        sharedPreferences.setString("fullName", fullName);
+        sharedPreferences.setString("phone", phone);
+        sharedPreferences.setString("email", email);
+        sharedPreferences.setString("passwordHash", passwordHash);
+        sharedPreferences.setString("defaultPlateNumber", defaultPlateNumber);
+        print(resBody);
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                    create: (context) => CurrentIndexBloc(),
+                    child: HomePage(
+                        id: id,
+                        fullName: fullName,
+                        phone: phone,
+                        email: email,
+                        passwordHash: passwordHash,
+                        defaultPlateNumber: defaultPlateNumber))),
+            (Route<dynamic> route) => false);
+      } else {
+        print(res.reasonPhrase);
+        print(resBody);
+      }
+    } catch (e) {
+      setState(() {
+        socketError = "There is an internet connection problem, Try again";
+      });
     }
   }
 
@@ -183,7 +208,7 @@ class _SignUpPageState extends State<SignUpPage> {
                       alignment: Alignment.center,
                       child: TextFormField(
                         controller: TextEditingController(text: user.fullName),
-                        onChanged: (value){
+                        onChanged: (value) {
                           user.fullName = value;
                         },
                         validator: (value) {
@@ -221,14 +246,14 @@ class _SignUpPageState extends State<SignUpPage> {
                       alignment: Alignment.center,
                       child: TextFormField(
                         controller: TextEditingController(text: user.email),
-                        onChanged: (value){
+                        onChanged: (value) {
                           user.email = value;
                         },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
                           } else if (RegExp(
-                              r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
+                                  r"^[a-zA-Z0-9.a-zA-Z0-9.!#$%&'*+-/=?^_`{|}~]+@[a-zA-Z0-9]+\.[a-zA-Z]+")
                               .hasMatch(value)) {
                             return null;
                           } else {
@@ -259,25 +284,36 @@ class _SignUpPageState extends State<SignUpPage> {
                       ),
                     ),
                   ),
+                  (emailInUse == "INVALID_CALL:|:USER_EMAIL_ALREADY_IN_USE")
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Center(
+                            child: Text(
+                              "Email already in use",
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
                         controller: TextEditingController(text: user.phone),
-                        onChanged: (value){
+                        onChanged: (value) {
                           user.phone = value;
                         },
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
-                          }
-                          else if (RegExp(
-                              r"^(?:[+0]9)?[0-9]{10}$")
+                          } else if (RegExp(r"^(?:[+0]9)?[0-9]{10}$")
                               .hasMatch(value)) {
                             return null;
-                          }
-                          else {
+                          } else {
                             return "Please enter valid phone number";
                           }
                         },
@@ -306,25 +342,26 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   (phoneInUse == "INVALID_CALL:|:USER_PHONE_ALREADY_IN_USE")
                       ? Padding(
-                    padding: const EdgeInsets.only(top: 5),
-                    child: Center(
-                      child: Text(
-                        "Phone already in use",
-                        style: TextStyle(
-                            color: Colors.redAccent,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 15),
-                      ),
-                    ),
-                  )
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Center(
+                            child: Text(
+                              "Phone already in use",
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
+                          ),
+                        )
                       : SizedBox(),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
-                        controller: TextEditingController(text: user.defaultPlateNumber),
-                        onChanged: (value){
+                        controller: TextEditingController(
+                            text: user.defaultPlateNumber),
+                        onChanged: (value) {
                           user.defaultPlateNumber = value;
                         },
                         validator: (value) {
@@ -361,8 +398,9 @@ class _SignUpPageState extends State<SignUpPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
-                        controller: TextEditingController(text: user.passwordHash),
-                        onChanged: (value){
+                        controller:
+                            TextEditingController(text: user.passwordHash),
+                        onChanged: (value) {
                           var bytes = utf8.encode(value);
                           var sha512 = sha256.convert(bytes);
                           var hashedPassword = sha512.toString();
@@ -415,143 +453,159 @@ class _SignUpPageState extends State<SignUpPage> {
                   ),
                   isProcessing
                       ? Padding(
-                    padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
-                    child: Center(
-                      child: CircularProgressIndicator(
-                        color: Col.primary,
-                        strokeWidth: 2,
-                      ),
-                    ),
-                  )
-                      : isDataEntered
-                      ? Padding(
-                    padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
-                    child: Column(
-                      children: [
-                        Text(
-                          "Verification code has been sent to your email",
-                          style: TextStyle(
-                            color: Col.Onbackground,
-                            fontSize: 15,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0.1,
-                          ),
-                        ),
-                        SizedBox(
-                          height: 10,
-                        ),
-                        Container(
-                          alignment: Alignment.center,
-                          child: TextFormField(
-                            validator: (value) {
-                              if (value!.isEmpty) {
-                                return "This field can not be empty";
-                              }else if(value != verificationCode){
-                                return "Please enter the correct verification code";
-                              }
-                              return null;
-                            },
-                            decoration: InputDecoration(
-                              hintText: "",
-                              hintStyle: TextStyle(
-                                color: Col.textfieldLabel,
-                                fontSize: 14,
-                                fontFamily: 'Nunito',
-                                letterSpacing: 0.1,
-                              ),
-                              labelText: "Verification Code",
-                              labelStyle: TextStyle(
-                                color: Col.textfieldLabel,
-                                fontSize: 14,
-                                fontFamily: 'Nunito',
-                                letterSpacing: 0,
-                              ),
-                              border: OutlineInputBorder(),
-                              errorBorder: OutlineInputBorder(
-                                borderSide:
-                                BorderSide(color: Colors.red),
-                              ),
+                          padding: EdgeInsets.fromLTRB(0, 15, 0, 0),
+                          child: Center(
+                            child: CircularProgressIndicator(
+                              color: Col.primary,
+                              strokeWidth: 2,
                             ),
-                            keyboardType: TextInputType.number,
                           ),
-                        ),
-                      ],
-                    ),
-                  )
-                      : Text(""),
+                        )
+                      : isDataEntered
+                          ? Padding(
+                              padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    "Verification code has been sent to your email",
+                                    style: TextStyle(
+                                      color: Col.Onbackground,
+                                      fontSize: 15,
+                                      fontWeight: FontWeight.bold,
+                                      fontFamily: 'Nunito',
+                                      letterSpacing: 0.1,
+                                    ),
+                                  ),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  Container(
+                                    alignment: Alignment.center,
+                                    child: TextFormField(
+                                      validator: (value) {
+                                        if (value!.isEmpty) {
+                                          return "This field can not be empty";
+                                        } else if (value != verificationCode) {
+                                          return "Please enter the correct verification code";
+                                        }
+                                        return null;
+                                      },
+                                      decoration: InputDecoration(
+                                        hintText: "",
+                                        hintStyle: TextStyle(
+                                          color: Col.textfieldLabel,
+                                          fontSize: 14,
+                                          fontFamily: 'Nunito',
+                                          letterSpacing: 0.1,
+                                        ),
+                                        labelText: "Verification Code",
+                                        labelStyle: TextStyle(
+                                          color: Col.textfieldLabel,
+                                          fontSize: 14,
+                                          fontFamily: 'Nunito',
+                                          letterSpacing: 0,
+                                        ),
+                                        border: OutlineInputBorder(),
+                                        errorBorder: OutlineInputBorder(
+                                          borderSide:
+                                              BorderSide(color: Colors.red),
+                                        ),
+                                      ),
+                                      keyboardType: TextInputType.number,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            )
+                          : Text(""),
+                  !(socketError == null)
+                      ? Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Center(
+                            child: Text(
+                              "There is an internet connection problem",
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
+                          ),
+                        )
+                      : SizedBox(),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 15, 25, 0),
                     child: Container(
                       width: double.infinity,
-                      child: isDataEntered ? RaisedButton(
-                        color: Col.primary,
-                        child: Text(
-                          "Verify",
-                          style: TextStyle(
-                            color: Col.Onprimary,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            fontFamily: 'Nunito',
-                            letterSpacing: 0.3,
-                          ),
-                        ),
-                        shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8)),
-                        onPressed: () {
-                          if (_formKey.currentState!.validate()) {
-                            signup();
-                            // setState(() {
-                            //   isProcessing = true;
-                            // });
-                          } else {
-                            print("Enter fields");
-                          }
-                          // Future.delayed(Duration(seconds: 6), () {
-                          //   setState(() {
-                          //     isProcessing = false;
-                          //   });
-                          // });
-                        },
-                      ) : RaisedButton(
-                      color: Col.primary,
-                      child: Text(
-                        "Sign up",
-                        style: TextStyle(
-                          color: Col.Onprimary,
-                          fontSize: 18,
-                          fontWeight: FontWeight.bold,
-                          fontFamily: 'Nunito',
-                          letterSpacing: 0.3,
-                        ),
-                      ),
-                      shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          verify();
-                          // setState(() {
-                          //   isDataEntered = !isDataEntered;
-                          // });
+                      child: isDataEntered
+                          ? RaisedButton(
+                              color: Col.primary,
+                              child: Text(
+                                "Verify",
+                                style: TextStyle(
+                                  color: Col.Onprimary,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Nunito',
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              onPressed: () {
+                                if (_formKey.currentState!.validate()) {
+                                  signup();
+                                  // setState(() {
+                                  //   isProcessing = true;
+                                  // });
+                                } else {
+                                  print("Enter fields");
+                                }
+                                // Future.delayed(Duration(seconds: 6), () {
+                                //   setState(() {
+                                //     isProcessing = false;
+                                //   });
+                                // });
+                              },
+                            )
+                          : RaisedButton(
+                              color: Col.primary,
+                              child: Text(
+                                "Sign up",
+                                style: TextStyle(
+                                  color: Col.Onprimary,
+                                  fontSize: 18,
+                                  fontWeight: FontWeight.bold,
+                                  fontFamily: 'Nunito',
+                                  letterSpacing: 0.3,
+                                ),
+                              ),
+                              shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8)),
+                              onPressed: () async {
+                                if (_formKey.currentState!.validate()) {
+                                  await verify();
+                                  // setState(() {
+                                  //   isDataEntered = !isDataEntered;
+                                  // });
 
-                          if(phoneInUse == "PHONE EXISTS"){
-                            setState(() {
-                              isProcessing = true;
-                            });
-                          }
-                          // if (!isDataEntered) {
-                          //   save();
-                          // }
-                        } else {
-                          print("Enter fields");
-                        }
-                        Future.delayed(Duration(seconds: 6), () {
-                          setState(() {
-                            isProcessing = false;
-                          });
-                        });
-                      },
-                    ),
+                                  if (phoneExists) {
+                                    setState(() {
+                                      isProcessing = true;
+                                    });
+                                  }
+                                  // if (!isDataEntered) {
+                                  //   save();
+                                  // }
+                                } else {
+                                  print("Enter fields");
+                                }
+                                Future.delayed(Duration(seconds: 3), () {
+                                  setState(() {
+                                    isProcessing = false;
+                                  });
+                                });
+                              },
+                            ),
                     ),
                   ),
                   Padding(

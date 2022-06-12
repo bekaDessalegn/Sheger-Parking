@@ -259,18 +259,18 @@ class ReservationsState extends State<Reservations> {
     }
   }
 
-  void notifier() {
-    reservations.forEach((element) {
-      var startTimeInM = element.startingTime / 60000;
-      var durationInM = element.duration * 60;
-      var endTimeInM = startTimeInM + durationInM;
-      var currentTimestampInM = DateTime.now().millisecondsSinceEpoch / 60000;
-      var minutesLeft = endTimeInM - currentTimestampInM;
-      if (minutesLeft <= Strings.notifiyingMinute && minutesLeft > 9) {
-        createNotification(element.branchName);
-      }
-    });
-  }
+  // void notifier() {
+  //   reservations.forEach((element) {
+  //     var startTimeInM = element.startingTime / 60000;
+  //     var durationInM = element.duration * 60;
+  //     var endTimeInM = startTimeInM + durationInM;
+  //     var currentTimestampInM = DateTime.now().millisecondsSinceEpoch / 60000;
+  //     var minutesLeft = endTimeInM - currentTimestampInM;
+  //     if (minutesLeft <= Strings.notifiyingMinute && minutesLeft > 9) {
+  //       createNotification(element.branchName);
+  //     }
+  //   });
+  // }
 
   @override
   Widget build(BuildContext context) {

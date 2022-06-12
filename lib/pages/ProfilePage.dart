@@ -53,6 +53,7 @@ class _ProfilePageState extends State<ProfilePage> {
       final SharedPreferences sharedPreferences =
           await SharedPreferences.getInstance();
       sharedPreferences.remove("email");
+      Strings.userId = false;
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(builder: (context) => StartUp()),
@@ -440,6 +441,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   final SharedPreferences sharedPreferences =
                                       await SharedPreferences.getInstance();
                                   sharedPreferences.remove("email");
+                                  Strings.userId = false;
                                   Navigator.pushAndRemoveUntil(
                                       context,
                                       MaterialPageRoute(
