@@ -65,7 +65,6 @@ class _ReservationPageState extends State<ReservationPage> {
   bool validDate = true;
 
   void launchUrl() async {
-    // if (!await launchUrl(_url)) throw 'Could not launch $_url';
     if (await canLaunch(url)) {
       await launch(url);
     } else {
@@ -103,11 +102,7 @@ class _ReservationPageState extends State<ReservationPage> {
           toPay = true;
         });
       }
-
-      print(resBody);
-    } else {
-      print(res.reasonPhrase);
-    }
+    } else {}
   }
 
   Future reserve() async {
@@ -142,7 +137,6 @@ class _ReservationPageState extends State<ReservationPage> {
       String price = data["price"].toString();
       String duration = data["duration"].toString();
       String parked = data["parked"].toString();
-      print(resBody);
 
       var url = data["paymentUrl"];
 
@@ -150,31 +144,7 @@ class _ReservationPageState extends State<ReservationPage> {
         this.url = url;
       });
       launchUrl();
-
-      // if (!await launchUrl(_url)) throw 'Could not launch the payment url';
-
-      // Navigator.pushReplacement(
-      //     context,
-      //     MaterialPageRoute(
-      //         builder: (context) => HomePage(
-      //             id: id,
-      //             fullName: fullName,
-      //             phone: phone,
-      //             email: email,
-      //             passwordHash: passwordHash,
-      //             defaultPlateNumber: defaultPlateNumber,
-      //             reservationId: reservationId,
-      //             reservationPlateNumber: reservationPlateNumber,
-      //             branch: branch,
-      //             branchName: branchName,
-      //             startTime: startingTime,
-      //             slot: slot,
-      //             price: price,
-      //             duration: duration,
-      //             parked: parked)));
-    } else {
-      print(resBody);
-    }
+    } else {}
   }
 
   Reservation reservation = Reservation("", "", "", "", 0, 0, 1);
@@ -252,16 +222,13 @@ class _ReservationPageState extends State<ReservationPage> {
         branchesName.add(branchDetail.name);
         branchesId.add(branchDetail.id);
         branchesPricePerHour.add(branchDetail.pricePerHour);
-        // value = branchesName[0];
       });
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // final hours = dateTime.hour.toString().padLeft(2, '0');
     reservation.startingTime = timestamp;
-    // final minutes = dateTime.minute.toString().padLeft(2, '0');
 
     return SingleChildScrollView(
       child: Container(
@@ -328,14 +295,6 @@ class _ReservationPageState extends State<ReservationPage> {
                             fontFamily: 'Nunito',
                             letterSpacing: 0.1,
                           ),
-                          // floatingLabelBehavior: FloatingLabelBehavior.always,
-                          // labelText: "Plate Number",
-                          // labelStyle: TextStyle(
-                          //   color: Col.textfieldLabel,
-                          //   fontSize: 14,
-                          //   fontFamily: 'Nunito',
-                          //   letterSpacing: 0,
-                          // ),
                           border: OutlineInputBorder(),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Col.primary),
@@ -347,50 +306,6 @@ class _ReservationPageState extends State<ReservationPage> {
                       ),
                     ),
                   ),
-
-                  /////////////////////////////////////////////////////////////////////
-                  // Padding(
-                  //   padding: EdgeInsets.fromLTRB(25, 40, 25, 0),
-                  //   child: Container(
-                  //     width: double.infinity,
-                  //     alignment: Alignment.center,
-                  //     child: TextFormField(
-                  //       controller: TextEditingController(
-                  //           text: reservation.reservationPlateNumber),
-                  //       validator: (value) {
-                  //         if (value!.isEmpty) {
-                  //           return "This field can not be empty";
-                  //         }
-                  //         return null;
-                  //       },
-                  //       onChanged: (value) {
-                  //         reservation.reservationPlateNumber = value;
-                  //       },
-                  //       decoration: InputDecoration(
-                  //         hintText: "",
-                  //         hintStyle: TextStyle(
-                  //           color: Col.textfieldLabel,
-                  //           fontSize: 14,
-                  //           fontFamily: 'Nunito',
-                  //           letterSpacing: 0.1,
-                  //         ),
-                  //         floatingLabelBehavior: FloatingLabelBehavior.always,
-                  //         labelText: "Plate Number",
-                  //         labelStyle: TextStyle(
-                  //           color: Col.blackColor,
-                  //           fontSize: 20,
-                  //           fontWeight: FontWeight.w600,
-                  //           fontFamily: 'Nunito',
-                  //           letterSpacing: 0.1,
-                  //         ),
-                  //         border: OutlineInputBorder(),
-                  //         errorBorder: OutlineInputBorder(
-                  //           borderSide: BorderSide(color: Colors.red),
-                  //         ),
-                  //       ),
-                  //     ),
-                  //   ),
-                  // ),
                   Padding(
                     padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
                     child: Container(
@@ -441,8 +356,6 @@ class _ReservationPageState extends State<ReservationPage> {
                                       });
                                     }
                                   }
-
-                                  print(reservation.branch);
                                 }),
                         validator: (value) {
                           if (checker == '') {
@@ -515,7 +428,6 @@ class _ReservationPageState extends State<ReservationPage> {
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Text(
-                            // "$formattedStartTime - $formattedFinishTime",
                             "$startDate ",
                             style: TextStyle(
                               color: Colors.black,
@@ -524,7 +436,6 @@ class _ReservationPageState extends State<ReservationPage> {
                             ),
                           ),
                           Text(
-                            // "$formattedStartTime - $formattedFinishTime",
                             "|",
                             style: TextStyle(
                               color: Col.primary,
@@ -533,7 +444,6 @@ class _ReservationPageState extends State<ReservationPage> {
                             ),
                           ),
                           Text(
-                            // "$formattedStartTime - $formattedFinishTime",
                             " $startTime",
                             style: TextStyle(
                               color: Colors.black,
@@ -626,14 +536,6 @@ class _ReservationPageState extends State<ReservationPage> {
                             fontFamily: 'Nunito',
                             letterSpacing: 0.1,
                           ),
-                          // floatingLabelBehavior: FloatingLabelBehavior.always,
-                          // labelText: "Duration (hours)",
-                          // labelStyle: TextStyle(
-                          //   color: Col.textfieldLabel,
-                          //   fontSize: 14,
-                          //   fontFamily: 'Nunito',
-                          //   letterSpacing: 0,
-                          // ),
                           border: OutlineInputBorder(),
                           focusedBorder: OutlineInputBorder(
                             borderSide: BorderSide(color: Col.primary),
@@ -673,15 +575,6 @@ class _ReservationPageState extends State<ReservationPage> {
                           ),
                         )
                       : SizedBox(),
-                  // toPay ? Text("The Total fee is $payement birr",
-                  //   style: TextStyle(
-                  //   color: Col.blackColor,
-                  //   fontSize: 18,
-                  //   fontWeight: FontWeight.bold,
-                  //   fontFamily: 'Nunito',
-                  //   letterSpacing: 0.1,
-                  // ),
-                  // ) : SizedBox(),
                   toPay
                       ? Padding(
                           padding: EdgeInsets.fromLTRB(0, 15, 0, 5),
@@ -704,7 +597,8 @@ class _ReservationPageState extends State<ReservationPage> {
                                                   email: email,
                                                   passwordHash: passwordHash,
                                                   defaultPlateNumber:
-                                                      defaultPlateNumber))), (Route<dynamic> route) => false);
+                                                      defaultPlateNumber))),
+                                      (Route<dynamic> route) => false);
                                 }
                               },
                               padding: EdgeInsets.symmetric(
@@ -760,8 +654,7 @@ class _ReservationPageState extends State<ReservationPage> {
                                       payement =
                                           pricePerHour * reservation.duration;
                                     });
-                                    print(reservation.price);
-                                    print(reservation.duration);
+
                                     availablility();
                                   }
                                 }
@@ -793,42 +686,6 @@ class _ReservationPageState extends State<ReservationPage> {
     );
   }
 
-  // Future pickDateTime() async {
-  //
-  //   DateTime? date = await showDatePicker(
-  //       context: context,
-  //       initialDate: DateTime.now(),
-  //       firstDate: DateTime(1900),
-  //       lastDate: DateTime(2100));
-  //   if(date == null) return;
-  //
-  //   TimeOfDay? time = await showTimePicker(context: context, initialTime: TimeOfDay.now());
-  //   if(time == null) return;
-  //
-  //   final dateTime = DateTime(
-  //     date.year,
-  //     date.month,
-  //     date.day,
-  //     date.hour,
-  //     date.minute
-  //   );
-  //
-  //   setState(() {
-  //     this.dateTime = dateTime;
-  //     _selectedTime = time.format(context);
-  //   });
-  // }
-
-  // Future<void> _openTimePicker(BuildContext context) async {
-  //   final TimeOfDay? t = await showTimePicker(context: context, initialTime: TimeOfDay.now());
-  //
-  //   if(t != null){
-  //     setState(() {
-  //       _selectedTime = t.format(context);
-  //     });
-  //   }
-  // }
-
   DropdownMenuItem<String> buildMenuBranch(String branch) => DropdownMenuItem(
         value: branch,
         child: Text(
@@ -842,21 +699,6 @@ class _ReservationPageState extends State<ReservationPage> {
         ),
       );
 
-  // DropdownMenuItem<String> buildMenuDuration(String duration) =>
-  //     DropdownMenuItem(
-  //       value: duration,
-  //       child: Text(
-  //         duration,
-  //         style: TextStyle(
-  //           color: Col.Onbackground,
-  //           fontSize: 18,
-  //           fontFamily: 'Nunito',
-  //           letterSpacing: 0.3,
-  //         ),
-  //         textAlign: TextAlign.center,
-  //       ),
-  //     );
-
   Future<DateTime?> pickDate() => showDatePicker(
       context: context,
       initialDate: fullTime,
@@ -865,8 +707,6 @@ class _ReservationPageState extends State<ReservationPage> {
 
   Future<TimeOfDay?> pickTime() => showCustomTimePicker(
         context: context,
-        // It is a must if you provide selectableTimePredicate
-        onFailValidation: (context) => print('Unavailable selection'),
         initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
         selectableTimePredicate: (time) {
           return time!.minute == 0;
@@ -885,23 +725,13 @@ class _ReservationPageState extends State<ReservationPage> {
 
     int timestamp = dateTime.millisecondsSinceEpoch;
 
-    // String currentYear = dateTime.year.toString();
-    // String currentMonth = dateTime.month.toString();
-    // String currentDay = dateTime.day.toString();
-    // String currentHour = dateTime.hour.toString().padLeft(2, '0');
-
     String startDate = DateFormat.yMMMd().format(dateTime);
     String startTime = DateFormat('h:mm a').format(dateTime);
 
     setState(() {
-      // this.dateTime = dateTime;
       this.timestamp = timestamp;
       this.startDate = startDate;
       this.startTime = startTime;
-      // this.currentYear = currentYear;
-      // this.currentMonth = currentMonth;
-      // this.currentDay = currentDay;
-      // this.currentHour = currentHour;
     });
   }
 }

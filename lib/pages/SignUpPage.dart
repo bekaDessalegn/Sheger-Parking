@@ -48,7 +48,7 @@ class _SignUpPageState extends State<SignUpPage> {
       "defaultPlateNumber": user.defaultPlateNumber
     };
 
-    try{
+    try {
       var req = http.Request('POST', url);
       req.headers.addAll(headersList);
       req.body = json.encode(body);
@@ -58,7 +58,7 @@ class _SignUpPageState extends State<SignUpPage> {
 
       if (res.statusCode >= 200 && res.statusCode < 300) {
         var verificationCode = json.decode(resBody);
-        print(verificationCode["emailVerificationCode"]);
+
         this.verificationCode =
             verificationCode["emailVerificationCode"].toString();
         setState(() {
@@ -67,17 +67,14 @@ class _SignUpPageState extends State<SignUpPage> {
           phoneInUse = "PHONE DOES NOT EXIST";
           emailInUse = "EMAIL DOES NOT EXIST";
         });
-        print(resBody);
       } else {
         var exists = json.decode(resBody);
         setState(() {
           phoneInUse = exists["message"].toString();
           emailInUse = exists["message"].toString();
         });
-        print(resBody);
       }
-    }
-    catch (e) {
+    } catch (e) {
       setState(() {
         socketError = "There is an internet connection problem, Try again";
       });
@@ -122,7 +119,7 @@ class _SignUpPageState extends State<SignUpPage> {
         sharedPreferences.setString("email", email);
         sharedPreferences.setString("passwordHash", passwordHash);
         sharedPreferences.setString("defaultPlateNumber", defaultPlateNumber);
-        print(resBody);
+
         Navigator.pushAndRemoveUntil(
             context,
             MaterialPageRoute(
@@ -136,10 +133,7 @@ class _SignUpPageState extends State<SignUpPage> {
                         passwordHash: passwordHash,
                         defaultPlateNumber: defaultPlateNumber))),
             (Route<dynamic> route) => false);
-      } else {
-        print(res.reasonPhrase);
-        print(resBody);
-      }
+      } else {}
     } catch (e) {
       setState(() {
         socketError = "There is an internet connection problem, Try again";
@@ -554,17 +548,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               onPressed: () {
                                 if (_formKey.currentState!.validate()) {
                                   signup();
-                                  // setState(() {
-                                  //   isProcessing = true;
-                                  // });
-                                } else {
-                                  print("Enter fields");
-                                }
-                                // Future.delayed(Duration(seconds: 6), () {
-                                //   setState(() {
-                                //     isProcessing = false;
-                                //   });
-                                // });
+                                } else {}
                               },
                             )
                           : RaisedButton(
@@ -584,21 +568,13 @@ class _SignUpPageState extends State<SignUpPage> {
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
                                   await verify();
-                                  // setState(() {
-                                  //   isDataEntered = !isDataEntered;
-                                  // });
 
                                   if (phoneExists) {
                                     setState(() {
                                       isProcessing = true;
                                     });
                                   }
-                                  // if (!isDataEntered) {
-                                  //   save();
-                                  // }
-                                } else {
-                                  print("Enter fields");
-                                }
+                                } else {}
                                 Future.delayed(Duration(seconds: 3), () {
                                   setState(() {
                                     isProcessing = false;

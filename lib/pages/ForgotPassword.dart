@@ -21,7 +21,6 @@ class ForgotPassword extends StatefulWidget {
 }
 
 class _ForgotPasswordState extends State<ForgotPassword> {
-
   List<UserDetails> users = [];
   String query = '';
   Timer? debouncer;
@@ -41,9 +40,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   void debounce(
-      VoidCallback callback, {
-        Duration duration = const Duration(milliseconds: 1000),
-      }) {
+    VoidCallback callback, {
+    Duration duration = const Duration(milliseconds: 1000),
+  }) {
     if (debouncer != null) {
       debouncer!.cancel();
     }
@@ -52,16 +51,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   }
 
   Future<List<UserDetails>> getUserDetails(String query) async {
-
-    final url = Uri.parse(
-        '${base_url}/clients');
+    final url = Uri.parse('${base_url}/clients');
     final response = await http.get(url);
 
     if (response.statusCode == 200) {
       final List userDetails = json.decode(response.body);
 
-      return userDetails.map((json) => UserDetails.fromJson(json)).where((reservationDetail) {
-        final reservationPlateNumberLower = reservationDetail.fullName.toLowerCase();
+      return userDetails
+          .map((json) => UserDetails.fromJson(json))
+          .where((reservationDetail) {
+        final reservationPlateNumberLower =
+            reservationDetail.fullName.toLowerCase();
         final searchLower = query.toLowerCase();
 
         return reservationPlateNumberLower.contains(searchLower);
@@ -83,28 +83,23 @@ class _ForgotPasswordState extends State<ForgotPassword> {
   String? hashedPassword;
   bool successChange = false;
 
-  void verified(){
+  void verified() {
     setState(() {
       isVerified = true;
     });
   }
 
-  void emailExistance(){
+  void emailExistance() {
     setState(() {
       doesEmailExist = true;
     });
   }
 
   Future changePassword() async {
-    var headersList = {
-      'Accept': '*/*',
-      'Content-Type': 'application/json'
-    };
+    var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse('${base_url}/clients/$id');
 
-    var body = {
-      "passwordHash": hashedPassword
-    };
+    var body = {"passwordHash": hashedPassword};
     var req = http.Request('PATCH', url);
     req.headers.addAll(headersList);
     req.body = json.encode(body);
@@ -113,17 +108,12 @@ class _ForgotPasswordState extends State<ForgotPassword> {
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      print(resBody);
-    }
-    else {
-      print(res.reasonPhrase);
-    }
+    } else {}
   }
 
   Future verify() async {
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
-    var url = Uri.parse(
-        '${base_url}/clients/recover');
+    var url = Uri.parse('${base_url}/clients/recover');
 
     var body = {"email": user.email};
     var req = http.Request('POST', url);
@@ -135,33 +125,26 @@ class _ForgotPasswordState extends State<ForgotPassword> {
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
       var verificationCode = json.decode(resBody);
-      print(verificationCode["emailVerificationCode"]);
+
       setState(() {
         emailExists = "Email exists";
       });
-      this.verificationCode = verificationCode["emailVerificationCode"].toString();
+      this.verificationCode =
+          verificationCode["emailVerificationCode"].toString();
       setState(() {
         isDataEntered = true;
       });
-      // emailExistance();
-      print(resBody);
     } else {
       var emailExists = json.decode(resBody);
       setState(() {
         this.emailExists = emailExists["message"].toString();
       });
-      print(resBody);
     }
   }
 
   User user = User('', '', '', '', '');
 
   Future init() async {
-
-    // setState(() {
-    //   isProcessing = true;
-    // });
-
     final userDetails = await getUserDetails(query);
 
     setState(() => this.users = userDetails);
@@ -202,22 +185,25 @@ class _ForgotPasswordState extends State<ForgotPassword> {
           ),
           isVerified
               ? Column(
-                children: [
-                  successChange ? Padding(
-                    padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
-                    child: Text(
-                      "Password successfully changed!",
-                      style: TextStyle(
-                        color: Col.primary,
-                        fontSize: 20,
-                        // fontWeight: FontWeight.bold,
-                        fontFamily: 'Nunito',
-                        letterSpacing: 0.1,
-                      ),
-                    ),
-                  ) : SizedBox(),
-                  Container(
-                      margin: successChange ? EdgeInsets.fromLTRB(10, 10, 10, 0) : EdgeInsets.fromLTRB(10, 60, 10, 0),
+                  children: [
+                    successChange
+                        ? Padding(
+                            padding: EdgeInsets.fromLTRB(0, 50, 0, 0),
+                            child: Text(
+                              "Password successfully changed!",
+                              style: TextStyle(
+                                color: Col.primary,
+                                fontSize: 20,
+                                fontFamily: 'Nunito',
+                                letterSpacing: 0.1,
+                              ),
+                            ),
+                          )
+                        : SizedBox(),
+                    Container(
+                      margin: successChange
+                          ? EdgeInsets.fromLTRB(10, 10, 10, 0)
+                          : EdgeInsets.fromLTRB(10, 60, 10, 0),
                       padding: EdgeInsets.symmetric(vertical: 20),
                       decoration: BoxDecoration(
                         borderRadius: BorderRadius.circular(8),
@@ -247,8 +233,9 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                               child: Container(
                                 alignment: Alignment.center,
                                 child: TextFormField(
-                                  controller: TextEditingController(text: user.passwordHash),
-                                  onChanged: (value){
+                                  controller: TextEditingController(
+                                      text: user.passwordHash),
+                                  onChanged: (value) {
                                     var bytes = utf8.encode(value);
                                     var sha512 = sha256.convert(bytes);
                                     var hashedPassword = sha512.toString();
@@ -280,7 +267,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                       ),
                                       border: OutlineInputBorder(),
                                       errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red),
+                                        borderSide:
+                                            BorderSide(color: Colors.red),
                                       ),
                                       suffixIcon: IconButton(
                                         onPressed: () {
@@ -329,12 +317,14 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                       ),
                                       border: OutlineInputBorder(),
                                       errorBorder: OutlineInputBorder(
-                                        borderSide: BorderSide(color: Colors.red),
+                                        borderSide:
+                                            BorderSide(color: Colors.red),
                                       ),
                                       suffixIcon: IconButton(
                                         onPressed: () {
                                           setState(() {
-                                            _secureConfirmText = !_secureConfirmText;
+                                            _secureConfirmText =
+                                                !_secureConfirmText;
                                           });
                                         },
                                         icon: Icon(
@@ -373,7 +363,11 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                         successChange = true;
                                       });
                                       Future.delayed(Duration(seconds: 3), () {
-                                        Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => LoginPage()));
+                                        Navigator.pushReplacement(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    LoginPage()));
                                       });
                                     }
                                   },
@@ -384,8 +378,8 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         ),
                       ),
                     ),
-                ],
-              )
+                  ],
+                )
               : Container(
                   margin: EdgeInsets.fromLTRB(10, 60, 10, 0),
                   padding: EdgeInsets.symmetric(vertical: 20),
@@ -459,17 +453,17 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                         ),
                         (emailExists == "INVALID_CALL:|:USER_EMAIL_NOT_IN_USE")
                             ? Padding(
-                          padding: const EdgeInsets.only(top: 5),
-                          child: Center(
-                            child: Text(
-                              "Email does not exist",
-                              style: TextStyle(
-                                  color: Colors.redAccent,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: 15),
-                            ),
-                          ),
-                        )
+                                padding: const EdgeInsets.only(top: 5),
+                                child: Center(
+                                  child: Text(
+                                    "Email does not exist",
+                                    style: TextStyle(
+                                        color: Colors.redAccent,
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 15),
+                                  ),
+                                ),
+                              )
                             : Text(""),
                         isProcessing
                             ? Padding(
@@ -509,10 +503,13 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                                   verificationCode) {
                                                 return "Please enter the correct verification code";
                                               }
-                                              for(int i = 0; i < users.length; i++){
+                                              for (int i = 0;
+                                                  i < users.length;
+                                                  i++) {
                                                 final userDetail = users[i];
 
-                                                if(user.email == userDetail.email){
+                                                if (user.email ==
+                                                    userDetail.email) {
                                                   setState(() {
                                                     id = userDetail.id;
                                                   });
@@ -548,70 +545,68 @@ class _ForgotPasswordState extends State<ForgotPassword> {
                                     ),
                                   )
                                 : Text(""),
-                        isDataEntered ? Padding(
-                          padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
-                          child: Container(
-                            width: double.infinity,
-                            child: RaisedButton(
-                              color: Col.primary,
-                              child: Text(
-                                "Verify",
-                                style: TextStyle(
-                                  color: Col.Onprimary,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Nunito',
-                                  letterSpacing: 0.3,
+                        isDataEntered
+                            ? Padding(
+                                padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
+                                child: Container(
+                                  width: double.infinity,
+                                  child: RaisedButton(
+                                    color: Col.primary,
+                                    child: Text(
+                                      "Verify",
+                                      style: TextStyle(
+                                        color: Col.Onprimary,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        verified();
+                                      }
+                                    },
+                                  ),
+                                ),
+                              )
+                            : Padding(
+                                padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
+                                child: Container(
+                                  width: double.infinity,
+                                  child: RaisedButton(
+                                    color: Col.primary,
+                                    child: Text(
+                                      "Submit",
+                                      style: TextStyle(
+                                        color: Col.Onprimary,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold,
+                                        fontFamily: 'Nunito',
+                                        letterSpacing: 0.3,
+                                      ),
+                                    ),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.circular(8)),
+                                    onPressed: () {
+                                      if (_formKey.currentState!.validate()) {
+                                        verify();
+
+                                        setState(() {
+                                          isProcessing = true;
+                                        });
+                                      } else {}
+                                      Future.delayed(Duration(seconds: 4), () {
+                                        setState(() {
+                                          isProcessing = false;
+                                        });
+                                      });
+                                    },
+                                  ),
                                 ),
                               ),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  verified();
-                                  // trial();
-                                }
-                              },
-                            ),
-                          ),
-                        ) : Padding(
-                          padding: EdgeInsets.fromLTRB(25, 10, 25, 0),
-                          child: Container(
-                            width: double.infinity,
-                            child: RaisedButton(
-                              color: Col.primary,
-                              child: Text(
-                                "Submit",
-                                style: TextStyle(
-                                  color: Col.Onprimary,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                  fontFamily: 'Nunito',
-                                  letterSpacing: 0.3,
-                                ),
-                              ),
-                              shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(8)),
-                              onPressed: () {
-                                if (_formKey.currentState!.validate()) {
-                                  verify();
-                                  // trial();
-                                  setState(() {
-                                    isProcessing = true;
-                                  });
-                                }
-                                else {
-                                  print("Enter fields");
-                                }
-                                Future.delayed(Duration(seconds: 4), () {
-                                  setState(() {
-                                    isProcessing = false;
-                                  });
-                                });
-                              },
-                            ),
-                          ),
-                        ),
                       ],
                     ),
                   ),

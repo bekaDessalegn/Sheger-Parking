@@ -112,13 +112,6 @@ class _HistoryPageState extends State<HistoryPage> {
   @override
   void initState() {
     super.initState();
-    // DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(reservations[0].startingTime);
-    // String startDate = DateFormat.yMMMd().format(startingTime);
-    // String formattedStartTime = DateFormat('h:mm a').format(startingTime);
-    // // String datetime = startingTime.hour.toString().padLeft(2, '0') + ":" + startingTime.minute.toString().padLeft(2, '0');
-    //
-    // this.startingTime = formattedStartTime;
-    // this.startDate = startDate;
 
     init();
   }
@@ -181,19 +174,6 @@ class _HistoryPageState extends State<HistoryPage> {
     }
   }
 
-  // void notifier() {
-  //   reservations.forEach((element) {
-  //     var startTimeInM = element.startingTime / 60000;
-  //     var durationInM = element.duration * 60;
-  //     var endTimeInM = startTimeInM + durationInM;
-  //     var currentTimestampInM = DateTime.now().millisecondsSinceEpoch / 60000;
-  //     var minutesLeft = endTimeInM - currentTimestampInM;
-  //     if (minutesLeft <= Strings.notifiyingMinute && minutesLeft > 9) {
-  //       createNotification(element.branchName);
-  //     }
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
@@ -214,7 +194,6 @@ class _HistoryPageState extends State<HistoryPage> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: viewportConstraints.maxHeight,
-                    // maxHeight: viewportConstraints.maxHeight*2,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -259,7 +238,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                         DateFormat.yMMMd().format(startTime);
                                     String formattedFinishTime =
                                         DateFormat('h:mm a').format(finishTime);
-                                    // String finishingTime = (startTime.hour + reservationDetail.duration).toString().padLeft(2, '0') + ":" + (startTime.minute).toString().padLeft(2, '0');
                                     String statusText =
                                         !reservationDetail.parked
                                             ? "Reserved"
@@ -324,22 +302,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: <Widget>[
-                                                // Stack(
-                                                //   children: [
-                                                // Align(
-                                                //   child: IconButton(
-                                                //     onPressed: () {
-                                                //       Navigator.push(
-                                                //           context,
-                                                //           MaterialPageRoute(
-                                                //               builder: (context) =>
-                                                //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                                                //     },
-                                                //     icon: Icon(Icons.edit),
-                                                //     iconSize: 25,
-                                                //   ),
-                                                //   alignment: Alignment.topRight,
-                                                // ),
                                                 Center(
                                                   child: Text(
                                                     "${reservationDetail.branchName}",
@@ -351,8 +313,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                                       fontFamily: 'Nunito',
                                                     ),
                                                   ),
-                                                  //     ),
-                                                  // ],
                                                 ),
                                                 Container(
                                                   width: double.infinity,
@@ -363,8 +323,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                                               .center,
                                                       children: [
                                                         Text(
-                                                          // "$formattedStartTime - $formattedFinishTime",
-                                                          "$startDate ",
+                                                         "$startDate ",
                                                           style: TextStyle(
                                                             color:
                                                                 Col.whiteColor,
@@ -374,7 +333,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                                           ),
                                                         ),
                                                         Text(
-                                                          // "$formattedStartTime - $formattedFinishTime",
                                                           "|",
                                                           style: TextStyle(
                                                             color: Col.primary,
@@ -384,7 +342,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                                           ),
                                                         ),
                                                         Text(
-                                                          // "$formattedStartTime - $formattedFinishTime",
                                                           " $formattedStartTime",
                                                           style: TextStyle(
                                                             color:
@@ -623,8 +580,6 @@ class _HistoryPageState extends State<HistoryPage> {
                                   ),
                                 ),
                     ],
-                    //   ),
-                    // ),
                   ),
                 ),
               ),

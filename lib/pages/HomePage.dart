@@ -93,8 +93,7 @@ class _HomePageState extends State<HomePage> {
       this.price,
       this.duration,
       this.parked);
-
-  // int currentIndex = 0;
+  
   var screens;
 
   @override

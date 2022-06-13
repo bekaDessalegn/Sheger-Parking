@@ -67,10 +67,7 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   email: email,
                   passwordHash: passwordHash,
                   defaultPlateNumber: defaultPlateNumber)));
-      print(resBody);
-    } else {
-      print(res.reasonPhrase);
-    }
+    } else {}
   }
 
   @override
@@ -397,18 +394,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
           ),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     if (_formKey.currentState!.validate()) {
-      //       edit();
-      //     }
-      //   },
-      //   backgroundColor: Col.primary,
-      //   child: Icon(
-      //     Icons.check,
-      //     color: Col.Onbackground,
-      //   ),
-      // ),
     );
   }
 }

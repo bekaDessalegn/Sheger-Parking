@@ -43,12 +43,10 @@ Widget noUpComing = Container(
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceAround,
             children: [
-              // SizedBox(width: 15,),
               Image.asset(
                 "images/bell.png",
                 scale: 5,
               ),
-              // Expanded(child: Row(),),
               Text(
                 "No upcoming reservation",
                 style: TextStyle(color: Col.whiteColor, fontSize: 17),
@@ -191,14 +189,6 @@ class ReservationsState extends State<Reservations> {
       },
     );
 
-    // DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(reservations[0].startingTime);
-    // String startDate = DateFormat.yMMMd().format(startingTime);
-    // String formattedStartTime = DateFormat('h:mm a').format(startingTime);
-    // // String datetime = startingTime.hour.toString().padLeft(2, '0') + ":" + startingTime.minute.toString().padLeft(2, '0');
-    //
-    // this.startingTime = formattedStartTime;
-    // this.startDate = startDate;
-
     init();
   }
 
@@ -259,19 +249,6 @@ class ReservationsState extends State<Reservations> {
     }
   }
 
-  // void notifier() {
-  //   reservations.forEach((element) {
-  //     var startTimeInM = element.startingTime / 60000;
-  //     var durationInM = element.duration * 60;
-  //     var endTimeInM = startTimeInM + durationInM;
-  //     var currentTimestampInM = DateTime.now().millisecondsSinceEpoch / 60000;
-  //     var minutesLeft = endTimeInM - currentTimestampInM;
-  //     if (minutesLeft <= Strings.notifiyingMinute && minutesLeft > 9) {
-  //       createNotification(element.branchName);
-  //     }
-  //   });
-  // }
-
   @override
   Widget build(BuildContext context) {
     Widget upComing = noUpComing;
@@ -280,7 +257,6 @@ class ReservationsState extends State<Reservations> {
       for (int index = 0; index < reservations.length; index++) {
         ReservationDetails reservation = reservations[index];
         if (!reservation.parked) {
-          // ///////////////////////////////////////////////////
           upComingReservation = reservation;
           DateTime startingTime =
               DateTime.fromMillisecondsSinceEpoch(reservation.startingTime);
@@ -334,31 +310,13 @@ class ReservationsState extends State<Reservations> {
                       child: Row(
                         mainAxisAlignment: MainAxisAlignment.spaceAround,
                         children: [
-                          // SizedBox(width: 15,),
                           Image.asset(
                             "images/bell.png",
                             scale: 2.4,
                           ),
-                          // Expanded(child: Row(),),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: <Widget>[
-                              // Stack(
-                              //   children: [
-                              // Align(
-                              //   child: IconButton(
-                              //     onPressed: () {
-                              //       Navigator.push(
-                              //           context,
-                              //           MaterialPageRoute(
-                              //               builder: (context) =>
-                              //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                              //     },
-                              //     icon: Icon(Icons.edit),
-                              //     iconSize: 25,
-                              //   ),
-                              //   alignment: Alignment.topRight,
-                              // ),
                               Center(
                                 child: Text(
                                   reservation.branchName,
@@ -369,8 +327,6 @@ class ReservationsState extends State<Reservations> {
                                     fontFamily: 'Nunito',
                                   ),
                                 ),
-                                //     ),
-                                // ],
                               ),
                               Text(
                                 startDate,
@@ -450,7 +406,6 @@ class ReservationsState extends State<Reservations> {
                 child: ConstrainedBox(
                   constraints: BoxConstraints(
                     minHeight: viewportConstraints.maxHeight,
-                    // maxHeight: viewportConstraints.maxHeight*2,
                   ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -509,7 +464,6 @@ class ReservationsState extends State<Reservations> {
                                         DateFormat.yMMMd().format(startTime);
                                     String formattedFinishTime =
                                         DateFormat('h:mm a').format(finishTime);
-                                    // String finishingTime = (startTime.hour + reservationDetail.duration).toString().padLeft(2, '0') + ":" + (startTime.minute).toString().padLeft(2, '0');
                                     String statusText =
                                         !reservationDetail.parked
                                             ? "Reserved"
@@ -574,22 +528,6 @@ class ReservationsState extends State<Reservations> {
                                               crossAxisAlignment:
                                                   CrossAxisAlignment.center,
                                               children: <Widget>[
-                                                // Stack(
-                                                //   children: [
-                                                // Align(
-                                                //   child: IconButton(
-                                                //     onPressed: () {
-                                                //       Navigator.push(
-                                                //           context,
-                                                //           MaterialPageRoute(
-                                                //               builder: (context) =>
-                                                //                   EditReservation(id: id, fullName: fullName, phone: phone, email: email, passwordHash: passwordHash, defaultPlateNumber: defaultPlateNumber, reservationId: reservationDetail.id, reservationPlateNumber: reservationDetail.reservationPlateNumber, branch: reservationDetail.branch, branchName: reservationDetail.branchName, startTime: reservationDetail.startingTime)));
-                                                //     },
-                                                //     icon: Icon(Icons.edit),
-                                                //     iconSize: 25,
-                                                //   ),
-                                                //   alignment: Alignment.topRight,
-                                                // ),
                                                 Center(
                                                   child: Text(
                                                     "${reservationDetail.branchName}",
@@ -601,8 +539,6 @@ class ReservationsState extends State<Reservations> {
                                                       fontFamily: 'Nunito',
                                                     ),
                                                   ),
-                                                  //     ),
-                                                  // ],
                                                 ),
                                                 Container(
                                                   width: double.infinity,
@@ -613,7 +549,6 @@ class ReservationsState extends State<Reservations> {
                                                               .center,
                                                       children: [
                                                         Text(
-                                                          // "$formattedStartTime - $formattedFinishTime",
                                                           "$startDate ",
                                                           style: TextStyle(
                                                             color:
@@ -624,7 +559,6 @@ class ReservationsState extends State<Reservations> {
                                                           ),
                                                         ),
                                                         Text(
-                                                          // "$formattedStartTime - $formattedFinishTime",
                                                           "|",
                                                           style: TextStyle(
                                                             color: Col.primary,
@@ -634,7 +568,6 @@ class ReservationsState extends State<Reservations> {
                                                           ),
                                                         ),
                                                         Text(
-                                                          // "$formattedStartTime - $formattedFinishTime",
                                                           " $formattedStartTime",
                                                           style: TextStyle(
                                                             color:
@@ -872,8 +805,6 @@ class ReservationsState extends State<Reservations> {
                                   ),
                                 ),
                     ],
-                    //   ),
-                    // ),
                   ),
                 ),
               ),

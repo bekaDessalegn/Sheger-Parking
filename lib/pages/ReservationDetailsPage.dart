@@ -105,7 +105,6 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
         DateTime.fromMillisecondsSinceEpoch(int.parse(startTime));
     String startDate = DateFormat.yMMMd().format(startingTime);
     String formattedStartTime = DateFormat('h:mm a').format(startingTime);
-    // String datetime = startingTime.hour.toString().padLeft(2, '0') + ":" + startingTime.minute.toString().padLeft(2, '0');
 
     this.startingTime = formattedStartTime;
     this.startDate = startDate;

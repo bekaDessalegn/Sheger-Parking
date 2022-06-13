@@ -89,12 +89,9 @@ class _EditReservationState extends State<EditReservation> {
   String? value;
   String checker = '';
 
-  // DateTime dateTime = DateTime(2022, 12, 24);
-
   DateTime? startingTime;
   int? timestamp;
 
-  // String? currentYear, currentMonth, currentDay, currentHour, currentMinute;
   String? formattedstartTime, startDate;
   bool? slotResponse;
 
@@ -122,12 +119,7 @@ class _EditReservationState extends State<EditReservation> {
       setState(() {
         slotResponse = data["slotAvailable"];
       });
-
-      print(resBody);
-    } else {
-      print("mneeeeeeeeeeeeeeeeeeeee");
-      print(res.reasonPhrase);
-    }
+    } else {}
   }
 
   Future editReservation() async {
@@ -148,7 +140,6 @@ class _EditReservationState extends State<EditReservation> {
     final resBody = await res.stream.bytesToString();
 
     if (res.statusCode >= 200 && res.statusCode < 300) {
-      print(resBody);
       Navigator.pushAndRemoveUntil(
           context,
           MaterialPageRoute(
@@ -160,10 +151,9 @@ class _EditReservationState extends State<EditReservation> {
                       phone: phone,
                       email: email,
                       passwordHash: passwordHash,
-                      defaultPlateNumber: defaultPlateNumber))), (Route<dynamic> route) => false);
-    } else {
-      print(resBody);
-    }
+                      defaultPlateNumber: defaultPlateNumber))),
+          (Route<dynamic> route) => false);
+    } else {}
   }
 
   Reservation reservation = Reservation("", "", "", "", 0, 0, 0);
@@ -191,28 +181,14 @@ class _EditReservationState extends State<EditReservation> {
     DateTime startingTime = DateTime.fromMillisecondsSinceEpoch(startTime);
     int timestamp = startingTime.millisecondsSinceEpoch;
     DateTime currentDateTime = DateTime.fromMillisecondsSinceEpoch(timestamp);
-    // String formattedDate = DateFormat('yyyy-MM-dd  \n  kk:00 a').format(currentDateTime);
-
-    this.startingTime = startingTime; // DateTime
+    this.startingTime = startingTime;
     this.timestamp = timestamp;
-    // this.formattedDate = formattedDate;
 
     String startDate = DateFormat.yMMMd().format(currentDateTime);
     String formattedstartTime = DateFormat('h:mm a').format(currentDateTime);
 
     this.startDate = startDate;
     this.formattedstartTime = formattedstartTime;
-
-    // String currentYear = currentDateTime.year.toString();
-    // String currentMonth = currentDateTime.month.toString();
-    // String currentDay = currentDateTime.day.toString();
-    // String currentHour = currentDateTime.hour.toString();
-    // String currentMinute = "0".padLeft(2, '0');
-    // this.currentYear = currentYear;
-    // this.currentMonth = currentMonth;
-    // this.currentDay = currentDay;
-    // this.currentHour = currentHour;
-    // this.currentMinute = currentMinute;
 
     init();
   }
@@ -273,10 +249,7 @@ class _EditReservationState extends State<EditReservation> {
 
   @override
   Widget build(BuildContext context) {
-    // final hours = dateTime.hour.toString().padLeft(2, '0');
-    // reservation.startingTime = int.parse(hours);
     startTime = timestamp;
-    // final minutes = dateTime.minute.toString().padLeft(2, '0');
 
     return Scaffold(
       resizeToAvoidBottomInset: true,
@@ -392,14 +365,6 @@ class _EditReservationState extends State<EditReservation> {
                               fontFamily: 'Nunito',
                               letterSpacing: 0.1,
                             ),
-                            // floatingLabelBehavior: FloatingLabelBehavior.always,
-                            // labelText: "Plate Number",
-                            // labelStyle: TextStyle(
-                            //   color: Col.textfieldLabel,
-                            //   fontSize: 14,
-                            //   fontFamily: 'Nunito',
-                            //   letterSpacing: 0,
-                            // ),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Col.primary),
@@ -452,8 +417,6 @@ class _EditReservationState extends State<EditReservation> {
                                 });
                               }
                             }
-
-                            print(reservation.branch);
                           }),
                           validator: (value) {
                             if (checker == '') {
@@ -475,70 +438,6 @@ class _EditReservationState extends State<EditReservation> {
                         ),
                       ),
                     ),
-                    // Padding(
-                    //   padding: EdgeInsets.fromLTRB(25, 20, 25, 0),
-                    //   child: Container(
-                    //     width: double.infinity,
-                    //     child: Text(
-                    //       "Branch",
-                    //       style: TextStyle(
-                    //         color: Col.textfieldLabel,
-                    //         fontSize: 18,
-                    //         fontWeight: FontWeight.bold,
-                    //         fontFamily: 'Nunito',
-                    //         letterSpacing: 0,
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
-                    // Padding(
-                    //   padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
-                    //   child: Container(
-                    //     width: double.infinity,
-                    //     alignment: Alignment.center,
-                    //     padding:
-                    //     EdgeInsets.symmetric(vertical: 4),
-                    //     child: DropdownButtonFormField<String>(
-                    //       value: value,
-                    //       isExpanded: true,
-                    //       items: branchesName.map(buildMenuBranch).toList(),
-                    //       onChanged: (value) => setState(() {
-                    //         this.value = value;
-                    //         checker = value!;
-                    //         setState(() {
-                    //           branchName = value;
-                    //         });
-                    //
-                    //         for(int i = 0; i < branches.length; i++){
-                    //           final branchDetail = branches[i];
-                    //
-                    //           if(value == branchDetail.name){
-                    //             setState(() {
-                    //               branch = branchesId[i];
-                    //             });
-                    //           }
-                    //         }
-                    //
-                    //         print(reservation.branch);
-                    //
-                    //       }),
-                    //       validator: (value) {
-                    //         if (checker == '') {
-                    //           return "This field can not be empty";
-                    //         }
-                    //         return null;
-                    //       },
-                    //       decoration: InputDecoration(
-                    //         border: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: Colors.black),
-                    //         ),
-                    //         errorBorder: OutlineInputBorder(
-                    //           borderSide: BorderSide(color: Colors.red),
-                    //         ),
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
                     (slotResponse == false)
                         ? Padding(
                             padding: const EdgeInsets.only(top: 5),
@@ -582,7 +481,6 @@ class _EditReservationState extends State<EditReservation> {
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
                             Text(
-                              // "$formattedStartTime - $formattedFinishTime",
                               "$startDate ",
                               style: TextStyle(
                                 color: Colors.black,
@@ -591,7 +489,6 @@ class _EditReservationState extends State<EditReservation> {
                               ),
                             ),
                             Text(
-                              // "$formattedStartTime - $formattedFinishTime",
                               "|",
                               style: TextStyle(
                                 color: Col.primary,
@@ -600,7 +497,6 @@ class _EditReservationState extends State<EditReservation> {
                               ),
                             ),
                             Text(
-                              // "$formattedStartTime - $formattedFinishTime",
                               " $formattedstartTime",
                               style: TextStyle(
                                 color: Colors.black,
@@ -655,7 +551,6 @@ class _EditReservationState extends State<EditReservation> {
                     Padding(
                       padding: EdgeInsets.fromLTRB(25, 0, 25, 0),
                       child: Container(
-                        // color: Colors.grey[350],
                         alignment: Alignment.center,
                         child: TextFormField(
                           enabled: false,
@@ -679,14 +574,6 @@ class _EditReservationState extends State<EditReservation> {
                               fontFamily: 'Nunito',
                               letterSpacing: 0.1,
                             ),
-                            // floatingLabelBehavior: FloatingLabelBehavior.always,
-                            // labelText: "Duration (hours)",
-                            // labelStyle: TextStyle(
-                            //   color: Col.textfieldLabel,
-                            //   fontSize: 14,
-                            //   fontFamily: 'Nunito',
-                            //   letterSpacing: 0,
-                            // ),
                             border: OutlineInputBorder(),
                             focusedBorder: OutlineInputBorder(
                               borderSide: BorderSide(color: Col.primary),
@@ -746,18 +633,6 @@ class _EditReservationState extends State<EditReservation> {
           ),
         ),
       ),
-      // floatingActionButton: FloatingActionButton(
-      //   onPressed: () {
-      //     if (_formKey.currentState!.validate()) {
-      //       editReservation();
-      //     }
-      //   },
-      //   backgroundColor: Col.primary,
-      //   child: Icon(
-      //     Icons.check,
-      //     color: Col.Onbackground,
-      //   ),
-      // ),
     );
   }
 
@@ -769,8 +644,6 @@ class _EditReservationState extends State<EditReservation> {
 
   Future<TimeOfDay?> pickTime() => showCustomTimePicker(
       context: context,
-      // It is a must if you provide selectableTimePredicate
-      onFailValidation: (context) => print('Unavailable selection'),
       initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
       selectableTimePredicate: (time) {
         return time!.minute == 0;
@@ -810,19 +683,4 @@ class _EditReservationState extends State<EditReservation> {
           ),
         ),
       );
-
-// DropdownMenuItem<String> buildMenuDuration(String duration) =>
-//     DropdownMenuItem(
-//       value: duration,
-//       child: Text(
-//         duration,
-//         style: TextStyle(
-//           color: Col.Onbackground,
-//           fontSize: 18,
-//           fontFamily: 'Nunito',
-//           letterSpacing: 0.3,
-//         ),
-//         textAlign: TextAlign.center,
-//       ),
-//     );
 }
