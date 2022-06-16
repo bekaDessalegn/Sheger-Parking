@@ -250,7 +250,7 @@ class _HistoryPageState extends State<HistoryPage> {
                                             reservationDetail.startingTime);
                                     DateTime finishTime = startTime.add(
                                         Duration(
-                                            hours: reservationDetail.duration));
+                                            minutes: (reservationDetail.duration * 60).round()));
                                     String formattedStartTime =
                                         DateFormat('h:mm a').format(startTime);
                                     String startDate =

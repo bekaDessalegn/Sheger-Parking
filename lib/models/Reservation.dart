@@ -7,7 +7,7 @@ class Reservation {
   String branchName;
   int price;
   int startingTime;
-  int duration;
+  double duration;
 
   Reservation(this.client, this.reservationPlateNumber, this.branch,
       this.branchName, this.price, this.startingTime, this.duration);

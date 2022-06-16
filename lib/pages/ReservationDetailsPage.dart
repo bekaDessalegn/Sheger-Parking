@@ -317,7 +317,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
               Padding(
                 padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                 child: Text(
-                  "$duration:00 hours",
+                  "${double
+                      .parse(duration).floor()}:${((double.parse(duration)%1) * 60).round() <10?0:''}${((double.parse(duration)%1) * 60).round()} hours",
                   style: TextStyle(
                     color: Colors.black,
                     fontSize: 18,

@@ -9,7 +9,7 @@ class ReservationDetails {
   final String slot;
   final int price;
   final int startingTime;
-  final int duration;
+  final double duration;
   final bool parked;
   final bool completed;
   final bool expired;
@@ -38,7 +38,7 @@ class ReservationDetails {
     slot: json['slot'],
     price: json['price'],
     startingTime: json['startingTime'],
-    duration: json['duration'],
+    duration: json['duration'] is double?json['duration']:json['duration'].toDouble(),
     parked: json['parked'],
     completed: json['completed'],
     expired: json['expired'],

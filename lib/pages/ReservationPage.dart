@@ -63,7 +63,7 @@ class _ReservationPageState extends State<ReservationPage> {
   var url = "https://www.youtube.com";
 
   bool validDate = true;
-
+  String durationStateText = '';
   void launchUrl() async {
     if (await canLaunch(url)) {
       await launch(url);
@@ -81,7 +81,7 @@ class _ReservationPageState extends State<ReservationPage> {
     var body = {
       "branch": reservation.branch,
       "startingTime": reservation.startingTime,
-      "duration": int.parse(reservation.duration.toString())
+      "duration": double.parse(reservation.duration.toString())
     };
     var req = http.Request('POST', url);
     req.headers.addAll(headersList);
@@ -116,7 +116,7 @@ class _ReservationPageState extends State<ReservationPage> {
       "branchName": reservation.branchName,
       "price": payement,
       "startingTime": reservation.startingTime,
-      "duration": int.parse(reservation.duration.toString()),
+      "duration": double.parse(reservation.duration.toString()),
       "redirectPath": redirect_path
     };
     var req = http.Request('POST', url);
@@ -489,7 +489,7 @@ class _ReservationPageState extends State<ReservationPage> {
                     child: Container(
                       width: double.infinity,
                       child: Text(
-                        "Duration (hours)",
+                        "Duration (hh:mm)",
                         style: TextStyle(
                           color: Col.textfieldLabel,
                           fontSize: 14,
@@ -504,32 +504,39 @@ class _ReservationPageState extends State<ReservationPage> {
                     child: Container(
                       alignment: Alignment.center,
                       child: TextFormField(
-                        controller: TextEditingController(
-                            text: reservation.duration.toString()),
+                        controller: TextEditingController(text: durationStateText),
                         validator: (value) {
                           if (value!.isEmpty) {
                             return "This field can not be empty";
+                          } else if(!RegExp(
+                              r"^[0-9]{1,}\:[0-5][0-9]$")
+                              .hasMatch(value)){
+                            return "Invalid format!";
                           }
+                          double durationEntered;
                           try {
-                            int.parse(value);
+                            List<int> durationEnteredAsList = value.split(":").map((time) => int.parse(time)).toList();
+                            durationEntered = durationEnteredAsList[0]+(durationEnteredAsList[1]/60);
+
                           } catch (e) {
-                            return "Duration can only be a number";
+                            return "Invalid duration!";
                           }
-                          if (int.parse(value) <= 0) {
-                            return "Duration must be greater than 0";
+                          if(durationEntered<0.5){
+                            return "Duration must be at least 30 minutes";
                           }
+                          reservation.duration = durationEntered;
                           return null;
                         },
                         onChanged: (value) {
                           try {
-                            reservation.duration = int.parse(value);
+                            durationStateText = value;
                           } catch (e) {}
                         },
                         enabled: toPay ? false : true,
                         decoration: InputDecoration(
                           filled: true,
                           fillColor: toPay ? Colors.grey[200] : Colors.white,
-                          hintText: "",
+                          hintText: "Example: 2:15",
                           hintStyle: TextStyle(
                             color: Col.textfieldLabel,
                             fontSize: 14,
@@ -582,7 +589,7 @@ class _ReservationPageState extends State<ReservationPage> {
                             child: RaisedButton(
                               onPressed: () async {
                                 if (_formKey.currentState!.validate()) {
-                                  reserve();
+                                  await reserve();
                                   await Future.delayed(Duration(seconds: 2));
                                   Navigator.pushAndRemoveUntil(
                                       context,
@@ -652,9 +659,8 @@ class _ReservationPageState extends State<ReservationPage> {
                                   if (validForm) {
                                     setState(() {
                                       payement =
-                                          pricePerHour * reservation.duration;
+                                          (pricePerHour * reservation.duration).round();
                                     });
-
                                     availablility();
                                   }
                                 }
@@ -710,9 +716,9 @@ class _ReservationPageState extends State<ReservationPage> {
     onFailValidation: (context) {
       return print('Unavailable selection');
     },
-    initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
+    initialTime: TimeOfDay(hour: 12, minute: 0),
     selectableTimePredicate: (time) {
-      return time!.minute == 0;
+      return time!.minute%10 == 0;
     },
   );
 

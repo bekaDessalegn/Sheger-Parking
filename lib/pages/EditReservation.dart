@@ -554,7 +554,8 @@ class _EditReservationState extends State<EditReservation> {
                         alignment: Alignment.center,
                         child: TextFormField(
                           enabled: false,
-                          controller: TextEditingController(text: "$duration"),
+                          controller: TextEditingController(text: "${double
+                              .parse(duration).floor()}:${((double.parse(duration)%1) * 60).round() <10?0:''}${((double.parse(duration)%1) * 60).round()}"),
                           validator: (value) {
                             if (value!.isEmpty) {
                               return "This field can not be empty";
@@ -562,7 +563,7 @@ class _EditReservationState extends State<EditReservation> {
                             return null;
                           },
                           onChanged: (value) {
-                            reservation.duration = int.parse(value);
+                            reservation.duration = double.parse(value);
                           },
                           decoration: InputDecoration(
                             filled: true,
@@ -647,9 +648,9 @@ class _EditReservationState extends State<EditReservation> {
     onFailValidation: (context) {
       return print('Unavailable selection');
     },
-    initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
+    initialTime: TimeOfDay(hour: 12, minute: 0),
     selectableTimePredicate: (time) {
-      return time!.minute == 0 && time.hour >= fullTime.hour;
+      return time!.minute%10 == 0;
     },
   );
 
