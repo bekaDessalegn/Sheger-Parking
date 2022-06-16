@@ -24,6 +24,7 @@ class ReservationDetailsPage extends StatefulWidget {
       price,
       duration,
       parked;
+  bool expired, completed;
 
   ReservationDetailsPage(
       {required this.id,
@@ -40,7 +41,9 @@ class ReservationDetailsPage extends StatefulWidget {
       required this.slot,
       required this.price,
       required this.duration,
-      required this.parked});
+      required this.parked,
+      required this.expired,
+      required this.completed});
 
   @override
   _ReservationDetailsPageState createState() => _ReservationDetailsPageState(
@@ -58,7 +61,9 @@ class ReservationDetailsPage extends StatefulWidget {
       slot,
       price,
       duration,
-      parked);
+      parked,
+      expired,
+      completed);
 }
 
 class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
@@ -78,6 +83,8 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       duration,
       parked;
 
+  bool expired, completed;
+
   _ReservationDetailsPageState(
       this.id,
       this.fullName,
@@ -93,7 +100,9 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
       this.slot,
       this.price,
       this.duration,
-      this.parked);
+      this.parked,
+      this.expired,
+      this.completed);
 
   late String startingTime;
   late String startDate;
@@ -385,41 +394,53 @@ class _ReservationDetailsPageState extends State<ReservationDetailsPage> {
                   ),
                 ),
               ),
-              Center(
-                child: TextButton(
-                  onPressed: () {
-                    Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                            builder: (context) => EditReservation(
-                                id: id,
-                                fullName: fullName,
-                                phone: phone,
-                                email: email,
-                                passwordHash: passwordHash,
-                                defaultPlateNumber: defaultPlateNumber,
-                                reservationId: reservationId,
-                                reservationPlateNumber: reservationPlateNumber,
-                                branch: branch,
-                                branchName: branchName,
-                                duration: duration,
-                                startTime: int.parse(startTime))));
-                  },
-                  style: TextButton.styleFrom(
-                      padding: EdgeInsets.zero,
-                      minimumSize: Size(50, 30),
-                      tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                      alignment: Alignment.centerLeft),
-                  child: Text(
-                    "Edit reservation",
-                    style: TextStyle(
-                      color: Col.linkColor,
-                      fontSize: 18,
-                      fontFamily: 'Nunito',
+              (expired || completed)
+                  ? Center(
+                      child: Text(
+                        "Can't edit this reservation!",
+                        style: TextStyle(
+                          color: Col.linkColor,
+                          fontSize: 18,
+                          fontFamily: 'Nunito',
+                        ),
+                      ),
+                    )
+                  : Center(
+                      child: TextButton(
+                        onPressed: () {
+                          Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) => EditReservation(
+                                      id: id,
+                                      fullName: fullName,
+                                      phone: phone,
+                                      email: email,
+                                      passwordHash: passwordHash,
+                                      defaultPlateNumber: defaultPlateNumber,
+                                      reservationId: reservationId,
+                                      reservationPlateNumber:
+                                          reservationPlateNumber,
+                                      branch: branch,
+                                      branchName: branchName,
+                                      duration: duration,
+                                      startTime: int.parse(startTime))));
+                        },
+                        style: TextButton.styleFrom(
+                            padding: EdgeInsets.zero,
+                            minimumSize: Size(50, 30),
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                            alignment: Alignment.centerLeft),
+                        child: Text(
+                          "Edit reservation",
+                          style: TextStyle(
+                            color: Col.linkColor,
+                            fontSize: 18,
+                            fontFamily: 'Nunito',
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-              ),
             ],
           ),
         ),

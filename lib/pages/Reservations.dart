@@ -8,6 +8,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/bloc/home_event.dart';
 import 'package:sheger_parking/bloc/home_state.dart';
@@ -117,20 +118,21 @@ class ReservationsState extends State<Reservations> {
       parked;
 
   ReservationsState(
-      this.id,
-      this.fullName,
-      this.phone,
-      this.email,
-      this.passwordHash,
-      this.defaultPlateNumber,
-      this.reservationId,
-      this.reservationPlateNumber,
-      this.branch,
-      this.startTime,
-      this.slot,
-      this.price,
-      this.duration,
-      this.parked);
+    this.id,
+    this.fullName,
+    this.phone,
+    this.email,
+    this.passwordHash,
+    this.defaultPlateNumber,
+    this.reservationId,
+    this.reservationPlateNumber,
+    this.branch,
+    this.startTime,
+    this.slot,
+    this.price,
+    this.duration,
+    this.parked,
+  );
 
   var imageSliders = [
     "images/Parking-bro.svg",
@@ -213,7 +215,6 @@ class ReservationsState extends State<Reservations> {
     final url = Uri.parse('${base_url}/clients/${Strings.userId}/reservations');
 
     final response = await http.get(url);
-
     while (response.statusCode != 200) {
       final response = await http.get(url);
 
@@ -239,8 +240,28 @@ class ReservationsState extends State<Reservations> {
     setState(() {
       isLoading = true;
     });
+      ///////////////////////////////////////////
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    if (sharedPreferences.getString("reservationDetails") != null) {
+      var obtainedIdDeservationDetails =
+      List.from(jsonDecode(sharedPreferences.getString("reservationDetails")!)).map((reservationDetail) => ReservationDetails.fromJson(jsonDecode(jsonEncode(reservationDetail)))).toList();
+      setState(() {
+        reservations = obtainedIdDeservationDetails;
+        isLoading = false;
+      });
+    }
+      ///////////////////////////////////////////
     while (true) {
       final reservationDetails = await getReservationDetails();
+      ///////////////////////////////////////////
+      sharedPreferences.setString(
+          "reservationDetails",
+          jsonEncode(reservationDetails
+              .map((reservationDetail) => reservationDetail.toJson())
+              .toList()));
+      ////////////////////////////////////////////
+      // print
       setState(() {
         reservations = reservationDetails;
         isLoading = false;
@@ -286,7 +307,9 @@ class ReservationsState extends State<Reservations> {
                           slot: reservation.slot,
                           price: reservation.price.toString(),
                           duration: reservation.duration.toString(),
-                          parked: reservation.toString())));
+                          parked: reservation.toString(),
+                          expired: reservation.expired,
+                          completed: reservation.completed)));
             },
             child: Container(
               child: Padding(
@@ -509,7 +532,11 @@ class ReservationsState extends State<Reservations> {
                                                         .duration
                                                         .toString(),
                                                     parked: reservationDetail
-                                                        .toString())));
+                                                        .toString(),
+                                                    expired: reservationDetail
+                                                        .expired,
+                                                    completed: reservationDetail
+                                                        .completed)));
                                       },
                                       child: Padding(
                                         padding:

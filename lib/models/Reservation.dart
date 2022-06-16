@@ -1,6 +1,6 @@
 // ignore_for_file: file_names
 
-class Reservation{
+class Reservation {
   String client;
   String reservationPlateNumber;
   String branch;
@@ -9,6 +9,6 @@ class Reservation{
   int startingTime;
   int duration;
 
-  Reservation(this.client, this.reservationPlateNumber, this.branch, this.branchName,
-      this.price, this.startingTime, this.duration);
+  Reservation(this.client, this.reservationPlateNumber, this.branch,
+      this.branchName, this.price, this.startingTime, this.duration);
 }

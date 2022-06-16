@@ -9,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sheger_parking/bloc/home_bloc.dart';
 import 'package:sheger_parking/bloc/home_event.dart';
 import 'package:sheger_parking/bloc/home_state.dart';
@@ -138,7 +139,6 @@ class _HistoryPageState extends State<HistoryPage> {
         '${base_url}/clients/${Strings.userId}/reservations?includeCompleted=true');
 
     final response = await http.get(url);
-
     while (response.statusCode != 200) {
       final response = await http.get(url);
 
@@ -164,8 +164,27 @@ class _HistoryPageState extends State<HistoryPage> {
     setState(() {
       isLoading = true;
     });
+      ///////////////////////////////////////////
+    final SharedPreferences sharedPreferences =
+    await SharedPreferences.getInstance();
+    if (sharedPreferences.getString("reservationHistory") != null) {
+      var obtainedIdDeservationDetails =
+      List.from(jsonDecode(sharedPreferences.getString("reservationHistory")!)).map((reservationDetail) => ReservationDetails.fromJson(jsonDecode(jsonEncode(reservationDetail)))).toList();
+      setState(() {
+        reservations = obtainedIdDeservationDetails;
+        isLoading = false;
+      });
+    }
+      ///////////////////////////////////////////
     while (true) {
       final reservationDetails = await getReservationDetails();
+      ///////////////////////////////////////////
+      sharedPreferences.setString(
+          "reservationHistory",
+          jsonEncode(reservationDetails
+              .map((reservationDetail) => reservationDetail.toJson())
+              .toList()));
+      ////////////////////////////////////////////
       setState(() {
         reservations = reservationDetails;
         isLoading = false;
@@ -239,13 +258,15 @@ class _HistoryPageState extends State<HistoryPage> {
                                     String formattedFinishTime =
                                         DateFormat('h:mm a').format(finishTime);
                                     String statusText =
+                                    reservationDetail.completed?"Completed":
                                         !reservationDetail.parked
                                             ? "Reserved"
                                             : reservationDetail.expired
                                                 ? "Expired"
                                                 : "Parked";
                                     Color statusColor =
-                                        reservationDetail.expired
+                                    reservationDetail.completed?Col.primary:
+                                    reservationDetail.expired
                                             ? Col.deleteColor.withRed(255)
                                             : Col.primary;
                                     return GestureDetector(
@@ -283,7 +304,11 @@ class _HistoryPageState extends State<HistoryPage> {
                                                         .duration
                                                         .toString(),
                                                     parked: reservationDetail
-                                                        .toString())));
+                                                        .toString(),
+                                                    expired: reservationDetail
+                                                        .expired,
+                                                    completed: reservationDetail
+                                                        .completed)));
                                       },
                                       child: Padding(
                                         padding:

@@ -33,31 +33,48 @@ void main() {
 }
 
 Future getCurrentLocation() async {
-  var position = await Geolocator()
-      .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
-  Strings.lat = position.latitude;
-  Strings.longs = position.longitude;
+  Strings.lat = 9.034401;
+  Strings.longs = 38.763241;
+  var position = Geolocator()
+      .getCurrentPosition(desiredAccuracy: LocationAccuracy.high)
+      .then(
+    (position) {
+      Strings.lat = position.latitude;
+      Strings.longs = position.longitude;
+    },
+  );
 }
-Future fetchToNotify() async{
+
+// Future getCurrentLocation() async {
+//   // var position = await Geolocator()
+//   //     .getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+//   Strings.lat = 1.2;
+//   Strings.longs = 1.3;
+// }
+Future fetchToNotify() async {
   List<String> notified = [];
   while (true) {
-    if(Strings.userId != false){
-    final reservationDetails = await ReservationsState.getReservationDetails();
-    reservationDetails.forEach((element) {
-      var startTimeInM = element.startingTime / 60000;
-      var durationInM = element.duration * 60;
-      var endTimeInM = startTimeInM + durationInM;
-      var currentTimestampInM = DateTime.now().millisecondsSinceEpoch / 60000;
-      var minutesLeft = endTimeInM - currentTimestampInM;
-      if (minutesLeft>=0 && minutesLeft <= 10 && !notified.contains(element.id)) {
-        notified.add(element.id);
-        createNotification(element.branchName);
-      }
-    });
+    if (Strings.userId != false) {
+      final reservationDetails =
+          await ReservationsState.getReservationDetails();
+      reservationDetails.forEach((element) {
+        var startTimeInM = element.startingTime / 60000;
+        var durationInM = element.duration * 60;
+        var endTimeInM = startTimeInM + durationInM;
+        var currentTimestampInM = DateTime.now().millisecondsSinceEpoch / 60000;
+        var minutesLeft = endTimeInM - currentTimestampInM;
+        if (minutesLeft >= 0 &&
+            minutesLeft <= 10 &&
+            !notified.contains(element.id)) {
+          notified.add(element.id);
+          createNotification(element.branchName);
+        }
+      });
     }
     await Future.delayed(Duration(seconds: 10));
   }
 }
+
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {

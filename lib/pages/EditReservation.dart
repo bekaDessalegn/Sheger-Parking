@@ -643,11 +643,15 @@ class _EditReservationState extends State<EditReservation> {
       lastDate: DateTime(2050));
 
   Future<TimeOfDay?> pickTime() => showCustomTimePicker(
-      context: context,
-      initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
-      selectableTimePredicate: (time) {
-        return time!.minute == 0;
-      });
+    context: context,
+    onFailValidation: (context) {
+      return print('Unavailable selection');
+    },
+    initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
+    selectableTimePredicate: (time) {
+      return time!.minute == 0 && time.hour >= fullTime.hour;
+    },
+  );
 
   Future pickDateTime() async {
     DateTime? date = await pickDate();
@@ -657,19 +661,20 @@ class _EditReservationState extends State<EditReservation> {
     if (time == null) return;
 
     final dateTime =
-        DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    DateTime(date.year, date.month, date.day, time.hour, time.minute);
 
     int timestamp = dateTime.millisecondsSinceEpoch;
 
     String startDate = DateFormat.yMMMd().format(dateTime);
-    String formattedstartTime = DateFormat('h:mm a').format(dateTime);
+    String startTime = DateFormat('h:mm a').format(dateTime);
 
     setState(() {
       this.timestamp = timestamp;
       this.startDate = startDate;
-      this.formattedstartTime = formattedstartTime;
+      this.startTime = startTime;
     });
   }
+
 
   DropdownMenuItem<String> buildMenuBranch(String branch) => DropdownMenuItem(
         value: branch,

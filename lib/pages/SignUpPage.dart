@@ -32,11 +32,15 @@ class _SignUpPageState extends State<SignUpPage> {
   String? hashedPassword;
   String? phoneInUse;
   String? emailInUse;
-  String? socketError;
+  bool socketError = false;
 
   bool phoneExists = false;
 
   Future verify() async {
+    setState(() {
+      isProcessing = true;
+    });
+
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse('${base_url}/clients/signup');
 
@@ -56,6 +60,10 @@ class _SignUpPageState extends State<SignUpPage> {
       var res = await req.send();
       final resBody = await res.stream.bytesToString();
 
+      setState(() {
+        socketError = false;
+      });
+
       if (res.statusCode >= 200 && res.statusCode < 300) {
         var verificationCode = json.decode(resBody);
 
@@ -66,17 +74,20 @@ class _SignUpPageState extends State<SignUpPage> {
           isDataEntered = !isDataEntered;
           phoneInUse = "PHONE DOES NOT EXIST";
           emailInUse = "EMAIL DOES NOT EXIST";
+          isProcessing = false;
         });
       } else {
         var exists = json.decode(resBody);
         setState(() {
           phoneInUse = exists["message"].toString();
           emailInUse = exists["message"].toString();
+          isProcessing = false;
         });
       }
     } catch (e) {
       setState(() {
-        socketError = "There is an internet connection problem, Try again";
+        isProcessing = false;
+        socketError = true;
       });
     }
   }
@@ -100,6 +111,10 @@ class _SignUpPageState extends State<SignUpPage> {
 
       var res = await req.send();
       final resBody = await res.stream.bytesToString();
+
+      setState(() {
+        socketError = false;
+      });
 
       if (res.statusCode >= 200 && res.statusCode < 300) {
         var data = json.decode(resBody);
@@ -136,7 +151,7 @@ class _SignUpPageState extends State<SignUpPage> {
       } else {}
     } catch (e) {
       setState(() {
-        socketError = "There is an internet connection problem, Try again";
+        socketError = true;
       });
     }
   }
@@ -512,7 +527,7 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                             )
                           : Text(""),
-                  !(socketError == null)
+                  (socketError)
                       ? Padding(
                           padding: const EdgeInsets.only(top: 5),
                           child: Center(
@@ -565,22 +580,13 @@ class _SignUpPageState extends State<SignUpPage> {
                               ),
                               shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8)),
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  await verify();
-
-                                  if (phoneExists) {
-                                    setState(() {
-                                      isProcessing = true;
-                                    });
-                                  }
-                                } else {}
-                                Future.delayed(Duration(seconds: 3), () {
-                                  setState(() {
-                                    isProcessing = false;
-                                  });
-                                });
-                              },
+                              onPressed: isProcessing
+                                  ? null
+                                  : () async {
+                                      if (_formKey.currentState!.validate()) {
+                                        await verify();
+                                      } else {}
+                                    },
                             ),
                     ),
                   ),

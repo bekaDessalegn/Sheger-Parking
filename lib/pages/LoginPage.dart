@@ -32,56 +32,67 @@ class _LoginPageState extends State<LoginPage> {
   String? hashedPassword;
 
   final _formKey = GlobalKey<FormState>();
+  bool socketError = false;
 
   Future login() async {
     var headersList = {'Accept': '*/*', 'Content-Type': 'application/json'};
     var url = Uri.parse('${base_url}/clients/login');
 
     var body = {"phone": user.phone, "passwordHash": hashedPassword};
-    var req = http.Request('POST', url);
-    req.headers.addAll(headersList);
-    req.body = json.encode(body);
 
-    var res = await req.send();
-    final resBody = await res.stream.bytesToString();
+    try{
+      var req = http.Request('POST', url);
+      req.headers.addAll(headersList);
+      req.body = json.encode(body);
 
-    setState(() {
-      response = res.reasonPhrase;
-    });
+      var res = await req.send();
+      final resBody = await res.stream.bytesToString();
 
-    if (res.statusCode >= 200 && res.statusCode < 300) {
-      var data = json.decode(resBody);
-      String id = data["id"].toString();
-      String fullName = data["fullName"].toString();
-      String phone = data["phone"].toString();
-      String email = data["email"].toString();
-      String passwordHash = data["passwordHash"].toString();
-      String defaultPlateNumber = data["defaultPlateNumber"].toString();
-      Strings.userId = id;
+      setState(() {
+        response = res.reasonPhrase;
+        socketError = false;
+      });
 
-      final SharedPreferences sharedPreferences =
-          await SharedPreferences.getInstance();
-      sharedPreferences.setString("id", id);
-      sharedPreferences.setString("fullName", fullName);
-      sharedPreferences.setString("phone", phone);
-      sharedPreferences.setString("email", email);
-      sharedPreferences.setString("passwordHash", passwordHash);
-      sharedPreferences.setString("defaultPlateNumber", defaultPlateNumber);
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        var data = json.decode(resBody);
+        String id = data["id"].toString();
+        String fullName = data["fullName"].toString();
+        String phone = data["phone"].toString();
+        String email = data["email"].toString();
+        String passwordHash = data["passwordHash"].toString();
+        String defaultPlateNumber = data["defaultPlateNumber"].toString();
+        Strings.userId = id;
 
-      Navigator.pushAndRemoveUntil(
-          context,
-          MaterialPageRoute(
-              builder: (context) => BlocProvider(
-                  create: (context) => CurrentIndexBloc(),
-                  child: HomePage(
-                      id: id,
-                      fullName: fullName,
-                      phone: phone,
-                      email: email,
-                      passwordHash: passwordHash,
-                      defaultPlateNumber: defaultPlateNumber))),
-          (Route<dynamic> route) => false);
-    } else {}
+        final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+        sharedPreferences.setString("id", id);
+        sharedPreferences.setString("fullName", fullName);
+        sharedPreferences.setString("phone", phone);
+        sharedPreferences.setString("email", email);
+        sharedPreferences.setString("passwordHash", passwordHash);
+        sharedPreferences.setString("defaultPlateNumber", defaultPlateNumber);
+
+        Navigator.pushAndRemoveUntil(
+            context,
+            MaterialPageRoute(
+                builder: (context) => BlocProvider(
+                    create: (context) => CurrentIndexBloc(),
+                    child: HomePage(
+                        id: id,
+                        fullName: fullName,
+                        phone: phone,
+                        email: email,
+                        passwordHash: passwordHash,
+                        defaultPlateNumber: defaultPlateNumber))),
+                (Route<dynamic> route) => false);
+      } else {
+      }
+    }
+    catch (e) {
+      setState(() {
+        socketError = true;
+      });
+    }
   }
 
   User user = User('', '', '', '', '');
@@ -258,6 +269,20 @@ class _LoginPageState extends State<LoginPage> {
                                 ),
                               )
                             : Text(""),
+                        (socketError)
+                            ? Padding(
+                          padding: const EdgeInsets.only(top: 5),
+                          child: Center(
+                            child: Text(
+                              "There is an internet connection problem",
+                              style: TextStyle(
+                                  color: Colors.redAccent,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 15),
+                            ),
+                          ),
+                        )
+                            : SizedBox(),
                         Padding(
                           padding: EdgeInsets.fromLTRB(25, 25, 25, 0),
                           child: Container(

@@ -7,6 +7,7 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:sheger_parking/constants/api.dart';
 import 'package:sheger_parking/constants/strings.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -137,12 +138,32 @@ class _BranchesPageState extends State<BranchesPage> {
     setState(() {
       isLoading = true;
     });
-
+    ///////////////////////////////////////////
+    final SharedPreferences sharedPreferences =
+        await SharedPreferences.getInstance();
+    if (sharedPreferences.getString("branchDetails") != null) {
+      var obtainedIdBranchDetails =
+          List.from(jsonDecode(sharedPreferences.getString("branchDetails")!))
+              .map((branchDetail) =>
+                  BranchDetails.fromJson(jsonDecode(jsonEncode(branchDetail))))
+              .toList();
+      setState(() {
+        branches = obtainedIdBranchDetails;
+        isLoading = false;
+        onLoading = false;
+      });
+    }
+    ///////////////////////////////////////////
     final branchDetails = await getBranchDetails(query);
-
-    setState(() => this.branches = branchDetails);
-
+    ///////////////////////////////////////////
+    sharedPreferences.setString(
+        "branchDetails",
+        jsonEncode(branchDetails
+            .map((branchDetail) => branchDetail.toJson())
+            .toList()));
+    ////////////////////////////////////////////
     setState(() {
+      branches = branchDetails;
       isLoading = false;
       onLoading = false;
     });

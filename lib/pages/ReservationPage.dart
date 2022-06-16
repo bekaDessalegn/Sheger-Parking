@@ -706,12 +706,15 @@ class _ReservationPageState extends State<ReservationPage> {
       lastDate: DateTime(2050));
 
   Future<TimeOfDay?> pickTime() => showCustomTimePicker(
-        context: context,
-        initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
-        selectableTimePredicate: (time) {
-          return time!.minute == 0;
-        },
-      );
+    context: context,
+    onFailValidation: (context) {
+      return print('Unavailable selection');
+    },
+    initialTime: TimeOfDay(hour: fullTime.hour, minute: 0),
+    selectableTimePredicate: (time) {
+      return time!.minute == 0;
+    },
+  );
 
   Future pickDateTime() async {
     DateTime? date = await pickDate();
@@ -721,7 +724,7 @@ class _ReservationPageState extends State<ReservationPage> {
     if (time == null) return;
 
     final dateTime =
-        DateTime(date.year, date.month, date.day, time.hour, time.minute);
+    DateTime(date.year, date.month, date.day, time.hour, time.minute);
 
     int timestamp = dateTime.millisecondsSinceEpoch;
 
